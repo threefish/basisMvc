@@ -4,6 +4,7 @@ import com.sgaop.web.frame.server.util.ClassTool;
 import com.sgaop.web.frame.server.util.DaoUtil;
 import org.apache.log4j.Logger;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.*;
@@ -18,21 +19,14 @@ public class JDBC_Accessor {
 
     private static final Logger log = Logger.getRootLogger();
 
-    private Connection conn;
+    private DataSource dataSource;
 
-    public JDBC_Accessor(Connection dbconn) {
-        this.conn = dbconn;
+
+    public JDBC_Accessor(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
-    /**
-     * 打印sql语句
-     *
-     * @param sql
-     */
-    private void showSql(String sql) {
-        sql = sql.substring(sql.indexOf(":") + 1, sql.length());
-        log.debug(sql);
-    }
+
 
     /**
      * 执行查询，并取得查询结果集合，将结果装入HashMap中
@@ -45,12 +39,14 @@ public class JDBC_Accessor {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         List<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
+        Connection conn=null;
         try {
+            conn= dataSource.getConnection();
             pstm = conn.prepareStatement(sql);
             //设置参数
             DaoUtil.setParams(pstm, params);
             //打印sql
-            showSql(pstm.toString());
+            DaoUtil.showSql(pstm.toString());
             //执行查询，并取得查询结果
             rs = pstm.executeQuery();
             ResultSetMetaData meta = rs.getMetaData();
@@ -65,7 +61,7 @@ public class JDBC_Accessor {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DaoUtil.close(pstm, rs);
+            DaoUtil.close(pstm, rs, conn);
         }
         return data;
     }
@@ -82,12 +78,14 @@ public class JDBC_Accessor {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         HashMap<String, Object> data = new HashMap<String, Object>();
+        Connection conn = null;
         try {
+            conn = dataSource.getConnection();
             pstm = conn.prepareStatement(sql);
             //设置参数
             DaoUtil.setParams(pstm, params);
             //打印sql
-            showSql(pstm.toString());
+            DaoUtil.showSql(pstm.toString());
             //执行查询，并取得查询结果
             rs = pstm.executeQuery();
             ResultSetMetaData meta = rs.getMetaData();
@@ -102,7 +100,7 @@ public class JDBC_Accessor {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DaoUtil.close(pstm, rs);
+            DaoUtil.close(pstm, rs, conn);
         }
         return data;
     }
@@ -193,7 +191,9 @@ public class JDBC_Accessor {
         ResultSet rs = null;
         int rowCount = listBean.size();
         int[] keys = new int[rowCount];
+        Connection conn = null;
         try {
+            conn = dataSource.getConnection();
             for (Object bean : listBean) {
                 LinkedHashMap<String, Object> columMap = new LinkedHashMap<String, Object>();
                 StringBuffer sb = new StringBuffer("insert into " + daoMethod.getTableName() + "(");
@@ -221,7 +221,7 @@ public class JDBC_Accessor {
                     i++;
                 }
                 //打印sql
-                showSql(pstm.toString());
+                DaoUtil.showSql(pstm.toString());
                 pstm.addBatch();
 
             }
@@ -236,7 +236,7 @@ public class JDBC_Accessor {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DaoUtil.close(pstm, rs);
+            DaoUtil.close(pstm, rs, conn);
         }
         return keys;
     }
@@ -254,7 +254,9 @@ public class JDBC_Accessor {
         ResultSet rs = null;
         int rowCount = listBean.size();
         int[] keys = new int[rowCount];
+        Connection conn = null;
         try {
+            conn = dataSource.getConnection();
             for (Object bean : listBean) {
                 LinkedHashMap<String, Object> columMap = new LinkedHashMap<String, Object>();
                 StringBuffer sb = new StringBuffer("update " + daoMethod.getTableName() + " set ");
@@ -281,14 +283,14 @@ public class JDBC_Accessor {
                 //设置主键值
                 pstm.setObject(i, ClassTool.invokeGetMethod(cls, bean, daoMethod.getDaoFiled(daoMethod.getPkName()).get_getMethodName()));
                 //打印sql
-                showSql(pstm.toString());
+                DaoUtil.showSql(pstm.toString());
                 pstm.addBatch();
             }
             keys = pstm.executeBatch();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DaoUtil.close(pstm, rs);
+            DaoUtil.close(pstm, rs,conn);
         }
         return keys;
     }
@@ -307,7 +309,9 @@ public class JDBC_Accessor {
         ResultSet rs = null;
         int rowCount = listBean.size();
         int[] keys = new int[rowCount];
+        Connection conn = null;
         try {
+            conn = dataSource.getConnection();
             for (Object bean : listBean) {
                 StringBuffer sb = new StringBuffer("delete from " + daoMethod.getTableName());
                 sb.append(" where " + daoMethod.getPkName() + "=?");
@@ -317,14 +321,14 @@ public class JDBC_Accessor {
                 //设置主键值
                 pstm.setObject(1, ClassTool.invokeGetMethod(cls, bean, daoMethod.getDaoFiled(daoMethod.getPkName()).get_getMethodName()));
                 //打印sql
-                showSql(pstm.toString());
+                DaoUtil.showSql(pstm.toString());
                 pstm.addBatch();
             }
             keys = pstm.executeBatch();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DaoUtil.close(pstm, rs);
+            DaoUtil.close(pstm, rs,conn);
         }
         return keys;
     }

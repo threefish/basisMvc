@@ -4,6 +4,7 @@
 
 ## 基于Java注解和servlet3.0+实现通过注解方式访问的web MVC框架
 # 示例项目[basisMvcSample](https://github.com/threefish/basisMvcSample "示例项目")
+###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看原始项目的更新日志](https://github.com/threefish/basisMvcSample "示例项目")
 ### 已实现
 #### 参数类
 

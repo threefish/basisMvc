@@ -136,12 +136,12 @@ public class DaoUtil {
     }
 
     /**
-     * 关闭数据库资源
+     * 释放数据库连接资源
      *
      * @param stmt
      * @param rs
      */
-    public static void close(Statement stmt, ResultSet rs) {
+    public static void close(Statement stmt, ResultSet rs,Connection conn) {
         try {
             if (rs != null) {
                 rs.close();
@@ -155,9 +155,24 @@ public class DaoUtil {
             }
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
+        } try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage(), ex);
         }
     }
 
+    /**
+     * 打印sql语句
+     *
+     * @param sql
+     */
+    public static  void showSql(String sql) {
+        sql = sql.substring(sql.indexOf(":") + 1, sql.length());
+        logger.debug(sql);
+    }
 
     public static String arryToString(String[] ary) {
         StringBuffer sb = new StringBuffer();

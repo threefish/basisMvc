@@ -28,15 +28,6 @@ public class DBConnPool {
         return dataSource;
     }
 
-    public static Connection getDbConn() {
-        try {
-            return dataSource.getConnection();
-        } catch (Exception e) {
-            logger.debug("获取连接失败", e);
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     private static void init() {
         try {

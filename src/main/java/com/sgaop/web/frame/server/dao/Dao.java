@@ -3,7 +3,9 @@ package com.sgaop.web.frame.server.dao;
 import com.sgaop.web.frame.server.cache.CacheManager;
 import com.sgaop.web.frame.server.util.DaoUtil;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +25,9 @@ public class Dao {
      */
     private JDBC_Accessor accessor;
 
-    public Dao(Connection dbconn) {
-        this.accessor = new JDBC_Accessor(dbconn);
-        this.dbtype = DaoUtil.getDataBaseType(dbconn);
+    public Dao(DataSource dataSource) throws SQLException {
+        this.accessor = new JDBC_Accessor(dataSource);
+        this.dbtype = DaoUtil.getDataBaseType(dataSource.getConnection());
     }
 
 
