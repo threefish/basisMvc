@@ -1,5 +1,5 @@
 # **basis  MVC**
-- 基于servlet与java注解的Web MVC 框架
+- 基于servlet与java注解的Web MVC 快速开发框架
 - _**basis** 意思： n. 基础；底部；主要成分；基本原则或原理_
 
 ## 基于Java注解和servlet3.0+实现通过注解方式访问的web MVC框架
