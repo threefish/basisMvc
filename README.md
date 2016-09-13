@@ -38,6 +38,8 @@
 
 ### 正在添加中
 - aop的实现
+- ioc的实现
+- dao事务控制
 - 暂未想到的功能.....
 
 
@@ -47,7 +49,7 @@
     - 配置文件相关可以查看jar包中的 resources 目录以作规范
 
 ### 示例CODE
-```
+```java
 package com.sgaop.web.action;
 
 import com.google.gson.Gson;
