@@ -1,7 +1,7 @@
 # **basis  MVC**
 - 基于servlet与java注解的Web MVC 快速开发框架
 - _**basis** 意思： n. 基础；底部；主要成分；基本原则或原理_
-
+## 代码可能不够好，但是这是一种尝试，一种突破自我的方式。欢迎提出建议！谢谢！
 ## 基于Java注解和servlet3.0+实现通过注解方式访问的web MVC框架
 # 示例项目[basisMvcSample](https://github.com/threefish/basisMvcSample "示例项目")
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看原始项目的更新日志](https://github.com/threefish/basisMvcSample "示例项目")
@@ -32,6 +32,7 @@
     - table-Map
     - table-List<Map>
     - 对象的增删改查
+    - dao事务控制
 
 - @Setup 启动执行任务
 - 绑定durid连接池
@@ -39,7 +40,6 @@
 ### 正在添加中
 - aop的实现
 - ioc的实现
-- dao事务控制
 - 暂未想到的功能.....
 
 
