@@ -1,6 +1,7 @@
 package com.sgaop.test;
 
 import com.google.gson.Gson;
+import com.sgaop.bean.tbUser;
 import com.sgaop.web.frame.server.dao.DBConnPool;
 import com.sgaop.web.frame.server.dao.Dao;
 import com.sgaop.web.frame.server.dao.Pager;
@@ -8,7 +9,6 @@ import com.sgaop.web.frame.server.scanner.ClassScanner;
 import com.sgaop.web.frame.server.scanner.ProperScanner;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.sgaop.bean.tbUser;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,9 +19,8 @@ import java.util.Date;
  * User: 306955302@qq.com
  * Date: 2016/9/12 0012
  * To change this template use File | Settings | File Templates.
- *
- *写这个测试时并没有按照顺序来所以， 最好单个执行，全部执行时，有些数据或许因为被清除掉了而导致报错
- *
+ * <p>
+ * 写这个测试时并没有按照顺序来所以， 最好单个执行，全部执行时，有些数据或许因为被清除掉了而导致报错
  */
 public class TestAllDao {
     private static Dao dao;
@@ -92,7 +91,11 @@ public class TestAllDao {
      */
     @Test
     public void querySinge() {
-        dao.querySinge("id=?", tbUser.class, 10);
+        try {
+            dao.querySinge("id=?", tbUser.class, 10);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -109,14 +112,18 @@ public class TestAllDao {
      */
     @Test
     public void insertData() {
-        dao.insert(tbUser.class, tb);
+        try {
+            dao.insert(tbUser.class, tb);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * 批量插入实体对象
      */
     @Test
-    public void insertListData() {
+    public void insertListData() throws SQLException {
         dao.insert(tbUser.class, list);
     }
 
@@ -124,7 +131,7 @@ public class TestAllDao {
      * 批量更新实体对象
      */
     @Test
-    public void updateListData() {
+    public void updateListData() throws SQLException {
         int[] x = dao.update(tbUser.class, list);
         System.out.println(new Gson().toJson(x));
     }
@@ -151,8 +158,25 @@ public class TestAllDao {
      * 根据sql查询
      */
     @Test
-    public void queryBySql2() {
+    public void queryBySql2() throws SQLException {
         System.out.println(new Gson().toJson(dao.querySinge("select * from tb_user where id=?", 9)));
+    }
+
+
+    /**
+     * 使用事务
+     */
+    @Test
+    public void trans()  {
+        dao.begin(false);
+        try {
+            dao.insert(tbUser.class, list);
+            dao.insert(tbUser.class, list);
+            dao.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            dao.rollback();
+        }
     }
 
 }

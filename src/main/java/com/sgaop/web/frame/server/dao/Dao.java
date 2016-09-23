@@ -4,7 +4,6 @@ import com.sgaop.web.frame.server.cache.CacheManager;
 import com.sgaop.web.frame.server.util.DaoUtil;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +24,18 @@ public class Dao {
      */
     private JDBC_Accessor accessor;
 
+    public void commit()  {
+        accessor.commit();
+    }
+
+    public void begin(boolean autoCommit)  {
+        accessor.setAutoCommit(autoCommit);
+    }
+
+    public void rollback() {
+        accessor.rollback();
+    }
+
     public Dao(DataSource dataSource) throws SQLException {
         this.accessor = new JDBC_Accessor(dataSource);
         this.dbtype = DaoUtil.getDataBaseType(dataSource.getConnection());
@@ -38,7 +49,7 @@ public class Dao {
      * @param bean
      * @return
      */
-    public int insert(Class cls, Object bean) {
+    public int insert(Class cls, Object bean) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         ArrayList<Object> list = new ArrayList<Object>();
         list.add(bean);
@@ -52,7 +63,7 @@ public class Dao {
      * @param list
      * @return
      */
-    public int[] insert(Class cls, ArrayList<Object> list) {
+    public int[] insert(Class cls, ArrayList<Object> list) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         return accessor.doInsert(cls, daoMethod, list);
     }
@@ -65,7 +76,7 @@ public class Dao {
      * @param bean
      * @return
      */
-    public boolean update(Class cls, Object bean) {
+    public boolean update(Class cls, Object bean) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         ArrayList<Object> list = new ArrayList<Object>();
         list.add(bean);
@@ -79,7 +90,7 @@ public class Dao {
      * @param list
      * @return
      */
-    public int[] update(Class cls, ArrayList<Object> list) {
+    public int[] update(Class cls, ArrayList<Object> list) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         return accessor.doUpdateList(cls, daoMethod, list);
     }
@@ -177,7 +188,7 @@ public class Dao {
      * @param params
      * @return
      */
-    public HashMap<String, Object> querySinge(String sql, Object... params) {
+    public HashMap<String, Object> querySinge(String sql, Object... params) throws SQLException {
         return accessor.executeQuerySinge(sql, params);
     }
 
