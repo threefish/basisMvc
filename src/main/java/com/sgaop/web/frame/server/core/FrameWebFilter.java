@@ -50,7 +50,6 @@ public class FrameWebFilter implements Filter {
             Mvcs.initLocal(servletRequest, servletResponse, requestParameterMap);
             String reqMethod = request.getMethod();
             String servletPath = request.getServletPath();
-            logger.debug("通过 [" + reqMethod + "] 访问 [" + servletPath + "] 地址");
             if (STATIC_PATH != null) {
                 boolean isStatic = false;
                 String staticPaths[] = STATIC_PATH.split(",");
@@ -69,6 +68,7 @@ public class FrameWebFilter implements Filter {
                     DefaultViewsRender.RenderHttpStatus(response, 403, ConstanErrorMsg.ILLEGAL_OPERATION);
                     return;
                 } else if (!isStatic) {
+                    logger.debug("[" + reqMethod + "] [" + servletPath + "] ");
                     /**
                      * 访问的不是静态目录，现在注解中查询符合的访问地址
                      */
