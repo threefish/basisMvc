@@ -33,12 +33,12 @@
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <resources>
-            <inject>
+            <resource>
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>**/*.java</exclude>
                 </excludes>
-            </inject>
+            </resource>
         </resources>
         <plugins>
             <plugin>
