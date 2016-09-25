@@ -1,7 +1,5 @@
 package com.sgaop.web.frame.server.dao;
 
-import com.sgaop.web.frame.server.cache.CacheManager;
-import com.sgaop.web.frame.server.util.DaoUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -10,37 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: 306955302@qq.com
- * Date: 2016/6/20 0020
- * To change this template use File | Settings | File Templates.
+ * Created by 30695 on 2016/9/25 0025.
  */
-public class Dao {
 
-    private DbType dbtype;
+public interface Dao {
 
-    /**
-     * 数据访问器
-     */
-    private JDBC_Accessor accessor;
+    void commit();
 
-    public void commit()  {
-        accessor.commit();
-    }
+    void begin(boolean autoCommit);
 
-    public void begin(boolean autoCommit)  {
-        accessor.setAutoCommit(autoCommit);
-    }
+    void rollback();
 
-    public void rollback() {
-        accessor.rollback();
-    }
-
-    public Dao(DataSource dataSource) throws SQLException {
-        this.accessor = new JDBC_Accessor(dataSource);
-        this.dbtype = DaoUtil.getDataBaseType(dataSource.getConnection());
-    }
-
+    void setDataSource(DataSource dataSource)throws SQLException;
 
     /**
      * 插入一个对象,返回主键ID
@@ -49,12 +28,7 @@ public class Dao {
      * @param bean
      * @return
      */
-    public int insert(Class cls, Object bean) throws SQLException {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        ArrayList<Object> list = new ArrayList<Object>();
-        list.add(bean);
-        return accessor.doInsert(cls, daoMethod, list)[0];
-    }
+    int insert(Class cls, Object bean) throws SQLException;
 
     /**
      * 批量插入
@@ -63,10 +37,7 @@ public class Dao {
      * @param list
      * @return
      */
-    public int[] insert(Class cls, ArrayList<Object> list) throws SQLException {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        return accessor.doInsert(cls, daoMethod, list);
-    }
+    int[] insert(Class cls, ArrayList<Object> list) throws SQLException;
 
 
     /**
@@ -76,12 +47,7 @@ public class Dao {
      * @param bean
      * @return
      */
-    public boolean update(Class cls, Object bean) throws SQLException {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        ArrayList<Object> list = new ArrayList<Object>();
-        list.add(bean);
-        return accessor.doUpdateList(cls, daoMethod, list)[0] > 0;
-    }
+    boolean update(Class cls, Object bean) throws SQLException;
 
     /**
      * 批量更新
@@ -90,10 +56,7 @@ public class Dao {
      * @param list
      * @return
      */
-    public int[] update(Class cls, ArrayList<Object> list) throws SQLException {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        return accessor.doUpdateList(cls, daoMethod, list);
-    }
+    int[] update(Class cls, ArrayList<Object> list) throws SQLException;
 
     /**
      * 批量删除
@@ -102,10 +65,7 @@ public class Dao {
      * @param list
      * @return
      */
-    public int[] delect(Class cls, ArrayList<Object> list) {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        return accessor.doDelectList(cls, daoMethod, list);
-    }
+    int[] delect(Class cls, ArrayList<Object> list);
 
     /**
      * 删除一个对象
@@ -114,12 +74,7 @@ public class Dao {
      * @param bean
      * @return
      */
-    public boolean delect(Class cls, Object bean) {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        ArrayList<Object> list = new ArrayList<Object>();
-        list.add(bean);
-        return accessor.doDelectList(cls, daoMethod, list)[0] > 0;
-    }
+    boolean delect(Class cls, Object bean);
 
 
     /**
@@ -130,14 +85,7 @@ public class Dao {
      * @param <T>
      * @return
      */
-    public <T> List<T> queryList(Class cls, Pager pager, String order) {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        String sql = DaoUtil.generateSelectSql(daoMethod, "", "");
-        if (pager != null) {
-            sql = DaoUtil.generatePageSql(this.dbtype, daoMethod.getTableName(), sql, order, pager);
-        }
-        return accessor.doLoadList(cls, daoMethod, sql);
-    }
+    <T> List<T> queryList(Class cls, Pager pager, String order);
 
 
     /**
@@ -147,14 +95,7 @@ public class Dao {
      * @param <T>
      * @return
      */
-    public <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        String sql = DaoUtil.generateSelectSql(daoMethod, "", whereSqlAndOrder);
-        if (pager != null) {
-            sql = DaoUtil.generatePageSql(this.dbtype, daoMethod.getTableName(), sql, "", pager);
-        }
-        return accessor.doLoadList(cls, daoMethod, sql, params);
-    }
+    <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params);
 
     /**
      * 按自定义sql条件查询全部
@@ -163,10 +104,7 @@ public class Dao {
      * @param <T>
      * @return
      */
-    public <T> List<T> querySqlList(Class cls, String sql, Object... params) {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        return accessor.doLoadList(cls, daoMethod, sql, params);
-    }
+    <T> List<T> querySqlList(Class cls, String sql, Object... params);
 
     /**
      * 按sql条件单条记录
@@ -175,11 +113,7 @@ public class Dao {
      * @param <T>
      * @return
      */
-    public <T> T querySinge(Class cls, String whereSql, Object... params) {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        String sql = DaoUtil.generateSelectSql(daoMethod, "", whereSql);
-        return accessor.doLoadSinge(cls, daoMethod, sql, params);
-    }
+    <T> T querySinge(Class cls, String whereSql, Object... params);
 
     /**
      * 根据sql查询单个对象
@@ -188,10 +122,7 @@ public class Dao {
      * @param params
      * @return
      */
-    public HashMap<String, Object> querySinge(String sql, Object... params) throws SQLException {
-        return accessor.executeQuerySinge(sql, params);
-    }
-
+    HashMap<String, Object> querySinge(String sql, Object... params) throws SQLException;
 
     /**
      * 根据sql查询多个对象
@@ -200,9 +131,7 @@ public class Dao {
      * @param params
      * @return
      */
-    public List<HashMap<String, Object>> queryList(String sql, Object... params) {
-        return accessor.executeQueryList(sql, params);
-    }
+    List<HashMap<String, Object>> queryList(String sql, Object... params);
 
     /**
      * 按主键查询单条记录
@@ -211,11 +140,5 @@ public class Dao {
      * @param <T>
      * @return
      */
-    public <T> T querySingePK(Class cls, Object params) {
-        TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        String sql = DaoUtil.generateSelectPKSql(daoMethod);
-        return accessor.doLoadSinge(cls, daoMethod, sql, params);
-    }
-
-
+    <T> T querySingePK(Class cls, Object params);
 }

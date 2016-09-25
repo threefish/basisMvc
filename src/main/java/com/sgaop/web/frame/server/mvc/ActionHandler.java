@@ -3,6 +3,9 @@ package com.sgaop.web.frame.server.mvc;
 import com.sgaop.web.frame.server.cache.CacheManager;
 import com.sgaop.web.frame.server.constant.Constant;
 import com.sgaop.web.frame.server.error.WebErrorMessage;
+import com.sgaop.web.frame.server.ioc.IocBeanContext;
+import com.sgaop.web.frame.server.ioc.annotation.Inject;
+import com.sgaop.web.frame.server.ioc.annotation.IocBean;
 import com.sgaop.web.frame.server.mvc.annotation.Parameter;
 import com.sgaop.web.frame.server.util.ClassTool;
 import com.sgaop.web.frame.server.util.ParameterConverter;
@@ -11,6 +14,7 @@ import org.apache.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +26,9 @@ import java.util.Map;
  * Date: 2016/5/9 0009
  * To change this template use File | Settings | File Templates.
  */
+@IocBean("actionHandler")
 public class ActionHandler {
+
     private static final Logger logger = Logger.getRootLogger();
 
     public static ActionResult invokeAction(String servletPath, String methodType, HttpServletRequest request, HttpServletResponse response) {
@@ -35,8 +41,30 @@ public class ActionHandler {
                 actionResult.setResultType(actionMethod.getOK());
                 if (methodType.equals(actionMethod.getMethod())) {
                     Class<?> actionClass = actionMethod.getActionClass();
-                    Method handlerMethod = actionMethod.getActionMethod();
                     Object beanInstance = actionClass.newInstance();
+
+                    IocBean iocBean = actionClass.getAnnotation(IocBean.class);
+                    Field[] fields = actionClass.getDeclaredFields();
+                    for (Field field : fields) {
+                        field.setAccessible(true);
+                        if (field.getGenericType().equals(HttpServletRequest.class)) {
+                            field.set(beanInstance, request);
+                        } else if (field.getGenericType().equals(HttpServletResponse.class)) {
+                            field.set(beanInstance, response);
+                        } else {
+                            Inject inject = field.getAnnotation(Inject.class);
+                            if (iocBean != null && inject != null) {
+                                String resName = "";
+                                if (inject.value().equals("")) {
+                                    resName = field.getName();
+                                } else {
+                                    resName = inject.value();
+                                }
+                                IocBeanContext.me().injectBean(beanInstance,iocBean.value() + "." + resName);
+                            }
+                        }
+                    }
+                    Method handlerMethod = actionMethod.getActionMethod();
                     Class<?>[] actionParamTypes = actionMethod.getActionMethod().getParameterTypes();
                     List<Object> actionParamList = new ArrayList<Object>();
                     Annotation[][] annotations = handlerMethod.getParameterAnnotations();

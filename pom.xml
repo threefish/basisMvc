@@ -33,12 +33,12 @@
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <resources>
-            <resource>
+            <inject>
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>**/*.java</exclude>
                 </excludes>
-            </resource>
+            </inject>
         </resources>
         <plugins>
             <plugin>
@@ -58,6 +58,12 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.2</version>
         </dependency>
 
         <dependency>

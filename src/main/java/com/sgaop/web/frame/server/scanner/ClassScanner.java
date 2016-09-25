@@ -2,13 +2,13 @@ package com.sgaop.web.frame.server.scanner;
 
 
 import com.sgaop.web.frame.server.cache.CacheManager;
-import com.sgaop.web.frame.server.cache.StaticCacheManager;
 import com.sgaop.web.frame.server.constant.Constant;
 import com.sgaop.web.frame.server.dao.TableFiled;
 import com.sgaop.web.frame.server.dao.TableInfo;
 import com.sgaop.web.frame.server.dao.annotation.Colum;
 import com.sgaop.web.frame.server.dao.annotation.Pk;
 import com.sgaop.web.frame.server.dao.annotation.Table;
+import com.sgaop.web.frame.server.ioc.IocBeanContext;
 import com.sgaop.web.frame.server.mvc.ActionMethod;
 import com.sgaop.web.frame.server.mvc.annotation.*;
 import com.sgaop.web.frame.server.util.ClassTool;
@@ -26,7 +26,7 @@ import java.util.Set;
 public class ClassScanner {
 
     public static void ScannerAllClass() {
-        Set<Class<?>> classes = ClassScannerHelper.getClasses("");
+        Set<Class<?>> classes = ClassScannerHelper.scanPackage("");
         for (Class<?> ks : classes) {
             String classKey = ks.getName();
             WebController webController = ks.getAnnotation(WebController.class);
@@ -118,5 +118,6 @@ public class ClassScanner {
                 CacheManager.putTableCache(classKey, daoMethod);
             }
         }
+        IocBeanContext.me().init(classes);
     }
 }

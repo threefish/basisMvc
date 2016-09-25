@@ -41,6 +41,16 @@ public class StringsTool {
         return str;
     }
 
+
+    /**
+     * 判断字符串是否为空
+     * @param str
+     * @return
+     */
+    public static boolean isEmpty(String str) {
+        return str == null || "".equals(str.trim());
+    }
+
     /**
      * 处理空值的字符串
      *
