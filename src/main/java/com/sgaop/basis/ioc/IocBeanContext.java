@@ -138,9 +138,13 @@ public class IocBeanContext {
         try {
             String[] split = klass.split("\\.");
             Object object = beans.get(split[0]);
-            Field field = object.getClass().getDeclaredField(split[1]);
-            field.setAccessible(true);
-            field.set(beanInstance, beans.get(split[1]));
+            if(object!=null){
+                Field field = object.getClass().getDeclaredField(split[1]);
+                field.setAccessible(true);
+                field.set(beanInstance, beans.get(split[1]));
+            } else{
+                logger.error("没有"+ split[1]+"的实现");
+            }
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

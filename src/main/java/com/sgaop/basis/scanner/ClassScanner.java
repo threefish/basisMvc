@@ -6,6 +6,7 @@ import com.sgaop.basis.cache.CacheManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.dao.TableFiled;
 import com.sgaop.basis.dao.TableInfo;
+import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.ActionMethod;
 import com.sgaop.basis.util.ClassTool;
 
@@ -120,5 +121,6 @@ public class ClassScanner {
                 CacheManager.putTableCache(classKey, daoMethod);
             }
         }
+        IocBeanContext.me().init(classes);
     }
 }
