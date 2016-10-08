@@ -1,13 +1,13 @@
 package com.sgaop.web.action;
 
 import com.google.gson.Gson;
+import com.sgaop.basis.annotation.*;
 import com.sgaop.bean.TestbuildBean;
-import com.sgaop.web.frame.server.dao.DBConnPool;
-import com.sgaop.web.frame.server.mvc.AjaxResult;
-import com.sgaop.web.frame.server.mvc.Mvcs;
-import com.sgaop.web.frame.server.mvc.annotation.*;
-import com.sgaop.web.frame.server.mvc.upload.TempFile;
-import com.sgaop.web.frame.server.util.IoTool;
+import com.sgaop.basis.dao.DBConnPool;
+import com.sgaop.basis.mvc.AjaxResult;
+import com.sgaop.basis.mvc.Mvcs;
+import com.sgaop.basis.mvc.upload.TempFile;
+import com.sgaop.basis.util.IoTool;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -24,7 +24,7 @@ import java.util.Map;
  * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
  */
-@WebController("/mainController")
+@Control("/mainController")
 public class MainController {
 
     /**
@@ -52,7 +52,7 @@ public class MainController {
      */
     @OK("json")
     @POST
-    @Path("/buildBeanFile")
+    @Path(value = {"/buildBeanFile", "/buildBeanFile111222"},note = "测试哦")
     public AjaxResult buildBeanFile(@Parameter("data>>") TestbuildBean bean, @Parameter("docName") TempFile docName) {
         System.out.println(new Gson().toJson(bean));
         try {

@@ -1,6 +1,6 @@
 package com.sgaop.web.action.view;
 
-import com.sgaop.web.frame.server.mvc.view.View;
+import com.sgaop.basis.mvc.view.View;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 

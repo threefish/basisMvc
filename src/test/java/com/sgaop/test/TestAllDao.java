@@ -1,12 +1,13 @@
 package com.sgaop.test;
 
 import com.google.gson.Gson;
+import com.sgaop.basis.dao.impl.DaoImpl;
 import com.sgaop.bean.tbUser;
-import com.sgaop.web.frame.server.dao.DBConnPool;
-import com.sgaop.web.frame.server.dao.Dao;
-import com.sgaop.web.frame.server.dao.Pager;
-import com.sgaop.web.frame.server.scanner.ClassScanner;
-import com.sgaop.web.frame.server.scanner.ProperScanner;
+import com.sgaop.basis.dao.DBConnPool;
+import com.sgaop.basis.dao.Dao;
+import com.sgaop.basis.dao.Pager;
+import com.sgaop.basis.scanner.ClassScanner;
+import com.sgaop.basis.scanner.ProperScanner;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,7 +34,8 @@ public class TestAllDao {
         //加载全局配置文件
         ProperScanner.init();
         ClassScanner.ScannerAllClass();
-        dao = new Dao(DBConnPool.getDataSource());
+
+        dao = new DaoImpl();
 
         /**
          * 设置临时对象1

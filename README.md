@@ -1,7 +1,7 @@
 # **basis  MVC**
 - 基于servlet与java注解的Web MVC 快速开发框架
 - _**basis** 意思： n. 基础；底部；主要成分；基本原则或原理_
-## 代码可能不够好，但是这是一种尝试，一种突破自我的方式。欢迎提出建议！谢谢！
+## 代码可能不够好，重复造轮子是为了更加充分的了解框架底层实现原理，写这个这是一种尝试，一种突破自我的方式。欢迎提出建议！谢谢！
 ## 基于Java注解和servlet3.0+实现通过注解方式访问的web MVC框架
 # 示例项目[basisMvcSample](https://github.com/threefish/basisMvcSample "示例项目")
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看原始项目的更新日志](https://github.com/threefish/basisMvcSample "示例项目")
@@ -23,8 +23,8 @@
     - json对象返回
     - 404、500页面
     - 文件下载
-#### 用户自定义视图控制器
-     - 用户自定义视图（如freemaker）
+#### 用户自定义视图模版引擎控制器
+     - 顾名思义，就是可以由开发者自定义的视图模版引擎 （如freemaker，beetl，vm等等）
 
 #### dao功能  简易的orm实现
     - table-List<对象>
@@ -53,12 +53,12 @@
 package com.sgaop.web.action;
 
 import com.google.gson.Gson;
-import com.sgaop.web.frame.server.dao.DBConnPool;
-import com.sgaop.web.frame.server.mvc.Mvcs;
+import DBConnPool;
+import Mvcs;
 import com.sgaop.web.frame.server.mvc.annotation.*;
-import com.sgaop.web.frame.server.mvc.upload.TempFile;
-import com.sgaop.web.frame.server.mvc.AjaxResult;
-import com.sgaop.web.frame.server.util.IoTool;
+import TempFile;
+import AjaxResult;
+import IoTool;
 import com.sgaop.bean.TestbuildBean;
 
 import javax.servlet.http.HttpServletRequest;

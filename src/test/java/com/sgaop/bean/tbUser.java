@@ -1,8 +1,8 @@
 package com.sgaop.bean;
 
-import com.sgaop.web.frame.server.dao.annotation.Colum;
-import com.sgaop.web.frame.server.dao.annotation.Pk;
-import com.sgaop.web.frame.server.dao.annotation.Table;
+import com.sgaop.basis.annotation.Colum;
+import com.sgaop.basis.annotation.Pk;
+import com.sgaop.basis.annotation.Table;
 
 import java.sql.Timestamp;
 
