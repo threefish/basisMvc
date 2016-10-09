@@ -4,8 +4,16 @@
 ## 代码可能不够好，重复造轮子是为了更加充分的了解框架底层实现原理，写这个这是一种尝试，一种突破自我的方式。欢迎提出建议！谢谢！
 ## 基于Java注解和servlet3.0+实现通过注解方式访问的web MVC框架
 # 示例项目[basisMvcSample](https://github.com/threefish/basisMvcSample "示例项目")
-###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看原始项目的更新日志](https://github.com/threefish/basisMvcSample "示例项目")
+###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看更早前的更新日志](https://github.com/threefish/WebFrameWork "更早前的更新日志")
+
+### 正在添加中
+- aop的实现
+- 暂未想到的功能.....
+
 ### 已实现
+
+#### 简单小巧的IOC
+
 #### 参数类
 
     - 实现缓存扫描注解action
@@ -37,10 +45,6 @@
 - @Setup 启动执行任务
 - 绑定durid连接池
 
-### 正在添加中
-- aop的实现
-- ioc的实现
-- 暂未想到的功能.....
 
 
 ### 规范
@@ -76,8 +80,21 @@ import java.util.Map;
  * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
  */
-@WebController("/mainController")
+@IocBean("topicAction")
+@Control("/mainController")
 public class MainController {
+
+   private HttpServletRequest request;
+
+   private HttpServletResponse response;
+
+   private HttpSession session;
+
+   private ServletContext context;
+
+   @Inject("dao")
+   private Dao dao;
+
 
     /**
      * 返回freemarker自定义视图
@@ -103,7 +120,14 @@ public class MainController {
     @OK("json")
     @POST
     @Path("/buildBeanFile")
-    public AjaxResult buildBeanFile(@Parameter("data>>") TestbuildBean bean, @Parameter("docName") TempFile docName) {
+    public AjaxResult buildBeanFile(
+        @Parameter("data>>") TestbuildBean bean,
+        @Parameter("docName") TempFile docName,
+        HttpServletRequest request,
+        HttpServletResponse response,
+        HttpSession session,
+        ServletContext context
+    ) {
         System.out.println(new Gson().toJson(bean));
         try {
             if (docName != null) {
