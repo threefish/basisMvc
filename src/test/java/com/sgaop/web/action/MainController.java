@@ -2,8 +2,9 @@ package com.sgaop.web.action;
 
 import com.google.gson.Gson;
 import com.sgaop.basis.annotation.*;
+import com.sgaop.basis.dao.Dao;
 import com.sgaop.bean.TestbuildBean;
-import com.sgaop.basis.dao.DBConnPool;
+import com.sgaop.basis.dao.factory.DataSourceFactory;
 import com.sgaop.basis.mvc.AjaxResult;
 import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.mvc.upload.TempFile;
@@ -26,6 +27,9 @@ import java.util.Map;
  */
 @Control("/mainController")
 public class MainController {
+
+    @Inject
+    private Dao dao;
 
     /**
      * 返回freemarker自定义视图
@@ -97,7 +101,7 @@ public class MainController {
     @Path("/buildBean")
     public AjaxResult buildBean(@Parameter("data>>") TestbuildBean bean) throws SQLException {
         System.out.println(new Gson().toJson(bean));
-        Connection connection = DBConnPool.getDataSource().getConnection();
+        Connection connection = DataSourceFactory.getDataSource().getConnection();
         System.out.println(connection);
         return new AjaxResult(true, "呵呵呵", bean);
     }

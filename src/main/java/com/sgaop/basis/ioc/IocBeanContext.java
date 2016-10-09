@@ -45,8 +45,14 @@ public class IocBeanContext {
      * @return
      */
     public Object getBean(String name) {
-
         return beans.get(name);
+    }
+
+    /**
+     * 存放bean对象
+     */
+    public void setBean(String key,Object bean) {
+        this.beans.put(key, bean);
     }
 
     /**
@@ -78,13 +84,12 @@ public class IocBeanContext {
             if (annotation != null) {
                 String beanName = annotation.value();
                 try {
-                    this.beans.put(annotation.value(), item.newInstance());
+                    this.setBean(annotation.value(), item.newInstance());
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-
                 /*
                 记录依赖关系
                  */

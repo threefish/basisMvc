@@ -1,7 +1,9 @@
 package com.sgaop.test;
 
 import com.google.gson.Gson;
+import com.sgaop.basis.annotation.Inject;
 import com.sgaop.basis.cache.CacheManager;
+import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.scanner.ClassScanner;
 import com.sgaop.basis.scanner.ProperScanner;
 import org.junit.BeforeClass;
@@ -21,13 +23,14 @@ public class TestMvc {
     public static void setUp() throws SQLException {
         //加载全局配置文件
         ProperScanner.init();
-        ClassScanner.ScannerAllClass();
+        ClassScanner.init();
     }
 
+    @Inject
+    private Dao dao;
 
     @Test
     public void showWebMvcMap() {
-        CacheManager.urlMappingList();
         System.out.println("UrlMapping:" + new Gson().toJson(CacheManager.urlMappingList()));
     }
 

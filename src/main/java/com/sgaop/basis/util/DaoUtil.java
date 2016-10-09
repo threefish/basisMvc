@@ -2,7 +2,7 @@ package com.sgaop.basis.util;
 
 import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.Pager;
-import com.sgaop.basis.dao.TableInfo;
+import com.sgaop.basis.dao.bean.TableInfo;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -28,7 +28,6 @@ public class DaoUtil {
     public static DbType getDataBaseType(Connection dbconn) {
         try {
             String driverName = dbconn.getMetaData().getDriverName().toUpperCase();
-            System.out.println(driverName);
             //通过driverName是否包含关键字判断
             if (driverName.indexOf("MYSQL") != -1) {
                 return DbType.mysql;

@@ -31,7 +31,7 @@ public class ServletInitListener implements ServletContextListener {
         //加载全局配置文件
         ProperScanner.init();
         //扫描关键注解
-        ClassScanner.ScannerAllClass();
+        ClassScanner.init();
         //注册默认视图
         ViewsRegister.RegisterDefaultView();
         //执行自定义启动类

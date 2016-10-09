@@ -4,14 +4,17 @@ package com.sgaop.basis.scanner;
 import com.sgaop.basis.annotation.*;
 import com.sgaop.basis.cache.CacheManager;
 import com.sgaop.basis.constant.Constant;
-import com.sgaop.basis.dao.TableFiled;
-import com.sgaop.basis.dao.TableInfo;
+import com.sgaop.basis.dao.bean.TableFiled;
+import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.ActionMethod;
 import com.sgaop.basis.util.ClassTool;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,33 +25,17 @@ import java.util.Set;
  */
 public class ClassScanner {
 
+    public static Set<Class<?>> classes = new HashSet<>();
 
-    private static void putUrlMapping(String relpath, Method method, String classKey, Class<?> ks, String okVal, String note) {
-        boolean hasPOST = method.isAnnotationPresent(POST.class);
-        boolean hasDELETE = method.isAnnotationPresent(DELETE.class);
-        boolean hasPUT = method.isAnnotationPresent(PUT.class);
-        boolean hasGET = method.isAnnotationPresent(GET.class);
-        boolean hasHEAD = method.isAnnotationPresent(HEAD.class);
-        if (hasPOST) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("POST", classKey, ks, method, okVal, note));
-        }
-        if (hasHEAD) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("HEAD", classKey, ks, method, okVal, note));
-        }
-        if (hasDELETE) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("DELETE", classKey, ks, method, okVal, note));
-        }
-        if (hasPUT) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("PUT", classKey, ks, method, okVal, note));
-        }
-        //默认支持get访问
-        if (hasGET || (!hasPOST && !hasDELETE && !hasPUT && !hasHEAD)) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("GET", classKey, ks, method, okVal, note));
-        }
+    public static List<Class<?>> classes() {
+        return new ArrayList(classes);
     }
 
-    public static void ScannerAllClass() {
-        Set<Class<?>> classes = ClassScannerHelper.scanPackage("");
+    static {
+        classes = ClassScannerHelper.scanPackage("");
+    }
+
+    public static void init() {
         for (Class<?> ks : classes) {
             String classKey = ks.getName();
             Control control = ks.getAnnotation(Control.class);
@@ -123,4 +110,31 @@ public class ClassScanner {
         }
         IocBeanContext.me().init(classes);
     }
+
+
+    private static void putUrlMapping(String relpath, Method method, String classKey, Class<?> ks, String okVal, String note) {
+        boolean hasPOST = method.isAnnotationPresent(POST.class);
+        boolean hasDELETE = method.isAnnotationPresent(DELETE.class);
+        boolean hasPUT = method.isAnnotationPresent(PUT.class);
+        boolean hasGET = method.isAnnotationPresent(GET.class);
+        boolean hasHEAD = method.isAnnotationPresent(HEAD.class);
+        if (hasPOST) {
+            CacheManager.putUrlCache(relpath, new ActionMethod("POST", classKey, ks, method, okVal, note));
+        }
+        if (hasHEAD) {
+            CacheManager.putUrlCache(relpath, new ActionMethod("HEAD", classKey, ks, method, okVal, note));
+        }
+        if (hasDELETE) {
+            CacheManager.putUrlCache(relpath, new ActionMethod("DELETE", classKey, ks, method, okVal, note));
+        }
+        if (hasPUT) {
+            CacheManager.putUrlCache(relpath, new ActionMethod("PUT", classKey, ks, method, okVal, note));
+        }
+        //默认支持get访问
+        if (hasGET || (!hasPOST && !hasDELETE && !hasPUT && !hasHEAD)) {
+            CacheManager.putUrlCache(relpath, new ActionMethod("GET", classKey, ks, method, okVal, note));
+        }
+    }
+
+
 }

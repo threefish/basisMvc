@@ -41,7 +41,8 @@ public class ClassScannerHelper {
         //将包名转换为文件路径
         String packageDirName = packageName.replace('.', '/');
         try {
-            scannerJar(DaoImpl.class.getPackage().getName(), classes, true);
+//            scannerJar(DaoImpl.class.getPackage().getName(), classes, true);
+            scannerJar("com.sgaop.basis", classes, true);
             Enumeration<URL> dirs = classLoader.getResources(packageDirName);
             while (dirs.hasMoreElements()) {
                 URL url = dirs.nextElement();

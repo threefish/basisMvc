@@ -1,4 +1,4 @@
-package com.sgaop.basis.dao;
+package com.sgaop.basis.dao.factory;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.sgaop.basis.cache.StaticCacheManager;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * Date: 2016/5/4 0004
  * To change this template use File | Settings | File Templates.
  */
-public class DBConnPool {
+public class DataSourceFactory {
 
     private static final Logger logger = Logger.getRootLogger();
 

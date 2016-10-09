@@ -1,4 +1,4 @@
-package com.sgaop.basis.dao;
+package com.sgaop.basis.dao.bean;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

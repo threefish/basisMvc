@@ -7,5 +7,5 @@ package com.sgaop.basis.dao;
  * To change this template use File | Settings | File Templates.
  */
 public enum DbType {
-    mysql, mssql, oracle;
+    mysql, mssql, oracle
 }
