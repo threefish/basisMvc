@@ -11,8 +11,10 @@ import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.ParameterConverter;
 import org.apache.log4j.Logger;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -26,11 +28,18 @@ import java.util.Map;
  * Date: 2016/5/9 0009
  * To change this template use File | Settings | File Templates.
  */
-@IocBean("actionHandler")
 public class ActionHandler {
 
     private static final Logger logger = Logger.getRootLogger();
 
+    /**
+     * 执行action
+     * @param servletPath
+     * @param methodType
+     * @param request
+     * @param response
+     * @return
+     */
     public static ActionResult invokeAction(String servletPath, String methodType, HttpServletRequest request, HttpServletResponse response) {
         WebErrorMessage webErrorMessage = new WebErrorMessage();
         webErrorMessage.setCode(200);
@@ -51,20 +60,20 @@ public class ActionHandler {
                             field.set(beanInstance, request);
                         } else if (field.getGenericType().equals(HttpServletResponse.class)) {
                             field.set(beanInstance, response);
+                        } else if (field.getGenericType().equals(HttpSession.class)) {
+                            field.set(beanInstance, request.getSession());
+                        } else if (field.getGenericType().equals(ServletContext.class)) {
+                            field.set(beanInstance, request.getServletContext());
                         } else {
                             Inject inject = field.getAnnotation(Inject.class);
                             if (iocBean != null && inject != null) {
-                                String resName = "";
-                                if (inject.value().equals("")) {
-                                    resName = field.getName();
-                                } else {
-                                    resName = inject.value();
-                                }
+                                String resName = inject.value().equals("") ? field.getName() : inject.value();
                                 IocBeanContext.me().injectBean(beanInstance, iocBean.value() + "." + resName);
                             }
                         }
                     }
                     Method handlerMethod = actionMethod.getActionMethod();
+                    handlerMethod.setAccessible(true);
                     Class<?>[] actionParamTypes = actionMethod.getActionMethod().getParameterTypes();
                     List<Object> actionParamList = new ArrayList<Object>();
                     Annotation[][] annotations = handlerMethod.getParameterAnnotations();
@@ -90,13 +99,16 @@ public class ActionHandler {
                             actionParamList.add(request);
                         } else if (anClass.equals(HttpServletResponse.class)) {
                             actionParamList.add(response);
+                        } else if (anClass.equals(HttpSession.class)) {
+                            actionParamList.add(request.getSession());
+                        } else if (anClass.equals(ServletContext.class)) {
+                            actionParamList.add(request.getServletContext());
                         } else {
                             webErrorMessage.setCode(500);
                             webErrorMessage.setMessage("Action的参数,除HttpServletRequest,HttpServletResponse外必须使用@" + Parameter.class + "注解");
                             logger.warn(webErrorMessage.getMessage());
                         }
                     }
-                    handlerMethod.setAccessible(true);
                     actionResult.setResultData(handlerMethod.invoke(beanInstance, actionParamList.toArray()));
                 } else {
                     webErrorMessage.setCode(404);
