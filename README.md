@@ -6,13 +6,13 @@
 # 示例项目[basisMvcSample](https://github.com/threefish/basisMvcSample "示例项目")
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看更早前的更新日志](https://github.com/threefish/WebFrameWork "更早前的更新日志")
 
-### 正在添加中
-- aop的实现
-- 暂未想到的功能.....
+#### AOP实现中
+   - 目前只能一个方法对应一个切面，无法添加多个切面，寻求解决中。如果使用模拟aop就不存在这个问题了，比较纠结
 
 ### 已实现
 
 #### 简单小巧的IOC
+
 
 #### 参数类
 
@@ -73,7 +73,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Created by IntelliJ IDEA.
  * User: 306955302@qq.com
@@ -103,6 +102,7 @@ public class MainController {
     @OK("freemarker:TestFreeMarker.ftl")
     @GET
     @Path("/freemarker")
+    @Aop({"TestAop"})//加入AOP
     public Map freemarkerTest() {
         System.out.println("---freemarkerTest");
         Map data1 = new HashMap();

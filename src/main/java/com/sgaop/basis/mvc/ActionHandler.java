@@ -59,25 +59,25 @@ public class ActionHandler {
                     IocBean iocBean = actionClass.getAnnotation(IocBean.class);
 
                     Object beanInstance = null;
-                    Aop aop = handlerMethod.getAnnotation(Aop.class);
-                    if (aop != null && aop.value().length > 0) {
-                        List<Callback> proxys = new ArrayList();
-                        for (String str : aop.value()) {
-                            Callback proxy = (Callback) IocBeanContext.me().getBean(str);
-                            proxys.add(proxy);
-                        }
-                        Enhancer enhancer = new Enhancer();
-                        enhancer.setSuperclass(actionClass);
-                        enhancer.setUseCache(true);
-                        enhancer.setCallbacks(proxys.toArray(new Callback[0]));
-                        // 增强目标类
-                        beanInstance = enhancer.create();
-                    } else {
+//                    Aop aop = handlerMethod.getAnnotation(Aop.class);
+//                    if (aop != null && aop.value().length > 0) {
+//                        List<Callback> proxys = new ArrayList();
+//                        for (String str : aop.value()) {
+//                            Callback proxy = (Callback) IocBeanContext.me().getBean(str);
+//                            proxys.add(proxy);
+//                        }
+//                        Enhancer enhancer = new Enhancer();
+//                        enhancer.setSuperclass(actionClass);
+//                        enhancer.setUseCache(true);
+//                        enhancer.setCallbacks(proxys.toArray(new Callback[0]));
+//                        // 增强目标类
+//                        beanInstance = enhancer.create();
+//                    } else {
                         beanInstance = IocBeanContext.me().getBean(iocBean.value());
                         if (beanInstance == null) {
                             beanInstance = actionClass.newInstance();
                         }
-                    }
+//                    }
                     /**
                      * 自动注入参数
                      */
@@ -93,11 +93,11 @@ public class ActionHandler {
                         } else if (field.getGenericType().equals(ServletContext.class)) {
                             field.set(beanInstance, request.getServletContext());
                         } else {
-                            Inject inject = field.getAnnotation(Inject.class);
-                            if (iocBean != null && inject != null) {
-                                String resName = inject.value().equals("") ? field.getName() : inject.value();
-                                IocBeanContext.me().injectBean(beanInstance, iocBean.value() + "." + resName);
-                            }
+//                            Inject inject = field.getAnnotation(Inject.class);
+//                            if (iocBean != null && inject != null) {
+//                                String resName = inject.value().equals("") ? field.getName() : inject.value();
+//                                IocBeanContext.me().injectBean(field,beanInstance,resName);
+//                            }
                         }
                     }
                     Class<?>[] actionParamTypes = handlerMethod.getParameterTypes();
