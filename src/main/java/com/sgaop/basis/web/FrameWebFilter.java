@@ -73,6 +73,7 @@ public class FrameWebFilter implements Filter {
                      * 访问的不是静态目录，现在注解中查询符合的访问地址
                      */
                     ActionResult actionResult = ActionHandler.invokeAction(servletPath, reqMethod, request, response);
+
                     String resultType = actionResult.getResultType();
                     if (actionResult.getWebErrorMessage().getCode() == 200 && actionResult.getWebErrorMessage().isJsp()) {
                         DefaultViewsRender.RenderJSP(servletPath, request, response);

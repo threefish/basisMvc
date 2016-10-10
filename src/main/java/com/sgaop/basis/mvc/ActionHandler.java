@@ -1,5 +1,6 @@
 package com.sgaop.basis.mvc;
 
+import com.sgaop.basis.annotation.Aop;
 import com.sgaop.basis.annotation.Inject;
 import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.annotation.Parameter;
@@ -9,6 +10,8 @@ import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.ParameterConverter;
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.Enhancer;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContext;
@@ -34,6 +37,7 @@ public class ActionHandler {
 
     /**
      * 执行action
+     *
      * @param servletPath
      * @param methodType
      * @param request
@@ -50,9 +54,33 @@ public class ActionHandler {
                 actionResult.setResultType(actionMethod.getOK());
                 if (methodType.equals(actionMethod.getMethod())) {
                     Class<?> actionClass = actionMethod.getActionClass();
-                    Object beanInstance = actionClass.newInstance();
-
+                    Method handlerMethod = actionMethod.getActionMethod();
+                    handlerMethod.setAccessible(true);
                     IocBean iocBean = actionClass.getAnnotation(IocBean.class);
+
+                    Object beanInstance = null;
+                    Aop aop = handlerMethod.getAnnotation(Aop.class);
+                    if (aop != null && aop.value().length > 0) {
+                        List<Callback> proxys = new ArrayList();
+                        for (String str : aop.value()) {
+                            Callback proxy = (Callback) IocBeanContext.me().getBean(str);
+                            proxys.add(proxy);
+                        }
+                        Enhancer enhancer = new Enhancer();
+                        enhancer.setSuperclass(actionClass);
+                        enhancer.setUseCache(true);
+                        enhancer.setCallbacks(proxys.toArray(new Callback[0]));
+                        // 增强目标类
+                        beanInstance = enhancer.create();
+                    } else {
+                        beanInstance = IocBeanContext.me().getBean(iocBean.value());
+                        if (beanInstance == null) {
+                            beanInstance = actionClass.newInstance();
+                        }
+                    }
+                    /**
+                     * 自动注入参数
+                     */
                     Field[] fields = actionClass.getDeclaredFields();
                     for (Field field : fields) {
                         field.setAccessible(true);
@@ -72,10 +100,8 @@ public class ActionHandler {
                             }
                         }
                     }
-                    Method handlerMethod = actionMethod.getActionMethod();
-                    handlerMethod.setAccessible(true);
-                    Class<?>[] actionParamTypes = actionMethod.getActionMethod().getParameterTypes();
-                    List<Object> actionParamList = new ArrayList<Object>();
+                    Class<?>[] actionParamTypes = handlerMethod.getParameterTypes();
+                    List<Object> actionParamList = new ArrayList<>();
                     Annotation[][] annotations = handlerMethod.getParameterAnnotations();
                     Map<String, ?> requestParameterMap = Mvcs.getReqMap();
                     for (int i = 0; i < annotations.length; i++) {
@@ -109,7 +135,8 @@ public class ActionHandler {
                             logger.warn(webErrorMessage.getMessage());
                         }
                     }
-                    actionResult.setResultData(handlerMethod.invoke(beanInstance, actionParamList.toArray()));
+                    Object object = handlerMethod.invoke(beanInstance, actionParamList.toArray());
+                    actionResult.setResultData(object);
                 } else {
                     webErrorMessage.setCode(404);
                 }

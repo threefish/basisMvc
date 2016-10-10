@@ -1,5 +1,6 @@
 package com.sgaop.basis.scanner;
 
+import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.dao.impl.DaoImpl;
 import org.apache.log4j.Logger;
 
@@ -49,7 +50,7 @@ public class ClassScannerHelper {
                 String protocol = url.getProtocol();
                 if ("file".equals(protocol)) {
                     // 获取包的物理路径
-                    String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
+                    String filePath = URLDecoder.decode(url.getFile(), Constant.utf8);
                     // 以文件的方式扫描整个包下的文件 并添加到集合中
                     findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
                 }
@@ -62,7 +63,7 @@ public class ClassScannerHelper {
         return null;
     }
 
-    public static void scannerJar(String packageName, Set<Class<?>> classes, boolean recursive) throws IOException {
+    private static void scannerJar(String packageName, Set<Class<?>> classes, boolean recursive) throws IOException {
         String packageDirName = packageName.replace('.', '/');
         Enumeration<URL> dirs = classLoader.getResources(packageDirName);
         while (dirs.hasMoreElements()) {

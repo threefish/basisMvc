@@ -2,16 +2,18 @@ package com.sgaop.basis.ioc;
 
 
 import com.google.gson.Gson;
+import com.sgaop.basis.annotation.Aop;
 import com.sgaop.basis.annotation.Inject;
 import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.util.StringsTool;
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.Enhancer;
 import org.apache.log4j.Logger;
+import org.junit.internal.MethodSorter;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -84,6 +86,32 @@ public class IocBeanContext {
             if (annotation != null) {
                 String beanName = annotation.value();
                 try {
+//
+//                  Method[] methods= item.getMethods();
+//
+//                    for(Method method:methods){
+//                        Aop aop = method.getAnnotation(Aop.class);
+//                        if (aop != null && aop.value().length > 0) {
+//                            List<Callback> proxys = new ArrayList();
+//                            for (String str : aop.value()) {
+//                                Callback proxy = (Callback) IocBeanContext.me().getBean(str);
+//                                proxys.add(proxy);
+//                            }
+//                            Enhancer enhancer = new Enhancer();
+//                            enhancer.setSuperclass(actionClass);
+//                            enhancer.setUseCache(true);
+//                            enhancer.setCallbacks(proxys.toArray(new Callback[0]));
+//                            // 增强目标类
+//                            beanInstance = enhancer.create();
+//                        }
+//
+//
+//
+//                    }
+//
+
+
+
                     this.setBean(annotation.value(), item.newInstance());
                 } catch (InstantiationException e) {
                     e.printStackTrace();
