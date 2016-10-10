@@ -1,9 +1,13 @@
 # **basis  MVC**
 - 基于servlet与java注解的Web MVC 快速开发框架
-- _**basis** 意思： n. 基础；底部；主要成分；基本原则或原理_
+ 	- _**basis** 意思： n. 基础；底部；主要成分；基本原则或原理_
+
 ## 代码可能不够好，重复造轮子是为了更加充分的了解框架底层实现原理，写这个这是一种尝试，一种突破自我的方式。欢迎提出建议！谢谢！
+
 ## 基于Java注解和servlet3.0+实现通过注解方式访问的web MVC框架
+
 # 示例项目[basisMvcSample](https://github.com/threefish/basisMvcSample "示例项目")
+
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看更早前的更新日志](https://github.com/threefish/WebFrameWork "更早前的更新日志")
 
 #### AOP实现中
