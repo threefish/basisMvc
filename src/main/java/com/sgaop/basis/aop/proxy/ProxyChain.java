@@ -23,7 +23,7 @@ public class ProxyChain {
     private final MethodProxy methodProxy;
     private final Object[] methodParams;
     private final List<ProxyMethodFilter> proxyMethodFilters;
-    private List<Proxy> proxyList = new ArrayList<Proxy>();
+    private List<Proxy> proxyList = new ArrayList<>();
     private int proxyIndex = 0;
 
     public ProxyChain(Class targetClass, Object targetObject, Method targetMethod, MethodProxy methodProxy, Object[] methodParams, List<Proxy> proxyList, List<ProxyMethodFilter> proxyMethodFilters) {
@@ -48,24 +48,45 @@ public class ProxyChain {
         return targetMethod;
     }
 
+    /**
+     * 执行代理链
+     *
+     * @return
+     * @throws Throwable
+     */
     public Object doProxyChain() throws Throwable {
-        Object methodResult;
+        Object methodResult = null;
         Set<String> aops = getProxyMethodChain();
-        if (aops.size() == 0 || proxyList.size()==0) {
-            methodResult = methodProxy.invokeSuper(targetObject, methodParams);
+        boolean doRun = false;
+        if (aops.size() == 0 || proxyList.size() == 0) {
+            doRun = true;
         } else {
             if (proxyIndex < proxyList.size()) {
                 Proxy proxy = proxyList.get(proxyIndex++);
-                if(aops.contains(ClassTool.getIocBeanName(proxy.getClass()))){
+                if (aops.contains(ClassTool.getIocBeanName(proxy.getClass()))) {
                     methodResult = proxy.doProxy(this);
-                }else{
+                } else {
                     methodResult = doProxyChain();
                 }
             } else {
-                methodResult = methodProxy.invokeSuper(targetObject, methodParams);
+                doRun = true;
+
             }
         }
+        if (doRun) {
+            methodResult = invokeSuper();
+        }
         return methodResult;
+    }
+
+    /**
+     * 执行被拦截的业务
+     *
+     * @return
+     * @throws Throwable
+     */
+    public Object invokeSuper() throws Throwable {
+        return methodProxy.invokeSuper(targetObject, methodParams);
     }
 
 

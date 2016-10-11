@@ -177,6 +177,7 @@ public class ClassTool {
 
     /**
      * 获取IocBean的名称
+     * 第一个字母会变成小写，其他不变
      *
      * @param klass
      * @return
@@ -185,7 +186,8 @@ public class ClassTool {
         IocBean iocBean = klass.getAnnotation(IocBean.class);
         if (iocBean != null) {
             if (iocBean.value().equals("")) {
-                return klass.getName();
+                String beanKey = klass.getSimpleName();
+                return beanKey.substring(0, 1).toLowerCase() + beanKey.substring(1, beanKey.length());
             } else {
                 return iocBean.value();
             }
