@@ -1,6 +1,8 @@
 package com.sgaop.basis.aop;
 
-import net.sf.cglib.proxy.Callback;
+import com.sgaop.basis.aop.Interceptor.ProxyMethodInterceptor;
+import com.sgaop.basis.aop.proxy.Proxy;
+import com.sgaop.basis.aop.proxy.ProxyMethodFilter;
 import net.sf.cglib.proxy.Enhancer;
 
 import java.util.List;
@@ -10,15 +12,16 @@ import java.util.List;
  * User: 306955302@qq.com
  * Date: 2016/10/10 0010
  * To change this template use File | Settings | File Templates.
+ * 代理工厂
  */
 public class ProxyFactory {
 
-    public static Object createProxyInstance(Class superclass, List<Callback> callbacks) {
+    public static Object createProxyInstance(Class superclass, List<Proxy> proxys, List<ProxyMethodFilter> proxyMethodFilters) {
         Enhancer enhancer = new Enhancer();
         enhancer.setUseCache(true);
-        enhancer.setCallbackFilter(new ProxyCallbackFilter());
         enhancer.setSuperclass(superclass);
-        enhancer.setCallbacks(callbacks.toArray(new Callback[0]));
+        enhancer.setCallback(new ProxyMethodInterceptor(superclass, proxys, proxyMethodFilters));
         return enhancer.create();
     }
+
 }

@@ -10,13 +10,10 @@
 
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看更早前的更新日志](https://github.com/threefish/WebFrameWork "更早前的更新日志")
 
-#### AOP实现中
-   - 目前只能一个方法对应一个切面，无法添加多个切面，寻求解决中。如果使用模拟aop就不存在这个问题了，比较纠结
+#### TODO 插件装载实现中
 
-### 已实现
-
-#### 简单小巧的IOC
-
+### 现已实现以下功能
+#### IOC、AOP、ORM、MVC
 
 #### 参数类
 
@@ -106,7 +103,7 @@ public class MainController {
     @OK("freemarker:TestFreeMarker.ftl")
     @GET
     @Path("/freemarker")
-    @Aop({"TestAop"})//加入AOP
+    @Aop({"TestAop","TestAop2"})//加入AOP 按数组顺序执行AOP拦截规则
     public Map freemarkerTest() {
         System.out.println("---freemarkerTest");
         Map data1 = new HashMap();

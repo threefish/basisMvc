@@ -4,11 +4,12 @@ package com.sgaop.basis.ioc;
 import com.google.gson.Gson;
 import com.sgaop.basis.annotation.Aop;
 import com.sgaop.basis.annotation.Inject;
-import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.aop.ProxyFactory;
+import com.sgaop.basis.aop.proxy.Proxy;
+import com.sgaop.basis.aop.proxy.ProxyMethodFilter;
+import com.sgaop.basis.constant.Constant;
+import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.StringsTool;
-import net.sf.cglib.proxy.Callback;
-import net.sf.cglib.proxy.NoOp;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
@@ -95,11 +96,10 @@ public class IocBeanContext {
         Iterator<Class<?>> iterator = classes.iterator();
         while (iterator.hasNext()) {
             Class<?> item = iterator.next();
-            IocBean iocBean = item.getAnnotation(IocBean.class);
-            if (iocBean != null) {
-                String beanName = iocBean.value();
+            String beanName= ClassTool.getIocBeanName(item);
+            if (beanName != null) {
                 try {
-                    this.setBean(iocBean.value(), item.newInstance());
+                    this.setBean(beanName, item.newInstance());
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
@@ -117,7 +117,7 @@ public class IocBeanContext {
                         if (StringsTool.isEmpty(resourceName)) {
                             resourceName = field.getName();
                         }
-                        this.dependencies.put(beanName.concat(".").concat(field.getName()), resourceName);
+                        this.dependencies.put(beanName.concat(Constant.IOC_SEPARATOR).concat(field.getName()), resourceName);
                     }
                 }
             }
@@ -133,7 +133,7 @@ public class IocBeanContext {
             Map.Entry<String, String> item = iterator.next();
             String key = item.getKey();
             String value = item.getValue();//依赖对象的值
-            String[] split = key.split("\\.");//数组第一个值表示bean对象名称,第二个值为字段属性名称
+            String[] split = key.split(Constant.IOC_SEPARATOR_REG);//数组第一个值表示bean对象名称,第二个值为字段属性名称
             try {
 //                PropertyUtils.setProperty(beans.get(split[0]), split[1], beans.get(value));
                 Object object = beans.get(split[0]);
@@ -152,39 +152,46 @@ public class IocBeanContext {
         Iterator<Class<?>> aopIterator = classes.iterator();
         while (aopIterator.hasNext()) {
             Class<?> item = aopIterator.next();
-            IocBean iocBean = item.getAnnotation(IocBean.class);
-            if (iocBean != null) {
-                Object beanInstance = this.getBean(iocBean.value());
+            String iocBeanName = ClassTool.getIocBeanName(item);
+            if (iocBeanName != null) {
+                Object beanInstance = this.getBean(iocBeanName);
                 Method[] methods = item.getMethods();
-                List<Callback> proxys = new ArrayList();
-                proxys.add(NoOp.INSTANCE);
+                List<Proxy> proxys = new ArrayList();
+                List<ProxyMethodFilter> proxyMethodFilters =new ArrayList<>();
                 for (Method method : methods) {
                     Aop aop = method.getAnnotation(Aop.class);
                     if (aop != null && aop.value().length > 0) {
-                        for (String str : aop.value()) {
-                            Callback proxy = (Callback) IocBeanContext.me().getBean(str);
+                        Set<String> sets = new HashSet<>();
+                        for (String beanKey : aop.value()) {
+                            Proxy proxy = (Proxy) IocBeanContext.me().getBean(beanKey);
                             if (proxy == null) {
-                                logger.error(String.format("IOC 中没有找到%s", str));
-                                throw new RuntimeException(String.format("IOC中没有找到%s", str));
+                                String msg = String.format("IOC 中没有找到%s", beanKey);
+                                logger.error(msg);
+                                throw new RuntimeException(msg);
                             } else {
-                                proxys.add(proxy);
+                                sets.add(beanKey);
+                                //不重复添加AOP代理
+                                if(!proxys.contains(proxy)){
+                                    proxys.add(proxy);
+                                }
                             }
                         }
+                        proxyMethodFilters.add(new ProxyMethodFilter(method.getName(), sets));
                     }
                 }
                 if (proxys.size() != 0) {
-                    beanInstance = ProxyFactory.createProxyInstance(item, proxys);
+                    beanInstance = ProxyFactory.createProxyInstance(item, proxys, proxyMethodFilters);
                 }
                 Field[] fields = item.getDeclaredFields();
                 for (Field field : fields) {
                     field.setAccessible(true);
                     Inject inject = field.getAnnotation(Inject.class);
-                    if (iocBean != null && inject != null) {
+                    if (iocBeanName != null && inject != null) {
                         String resName = inject.value().equals("") ? field.getName() : inject.value();
                         this.injectBean(field, beanInstance, resName);
                     }
                 }
-                this.setProxyBean(iocBean.value(), beanInstance);
+                this.setProxyBean(iocBeanName, beanInstance);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.sgaop.basis.util;
 
+import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.mvc.upload.TempFile;
 import org.apache.log4j.Logger;
 
@@ -172,5 +173,23 @@ public class ClassTool {
             e.printStackTrace();
         }
         return value;
+    }
+
+    /**
+     * 获取IocBean的名称
+     *
+     * @param klass
+     * @return
+     */
+    public static String getIocBeanName(Class<?> klass) {
+        IocBean iocBean = klass.getAnnotation(IocBean.class);
+        if (iocBean != null) {
+            if (iocBean.value().equals("")) {
+                return klass.getName();
+            } else {
+                return iocBean.value();
+            }
+        }
+        return null;
     }
 }
