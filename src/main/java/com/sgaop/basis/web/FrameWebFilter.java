@@ -2,7 +2,7 @@ package com.sgaop.basis.web;
 
 import com.sgaop.basis.cache.StaticCacheManager;
 import com.sgaop.basis.constant.Constant;
-import com.sgaop.basis.error.ConstanErrorMsg;
+import com.sgaop.basis.constant.ConstanErrorMsg;
 import com.sgaop.basis.mvc.ActionHandler;
 import com.sgaop.basis.mvc.ActionResult;
 import com.sgaop.basis.mvc.Mvcs;

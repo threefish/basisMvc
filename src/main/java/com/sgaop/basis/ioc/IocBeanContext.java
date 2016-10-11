@@ -54,6 +54,19 @@ public class IocBeanContext {
      * 存放bean对象
      */
     public void setBean(String key, Object bean) {
+        if (this.beans.containsKey(key)) {
+            String str = String.format("IOC 中 %s 已经存在,不应该再次加入一个同名的bean", key);
+            logger.error(str);
+            throw new RuntimeException(str);
+        } else {
+            this.beans.put(key, bean);
+        }
+    }
+
+    /**
+     * 存放bean代理对象
+     */
+    public void setProxyBean(String key, Object bean) {
         this.beans.put(key, bean);
     }
 
@@ -171,7 +184,7 @@ public class IocBeanContext {
                         this.injectBean(field, beanInstance, resName);
                     }
                 }
-                this.setBean(iocBean.value(), beanInstance);
+                this.setProxyBean(iocBean.value(), beanInstance);
             }
         }
     }
@@ -208,8 +221,6 @@ public class IocBeanContext {
             e.printStackTrace();
         }
     }
-
-
 
 
 }

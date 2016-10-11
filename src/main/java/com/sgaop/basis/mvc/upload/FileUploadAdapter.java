@@ -1,7 +1,7 @@
 package com.sgaop.basis.mvc.upload;
 
 import com.sgaop.basis.constant.Constant;
-import com.sgaop.basis.error.ConstanErrorMsg;
+import com.sgaop.basis.constant.ConstanErrorMsg;
 
 import java.util.regex.Matcher;
 
