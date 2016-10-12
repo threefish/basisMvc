@@ -13,12 +13,13 @@ import java.lang.reflect.Method;
  * To change this template use File | Settings | File Templates.
  * AOP代理
  */
-public abstract class AopProxy implements Proxy {
+public abstract class InterceptorProxy implements Proxy {
 
     private static final Logger logger = Logger.getRootLogger();
 
     /**
      * 执行代理链
+     *
      * @param proxyChain 代理链
      * @return
      * @throws Throwable
@@ -45,6 +46,7 @@ public abstract class AopProxy implements Proxy {
 
     /**
      * 在业务执行以前执行
+     *
      * @param cls
      * @param method
      * @param params

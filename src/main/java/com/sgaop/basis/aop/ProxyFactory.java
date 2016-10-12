@@ -6,6 +6,7 @@ import com.sgaop.basis.aop.proxy.ProxyMethodFilter;
 import net.sf.cglib.proxy.Enhancer;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,11 +17,11 @@ import java.util.List;
  */
 public class ProxyFactory {
 
-    public static Object createProxyInstance(Class superclass, List<Proxy> proxys, List<ProxyMethodFilter> proxyMethodFilters) {
+    public static Object createProxyInstance(Class superclass, List<Proxy> proxys, List<ProxyMethodFilter> proxyMethodFilters, Set<String> allAop) {
         Enhancer enhancer = new Enhancer();
         enhancer.setUseCache(true);
         enhancer.setSuperclass(superclass);
-        enhancer.setCallback(new ProxyMethodInterceptor(superclass, proxys, proxyMethodFilters));
+        enhancer.setCallback(new ProxyMethodInterceptor(superclass, proxys, proxyMethodFilters, allAop));
         return enhancer.create();
     }
 

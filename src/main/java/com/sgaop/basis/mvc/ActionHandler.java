@@ -1,6 +1,5 @@
 package com.sgaop.basis.mvc;
 
-import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.annotation.Parameter;
 import com.sgaop.basis.cache.CacheManager;
 import com.sgaop.basis.constant.Constant;
@@ -52,7 +51,7 @@ public class ActionHandler {
                     Class<?> actionClass = actionMethod.getActionClass();
                     Method handlerMethod = actionMethod.getActionMethod();
                     handlerMethod.setAccessible(true);
-                    String iocBeanName =ClassTool.getIocBeanName(actionClass);
+                    String iocBeanName = ClassTool.getIocBeanName(actionClass);
                     Object beanInstance = IocBeanContext.me().getBean(iocBeanName);
                     if (beanInstance == null) {
                         beanInstance = actionClass.newInstance();

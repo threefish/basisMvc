@@ -24,9 +24,10 @@ public class ProxyChain {
     private final Object[] methodParams;
     private final List<ProxyMethodFilter> proxyMethodFilters;
     private List<Proxy> proxyList = new ArrayList<>();
+    private Set<String> allAop;
     private int proxyIndex = 0;
 
-    public ProxyChain(Class targetClass, Object targetObject, Method targetMethod, MethodProxy methodProxy, Object[] methodParams, List<Proxy> proxyList, List<ProxyMethodFilter> proxyMethodFilters) {
+    public ProxyChain(Class targetClass, Object targetObject, Method targetMethod, MethodProxy methodProxy, Object[] methodParams, List<Proxy> proxyList, List<ProxyMethodFilter> proxyMethodFilters, Set<String> allAop) {
         this.targetClass = targetClass;
         this.targetObject = targetObject;
         this.targetMethod = targetMethod;
@@ -34,6 +35,7 @@ public class ProxyChain {
         this.methodParams = methodParams;
         this.proxyList = proxyList;
         this.proxyMethodFilters = proxyMethodFilters;
+        this.allAop = allAop;
     }
 
     public Object[] getMethodParams() {
@@ -58,12 +60,17 @@ public class ProxyChain {
         Object methodResult = null;
         Set<String> aops = getProxyMethodChain();
         boolean doRun = false;
-        if (aops.size() == 0 || proxyList.size() == 0) {
+        if (allAop.size() == 0 && aops.size() == 0 && proxyList.size() == 0) {
             doRun = true;
         } else {
             if (proxyIndex < proxyList.size()) {
                 Proxy proxy = proxyList.get(proxyIndex++);
-                if (aops.contains(ClassTool.getIocBeanName(proxy.getClass()))) {
+                String proxyBeanName = ClassTool.getIocBeanName(proxy.getClass());
+                //首先判断是否是类切片
+                if (allAop.contains(proxyBeanName)) {
+                    methodResult = proxy.doProxy(this);
+                    //判断是否是方法切片
+                } else if (aops.contains(proxyBeanName)) {
                     methodResult = proxy.doProxy(this);
                 } else {
                     methodResult = doProxyChain();
@@ -89,7 +96,11 @@ public class ProxyChain {
         return methodProxy.invokeSuper(targetObject, methodParams);
     }
 
-
+    /**
+     * 判断当前方法是否拥有aop
+     *
+     * @return
+     */
     private Set<String> getProxyMethodChain() {
         for (ProxyMethodFilter proxyMethodFilter : proxyMethodFilters) {
             if (targetMethod.getName().equals(proxyMethodFilter.getMethodName())) {

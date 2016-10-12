@@ -1,7 +1,6 @@
 package com.sgaop.basis.scanner;
 
 import com.sgaop.basis.constant.Constant;
-import com.sgaop.basis.dao.impl.DaoImpl;
 import org.apache.log4j.Logger;
 
 import java.io.File;

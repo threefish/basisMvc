@@ -8,6 +8,7 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,10 +24,13 @@ public class ProxyMethodInterceptor implements MethodInterceptor {
 
     private List<ProxyMethodFilter> proxyMethodFilters;
 
-    public ProxyMethodInterceptor(Class superclass, List<Proxy> proxys, List<ProxyMethodFilter> proxyMethodFilters) {
+    private Set<String> allAop;
+
+    public ProxyMethodInterceptor(Class superclass, List<Proxy> proxys, List<ProxyMethodFilter> proxyMethodFilters, Set<String> allAop) {
         this.superclass = superclass;
         this.proxys = proxys;
         this.proxyMethodFilters = proxyMethodFilters;
+        this.allAop = allAop;
     }
 
     /**
@@ -36,6 +40,6 @@ public class ProxyMethodInterceptor implements MethodInterceptor {
      * proxyMethod 与源对象中的method相对应的代理对象中的方法
      */
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        return new ProxyChain(superclass, obj, method, proxy, args, proxys, proxyMethodFilters).doProxyChain();
+        return new ProxyChain(superclass, obj, method, proxy, args, proxys, proxyMethodFilters, allAop).doProxyChain();
     }
 }

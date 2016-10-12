@@ -27,12 +27,12 @@ public class ClassScanner {
 
     public static Set<Class<?>> classes = new HashSet<>();
 
-    public static List<Class<?>> classes() {
-        return new ArrayList(classes);
-    }
-
     static {
         classes = ClassScannerHelper.scanPackage("");
+    }
+
+    public static List<Class<?>> classes() {
+        return new ArrayList(classes);
     }
 
     public static void init() {

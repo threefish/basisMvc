@@ -3,6 +3,7 @@ package com.sgaop.basis.ioc;
 
 import com.google.gson.Gson;
 import com.sgaop.basis.annotation.Aop;
+import com.sgaop.basis.annotation.Aspect;
 import com.sgaop.basis.annotation.Inject;
 import com.sgaop.basis.aop.ProxyFactory;
 import com.sgaop.basis.aop.proxy.Proxy;
@@ -12,6 +13,7 @@ import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -28,6 +30,10 @@ public class IocBeanContext {
     private static IocBeanContext me = new IocBeanContext();
     //存放bean
     private Map<String, Object> beans = new HashMap<String, Object>();
+
+    //全局AOP拦截器
+    private Map<String, Class<? extends Annotation>> aopSet = new HashMap<>();
+
     //记录依赖关系
     private Map<String, String> dependencies = new HashMap<String, String>();
 
@@ -96,7 +102,7 @@ public class IocBeanContext {
         Iterator<Class<?>> iterator = classes.iterator();
         while (iterator.hasNext()) {
             Class<?> item = iterator.next();
-            String beanName= ClassTool.getIocBeanName(item);
+            String beanName = ClassTool.getIocBeanName(item);
             if (beanName != null) {
                 try {
                     this.setBean(beanName, item.newInstance());
@@ -105,7 +111,7 @@ public class IocBeanContext {
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-                /*
+                /**
                  * 记录依赖关系
                  */
                 Field[] fields = item.getDeclaredFields();
@@ -119,6 +125,14 @@ public class IocBeanContext {
                         }
                         this.dependencies.put(beanName.concat(Constant.IOC_SEPARATOR).concat(field.getName()), resourceName);
                     }
+                }
+
+                /**
+                 * 记录是全局AOP信息
+                 */
+                Aspect aspect = item.getAnnotation(Aspect.class);
+                if (aspect != null) {
+                    aopSet.put(beanName, aspect.annotation());
                 }
             }
         }
@@ -157,7 +171,31 @@ public class IocBeanContext {
                 Object beanInstance = this.getBean(iocBeanName);
                 Method[] methods = item.getMethods();
                 List<Proxy> proxys = new ArrayList();
-                List<ProxyMethodFilter> proxyMethodFilters =new ArrayList<>();
+                List<ProxyMethodFilter> proxyMethodFilters = new ArrayList<>();
+                Set<String> allAop = new HashSet<>();
+
+                /**
+                 * 有全局AOP代理
+                 */
+                if (aopSet.size() != 0) {
+                    for (Map.Entry entry : aopSet.entrySet()) {
+                        String aopPorxyBeanName = (String) entry.getKey();
+                        Class<? extends Annotation> ann = (Class<? extends Annotation>) entry.getValue();
+                        //通过注解判断当前类是否需要代理
+                        if (this.getAopBean(item, ann)) {  //需要代理
+                            //取得代理bean
+                            Proxy proxy = (Proxy) IocBeanContext.me().getBean(aopPorxyBeanName);
+                            //添加AOP代理
+                            if (!proxys.contains(proxy)) {
+                                proxys.add(proxy);
+                                allAop.add(aopPorxyBeanName);
+                            }
+                        }
+                    }
+                }
+                /**
+                 * 针对方法AOP代理
+                 */
                 for (Method method : methods) {
                     Aop aop = method.getAnnotation(Aop.class);
                     if (aop != null && aop.value().length > 0) {
@@ -169,18 +207,22 @@ public class IocBeanContext {
                                 logger.error(msg);
                                 throw new RuntimeException(msg);
                             } else {
+                                //添加代理bean名称
                                 sets.add(beanKey);
                                 //不重复添加AOP代理
-                                if(!proxys.contains(proxy)){
+                                if (!proxys.contains(proxy)) {
                                     proxys.add(proxy);
                                 }
                             }
+                        }
+                        if (aopSet.size() != 0) {
+
                         }
                         proxyMethodFilters.add(new ProxyMethodFilter(method.getName(), sets));
                     }
                 }
                 if (proxys.size() != 0) {
-                    beanInstance = ProxyFactory.createProxyInstance(item, proxys, proxyMethodFilters);
+                    beanInstance = ProxyFactory.createProxyInstance(item, proxys, proxyMethodFilters, allAop);
                 }
                 Field[] fields = item.getDeclaredFields();
                 for (Field field : fields) {
@@ -193,6 +235,19 @@ public class IocBeanContext {
                 }
                 this.setProxyBean(iocBeanName, beanInstance);
             }
+        }
+    }
+
+    /**
+     * 通过class判断是否需要aop代理
+     *
+     * @param item
+     */
+    private boolean getAopBean(Class<?> item, Class<? extends Annotation> ann) {
+        if (item.getAnnotation(ann) == null) {
+            return false;
+        } else {
+            return true;
         }
     }
 
