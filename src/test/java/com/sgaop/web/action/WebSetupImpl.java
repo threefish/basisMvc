@@ -1,9 +1,9 @@
 package com.sgaop.web.action;
 
-import com.sgaop.web.action.view.FreeMarkerView;
-import com.sgaop.basis.web.WebSetup;
 import com.sgaop.basis.annotation.Setup;
 import com.sgaop.basis.mvc.view.ViewsRegister;
+import com.sgaop.basis.web.WebSetup;
+import com.sgaop.web.action.view.FreeMarkerView;
 
 import javax.servlet.ServletContextEvent;
 

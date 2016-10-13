@@ -12,8 +12,6 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 
@@ -23,7 +21,7 @@ import java.lang.reflect.Method;
  * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
  */
-@WebListener
+//@WebListener
 public class ServletInitListener implements ServletContextListener {
     private static final Logger logger = Logger.getRootLogger();
 
@@ -57,12 +55,8 @@ public class ServletInitListener implements ServletContextListener {
                     handlerMethod.setAccessible(true);
                     handlerMethod.invoke(beanInstance, servletContextEvent);
                 }
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                throw new RuntimeException("环境初始化错误！", e);
             }
         }
     }

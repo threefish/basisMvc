@@ -1,12 +1,12 @@
 package com.sgaop.test;
 
 import com.google.gson.Gson;
-import com.sgaop.basis.dao.impl.DaoImpl;
-import com.sgaop.bean.tbUser;
 import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.dao.Pager;
+import com.sgaop.basis.dao.impl.DaoImpl;
 import com.sgaop.basis.scanner.ClassScanner;
 import com.sgaop.basis.scanner.ProperScanner;
+import com.sgaop.bean.tbUser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -168,7 +168,7 @@ public class TestAllDao {
      * 使用事务
      */
     @Test
-    public void trans()  {
+    public void trans() {
         dao.begin(false);
         try {
             dao.insert(tbUser.class, list);

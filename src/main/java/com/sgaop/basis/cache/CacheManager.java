@@ -15,7 +15,11 @@ public class CacheManager {
     /**
      * MVC action相关类缓存
      */
-    private volatile static HashMap cacheUrlClassMap = new HashMap();
+    private volatile static HashMap<String, ActionMethod> getUrlClassMap = new HashMap();
+    private volatile static HashMap<String, ActionMethod> postUrlClassMap = new HashMap();
+    private volatile static HashMap<String, ActionMethod> headUrlClassMap = new HashMap();
+    private volatile static HashMap<String, ActionMethod> deleteUrlClassMap = new HashMap();
+    private volatile static HashMap<String, ActionMethod> putUrlClassMap = new HashMap();
 
 
     /**
@@ -36,23 +40,57 @@ public class CacheManager {
     }
 
     /**
-     * 得到缓存
+     * 获取请求信息
      *
      * @param key
      * @return
      */
-    public static Object getUrlCache(String key) {
-        return cacheUrlClassMap.get(key);
+    public static ActionMethod getUrlCache(String key, String methodType) {
+        ActionMethod actionMethod = null;
+        switch (methodType) {
+            case "POST":
+                actionMethod = postUrlClassMap.get(key);
+                break;
+            case "GET":
+                actionMethod = getUrlClassMap.get(key);
+                break;
+            case "DELETE":
+                actionMethod = deleteUrlClassMap.get(key);
+                break;
+            case "HEAD":
+                actionMethod = headUrlClassMap.get(key);
+                break;
+            case "PUT":
+                actionMethod = putUrlClassMap.get(key);
+                break;
+        }
+        return actionMethod;
     }
 
     /**
-     * 载入缓存
+     * 设置请求信息
      *
      * @param key
-     * @param obj
+     * @param method
      */
-    public static void putUrlCache(String key, Object obj) {
-        cacheUrlClassMap.put(key, obj);
+    public static void putUrlCache(String key, ActionMethod method) {
+        switch (method.getMethod()) {
+            case "POST":
+                postUrlClassMap.put(key, method);
+                break;
+            case "GET":
+                getUrlClassMap.put(key, method);
+                break;
+            case "DELETE":
+                deleteUrlClassMap.put(key, method);
+                break;
+            case "HEAD":
+                headUrlClassMap.put(key, method);
+                break;
+            case "PUT":
+                putUrlClassMap.put(key, method);
+                break;
+        }
     }
 
 
@@ -102,8 +140,16 @@ public class CacheManager {
      * urlMapping映射关系
      */
     public static List<Map> urlMappingList() {
-        Iterator iterator = cacheUrlClassMap.entrySet().iterator();
         List<Map> list = new ArrayList();
+        getMapList(list, getUrlClassMap.entrySet().iterator());
+        getMapList(list, postUrlClassMap.entrySet().iterator());
+        getMapList(list, headUrlClassMap.entrySet().iterator());
+        getMapList(list, deleteUrlClassMap.entrySet().iterator());
+        getMapList(list, putUrlClassMap.entrySet().iterator());
+        return list;
+    }
+
+    private static void getMapList(List<java.util.Map> list, Iterator iterator) {
         while (iterator.hasNext()) {
             Map.Entry entry = (Map.Entry) iterator.next();
             String url = entry.getKey().toString();
@@ -117,7 +163,6 @@ public class CacheManager {
             map.put("class", actionMethod.getKlass());
             list.add(map);
         }
-        return list;
     }
 } 
  

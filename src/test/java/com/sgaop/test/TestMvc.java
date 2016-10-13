@@ -19,15 +19,15 @@ import java.sql.SQLException;
  */
 public class TestMvc {
 
+    @Inject
+    private Dao dao;
+
     @BeforeClass
     public static void setUp() throws SQLException {
         //加载全局配置文件
         ProperScanner.init();
         ClassScanner.init();
     }
-
-    @Inject
-    private Dao dao;
 
     @Test
     public void showWebMvcMap() {

@@ -13,7 +13,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,7 +26,7 @@ import java.util.Map;
  * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
  */
-@WebFilter("/*")
+//@WebFilter("/*")
 public class FrameWebFilter implements Filter {
     private static final Logger logger = Logger.getRootLogger();
 

@@ -3,12 +3,12 @@ package com.sgaop.web.action;
 import com.google.gson.Gson;
 import com.sgaop.basis.annotation.*;
 import com.sgaop.basis.dao.Dao;
-import com.sgaop.bean.TestbuildBean;
 import com.sgaop.basis.dao.factory.DataSourceFactory;
 import com.sgaop.basis.mvc.AjaxResult;
 import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.mvc.upload.TempFile;
 import com.sgaop.basis.util.IoTool;
+import com.sgaop.bean.TestbuildBean;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -56,7 +56,7 @@ public class MainController {
      */
     @OK("json")
     @POST
-    @Path(value = {"/buildBeanFile", "/buildBeanFile111222"},note = "测试哦")
+    @Path(value = {"/buildBeanFile", "/buildBeanFile111222"}, note = "测试哦")
     public AjaxResult buildBeanFile(@Parameter("data>>") TestbuildBean bean, @Parameter("docName") TempFile docName) {
         System.out.println(new Gson().toJson(bean));
         try {
