@@ -1,6 +1,6 @@
 package com.sgaop.basis.constant;
 
-import com.sgaop.basis.cache.StaticCacheManager;
+import com.sgaop.basis.cache.PropertiesManager;
 
 import java.util.regex.Pattern;
 
@@ -21,9 +21,9 @@ public class Constant {
     public static final String PAGE_SUFFIX = ".jsp";
 
 
-    public static final Pattern ATTACH_PATTERN = Pattern.compile(StaticCacheManager.getCacheStr("attach.suffixReg"));
+    public static final Pattern ATTACH_PATTERN = Pattern.compile(PropertiesManager.getCacheStr("attach.suffixReg"));
 
-    public static final int ATTACH_MAX_FILE_SIEZ = StaticCacheManager.getIntCache("attach.maxFileSize");
+    public static final int ATTACH_MAX_FILE_SIEZ = PropertiesManager.getIntCache("attach.maxFileSize");
 
     public static final int BASE_BYTE = 4096;
 

@@ -11,14 +11,14 @@ import java.util.Properties;
  * Date: 2016/5/4 0015
  * To change this template use File | Settings | File Templates.
  */
-public class StaticCacheManager {
+public class PropertiesManager {
 
-    private volatile static HashMap staticCacheMap = new HashMap();
+    private volatile static HashMap propertiesMap = new HashMap();
 
     /**
      * 单实例构造方法
      */
-    private StaticCacheManager() {
+    private PropertiesManager() {
         super();
     }
 
@@ -29,7 +29,7 @@ public class StaticCacheManager {
      * @return
      */
     public synchronized static Object getCache(String key) {
-        return staticCacheMap.get(key);
+        return propertiesMap.get(key);
     }
 
     /**
@@ -39,7 +39,7 @@ public class StaticCacheManager {
      * @return
      */
     public static String getCacheStr(String key) {
-        return staticCacheMap.get(key).toString();
+        return propertiesMap.get(key).toString();
     }
 
     /**
@@ -49,7 +49,7 @@ public class StaticCacheManager {
      * @return
      */
     public static long getLongCache(String key) {
-        return Long.parseLong(staticCacheMap.get(key).toString());
+        return Long.parseLong(propertiesMap.get(key).toString());
     }
 
 
@@ -60,7 +60,7 @@ public class StaticCacheManager {
      * @return
      */
     public static int getIntCache(String key) {
-        return Integer.parseInt(staticCacheMap.get(key).toString());
+        return Integer.parseInt(propertiesMap.get(key).toString());
     }
 
     /**
@@ -70,7 +70,7 @@ public class StaticCacheManager {
      * @return
      */
     public static boolean getBooleanCache(String key) {
-        return Boolean.parseBoolean(staticCacheMap.get(key).toString());
+        return Boolean.parseBoolean(propertiesMap.get(key).toString());
     }
 
     /**
@@ -80,14 +80,14 @@ public class StaticCacheManager {
      * @return
      */
     public synchronized static boolean hasCache(String key) {
-        return staticCacheMap.containsKey(key);
+        return propertiesMap.containsKey(key);
     }
 
     /**
      * 清除所有缓存
      */
     public synchronized static void clearAll() {
-        staticCacheMap.clear();
+        propertiesMap.clear();
     }
 
     /**
@@ -96,7 +96,7 @@ public class StaticCacheManager {
      * @param key
      */
     public synchronized static void clearOnly(String key) {
-        staticCacheMap.remove(key);
+        propertiesMap.remove(key);
     }
 
     /**
@@ -106,7 +106,7 @@ public class StaticCacheManager {
      * @param obj
      */
     public synchronized static void putCache(String key, Object obj) {
-        staticCacheMap.put(key, obj);
+        propertiesMap.put(key, obj);
     }
 
     /**

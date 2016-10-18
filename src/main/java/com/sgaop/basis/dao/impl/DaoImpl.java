@@ -2,7 +2,7 @@ package com.sgaop.basis.dao.impl;
 
 import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.cache.CacheManager;
-import com.sgaop.basis.cache.StaticCacheManager;
+import com.sgaop.basis.cache.PropertiesManager;
 import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.Pager;
@@ -33,7 +33,7 @@ public class DaoImpl implements Dao {
 
     static {
         try {
-            if (StaticCacheManager.getBooleanCache("useDefaultDao")) {
+            if (PropertiesManager.getBooleanCache("useDefaultDao")) {
                 DataSource dataSource = DataSourceFactory.getDataSource();
                 accessor = new JDBC_Accessor(dataSource);
                 dbtype = DaoUtil.getDataBaseType(dataSource.getConnection());

@@ -14,6 +14,7 @@ import java.util.Set;
  * User: 306955302@qq.com
  * Date: 2016/10/11 0011
  * To change this template use File | Settings | File Templates.
+ * 代理链
  */
 public class ProxyChain {
 
@@ -22,9 +23,12 @@ public class ProxyChain {
     private final Method targetMethod;
     private final MethodProxy methodProxy;
     private final Object[] methodParams;
+    //存放方法拦截器信息
     private final List<ProxyMethodFilter> proxyMethodFilters;
-    private List<Proxy> proxyList = new ArrayList<>();
+    //存放类拦截器信息
     private Set<String> allAop;
+    private List<Proxy> proxyList = new ArrayList<>();
+
     private int proxyIndex = 0;
 
     public ProxyChain(Class targetClass, Object targetObject, Method targetMethod, MethodProxy methodProxy, Object[] methodParams, List<Proxy> proxyList, List<ProxyMethodFilter> proxyMethodFilters, Set<String> allAop) {
@@ -77,7 +81,6 @@ public class ProxyChain {
                 }
             } else {
                 doRun = true;
-
             }
         }
         if (doRun) {

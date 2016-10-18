@@ -1,6 +1,6 @@
 package com.sgaop.basis.web;
 
-import com.sgaop.basis.cache.StaticCacheManager;
+import com.sgaop.basis.cache.PropertiesManager;
 import com.sgaop.basis.constant.ConstanErrorMsg;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.mvc.ActionHandler;
@@ -27,10 +27,10 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 //@WebFilter("/*")
-public class FrameWebFilter implements Filter {
+public class BasisMvcWebFilter implements Filter {
     private static final Logger logger = Logger.getRootLogger();
 
-    private static final String STATIC_PATH = StaticCacheManager.getCache(Constant.STATIC_PATH_KEY).toString();
+    private static final String STATIC_PATH = PropertiesManager.getCache(Constant.STATIC_PATH_KEY).toString();
 
     public void init(FilterConfig filterConfig) throws ServletException {
         logger.info("过滤器启动");

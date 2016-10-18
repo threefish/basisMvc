@@ -1,6 +1,6 @@
 package com.sgaop.basis.scanner;
 
-import com.sgaop.basis.cache.StaticCacheManager;
+import com.sgaop.basis.cache.PropertiesManager;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -32,7 +32,7 @@ public class ProperScanner {
                 in = new FileInputStream(file);
                 Properties props = new Properties();
                 props.load(in);
-                StaticCacheManager.putCache(props);
+                PropertiesManager.putCache(props);
             }
         } catch (IOException e) {
             e.printStackTrace();

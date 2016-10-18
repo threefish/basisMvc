@@ -27,6 +27,7 @@ import java.util.*;
 public class IocBeanContext {
 
     private static final Logger logger = Logger.getRootLogger();
+
     private static IocBeanContext me = new IocBeanContext();
     //存放bean
     private Map<String, Object> beans = new HashMap<String, Object>();
@@ -170,10 +171,9 @@ public class IocBeanContext {
             if (iocBeanName != null) {
                 Object beanInstance = this.getBean(iocBeanName);
                 Method[] methods = item.getMethods();
-                List<Proxy> proxys = new ArrayList();
+                List<Proxy> proxys = new ArrayList<>();
                 List<ProxyMethodFilter> proxyMethodFilters = new ArrayList<>();
                 Set<String> allAop = new HashSet<>();
-
                 /**
                  * 有全局AOP代理
                  */
@@ -183,13 +183,7 @@ public class IocBeanContext {
                         Class<? extends Annotation> ann = (Class<? extends Annotation>) entry.getValue();
                         //通过注解判断当前类是否需要代理
                         if (this.getAopBean(item, ann)) {  //需要代理
-                            //取得代理bean
-                            Proxy proxy = (Proxy) IocBeanContext.me().getBean(aopPorxyBeanName);
-                            //添加AOP代理
-                            if (!proxys.contains(proxy)) {
-                                proxys.add(proxy);
-                                allAop.add(aopPorxyBeanName);
-                            }
+                            setProxy(aopPorxyBeanName, proxys, allAop);
                         }
                     }
                 }
@@ -200,23 +194,8 @@ public class IocBeanContext {
                     Aop aop = method.getAnnotation(Aop.class);
                     if (aop != null && aop.value().length > 0) {
                         Set<String> sets = new HashSet<>();
-                        for (String beanKey : aop.value()) {
-                            Proxy proxy = (Proxy) IocBeanContext.me().getBean(beanKey);
-                            if (proxy == null) {
-                                String msg = String.format("IOC 中没有找到%s", beanKey);
-                                logger.error(msg);
-                                throw new RuntimeException(msg);
-                            } else {
-                                //添加代理bean名称
-                                sets.add(beanKey);
-                                //不重复添加AOP代理
-                                if (!proxys.contains(proxy)) {
-                                    proxys.add(proxy);
-                                }
-                            }
-                        }
-                        if (aopSet.size() != 0) {
-
+                        for (String aopPorxyBeanName : aop.value()) {
+                            setProxy(aopPorxyBeanName, proxys, sets);
                         }
                         proxyMethodFilters.add(new ProxyMethodFilter(method.getName(), sets));
                     }
@@ -234,6 +213,24 @@ public class IocBeanContext {
                     }
                 }
                 this.setProxyBean(iocBeanName, beanInstance);
+            }
+        }
+    }
+
+
+    private void setProxy(String aopPorxyBeanName, List<Proxy> proxys, Set<String> proxyList) {
+        //取得代理bean
+        Proxy proxy = (Proxy) IocBeanContext.me().getBean(aopPorxyBeanName);
+        //添加AOP代理
+        if (!proxys.contains(aopPorxyBeanName)) {
+            if (proxy != null) {
+                //添加代理
+                proxys.add(proxy);
+                proxyList.add(aopPorxyBeanName);
+            } else {
+                String msg = String.format("IOC 中没有找到%s", aopPorxyBeanName);
+                logger.error(msg);
+                throw new RuntimeException(msg);
             }
         }
     }

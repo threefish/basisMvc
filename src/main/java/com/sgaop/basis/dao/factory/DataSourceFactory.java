@@ -1,7 +1,7 @@
 package com.sgaop.basis.dao.factory;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.sgaop.basis.cache.StaticCacheManager;
+import com.sgaop.basis.cache.PropertiesManager;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
@@ -30,22 +30,22 @@ public class DataSourceFactory {
 
     private static void init() {
         try {
-            dataSource.setPassword(StaticCacheManager.getCacheStr("db.password"));
-            dataSource.setUsername(StaticCacheManager.getCacheStr("db.user"));
-            dataSource.setUrl(StaticCacheManager.getCacheStr("db.jdbcUrl"));
-            dataSource.setMaxActive(StaticCacheManager.getIntCache("db.maxActive"));
-            dataSource.setDriverClassName(StaticCacheManager.getCacheStr("db.driverClassName"));
-            dataSource.setValidationQuery(StaticCacheManager.getCacheStr("db.validationQuery"));
-            dataSource.setValidationQueryTimeout(StaticCacheManager.getIntCache("db.validationQueryTimeout"));
-            dataSource.setInitialSize(StaticCacheManager.getIntCache("db.initialSize"));
-            dataSource.setMinIdle(StaticCacheManager.getIntCache("db.minIdle"));
-            dataSource.setMaxWait(StaticCacheManager.getIntCache("db.maxWait"));
-            dataSource.setTimeBetweenEvictionRunsMillis(StaticCacheManager.getIntCache("db.timeBetweenEvictionRunsMillis"));
-            dataSource.setMinEvictableIdleTimeMillis(StaticCacheManager.getIntCache("db.minEvictableIdleTimeMillis"));
-            dataSource.setTestWhileIdle(StaticCacheManager.getBooleanCache("db.testWhileIdle"));
-            dataSource.setTestOnBorrow(StaticCacheManager.getBooleanCache("db.testOnBorrow"));
-            dataSource.setTestOnReturn(StaticCacheManager.getBooleanCache("db.testOnReturn"));
-            dataSource.setPoolPreparedStatements(StaticCacheManager.getBooleanCache("db.poolPreparedStatements"));
+            dataSource.setPassword(PropertiesManager.getCacheStr("db.password"));
+            dataSource.setUsername(PropertiesManager.getCacheStr("db.user"));
+            dataSource.setUrl(PropertiesManager.getCacheStr("db.jdbcUrl"));
+            dataSource.setMaxActive(PropertiesManager.getIntCache("db.maxActive"));
+            dataSource.setDriverClassName(PropertiesManager.getCacheStr("db.driverClassName"));
+            dataSource.setValidationQuery(PropertiesManager.getCacheStr("db.validationQuery"));
+            dataSource.setValidationQueryTimeout(PropertiesManager.getIntCache("db.validationQueryTimeout"));
+            dataSource.setInitialSize(PropertiesManager.getIntCache("db.initialSize"));
+            dataSource.setMinIdle(PropertiesManager.getIntCache("db.minIdle"));
+            dataSource.setMaxWait(PropertiesManager.getIntCache("db.maxWait"));
+            dataSource.setTimeBetweenEvictionRunsMillis(PropertiesManager.getIntCache("db.timeBetweenEvictionRunsMillis"));
+            dataSource.setMinEvictableIdleTimeMillis(PropertiesManager.getIntCache("db.minEvictableIdleTimeMillis"));
+            dataSource.setTestWhileIdle(PropertiesManager.getBooleanCache("db.testWhileIdle"));
+            dataSource.setTestOnBorrow(PropertiesManager.getBooleanCache("db.testOnBorrow"));
+            dataSource.setTestOnReturn(PropertiesManager.getBooleanCache("db.testOnReturn"));
+            dataSource.setPoolPreparedStatements(PropertiesManager.getBooleanCache("db.poolPreparedStatements"));
             dataSource.init();
             logger.debug("数据库连接成功");
         } catch (SQLException e) {

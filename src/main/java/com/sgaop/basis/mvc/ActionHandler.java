@@ -119,7 +119,7 @@ public class ActionHandler {
             }
         } catch (Exception e) {
             if (e.getMessage() == null) {
-                Throwable te= e.getCause();
+                Throwable te = e.getCause();
                 webErrorMessage.setCode(500);
                 webErrorMessage.setMessage(te.getMessage());
                 logger.debug(e.getMessage());
