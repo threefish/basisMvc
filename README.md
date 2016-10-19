@@ -52,7 +52,23 @@
     - WEB-INF下的jsp必须通过action访问
     - 静态资源文件目录需要配置
     - 配置文件相关可以查看jar包中的 resources 目录以作规范
-
+    
+###webxml设置
+```xml
+ <!--basis框架过滤器-->
+    <listener>
+        <listener-class>com.sgaop.basis.web.ServletInitListener</listener-class>
+    </listener>
+    <filter>
+        <filter-name>basisFilter</filter-name>
+        <filter-class>com.sgaop.basis.web.BasisMvcWebFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>basisFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+```
 ### 示例CODE
 ```java
 package com.sgaop.web.action;
