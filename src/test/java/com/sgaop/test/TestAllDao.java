@@ -75,7 +75,7 @@ public class TestAllDao {
      */
     @Test
     public void queryListPager() {
-        System.out.println(new Gson().toJson(dao.queryList(tbUser.class, new Pager(2, 5), "order by id desc")));
+        System.out.println(new Gson().toJson(dao.queryList(tbUser.class, new Pager(2, 5), "No by id desc")));
     }
 
 

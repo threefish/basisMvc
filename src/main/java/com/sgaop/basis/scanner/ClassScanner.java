@@ -38,10 +38,10 @@ public class ClassScanner {
     public static void init() {
         for (Class<?> ks : classes) {
             String classKey = ks.getName();
-            Control control = ks.getAnnotation(Control.class);
+            Action action = ks.getAnnotation(Action.class);
             Setup setup = ks.getAnnotation(Setup.class);
             Table table = ks.getAnnotation(Table.class);
-            if (control != null) {
+            if (action != null) {
                 Method[] methods = ks.getMethods();
                 for (Method method : methods) {
                     Path webAction = method.getAnnotation(Path.class);
@@ -53,11 +53,11 @@ public class ClassScanner {
                     String relpath = "";
                     if (webAction != null) {
                         if (webAction.value().length == 0) {
-                            relpath = control.value() + "/" + method.getName();
+                            relpath = action.value() + "/" + method.getName();
                             putUrlMapping(relpath, method, classKey, ks, okVal, webAction.note());
                         } else {
                             for (String path : webAction.value()) {
-                                relpath = control.value() + path;
+                                relpath = action.value() + path;
                                 putUrlMapping(relpath, method, classKey, ks, okVal, webAction.note());
                             }
                         }

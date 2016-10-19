@@ -25,7 +25,7 @@ import java.util.Map;
  * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
  */
-@Control("/mainController")
+@Action("/mainController")
 public class MainController {
 
     @Inject

@@ -7,6 +7,7 @@ import com.sgaop.basis.annotation.Aspect;
 import com.sgaop.basis.annotation.Inject;
 import com.sgaop.basis.aop.ProxyFactory;
 import com.sgaop.basis.aop.proxy.Proxy;
+import com.sgaop.basis.aop.proxy.ProxyClassFiter;
 import com.sgaop.basis.aop.proxy.ProxyMethodFilter;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.util.ClassTool;
@@ -33,7 +34,7 @@ public class IocBeanContext {
     private Map<String, Object> beans = new HashMap<String, Object>();
 
     //全局AOP拦截器
-    private Map<String, Class<? extends Annotation>> aopSet = new HashMap<>();
+    private List<ProxyClassFiter> allAopList = new ArrayList<>();
 
     //记录依赖关系
     private Map<String, String> dependencies = new HashMap<String, String>();
@@ -133,10 +134,19 @@ public class IocBeanContext {
                  */
                 Aspect aspect = item.getAnnotation(Aspect.class);
                 if (aspect != null) {
-                    aopSet.put(beanName, aspect.annotation());
+                    allAopList.add(new ProxyClassFiter(beanName, aspect.No(), aspect.annotation()));
                 }
             }
         }
+        /**
+         * 全局AOP排序处理
+         */
+        Collections.sort(allAopList, new Comparator<ProxyClassFiter>() {
+            @Override
+            public int compare(ProxyClassFiter o1, ProxyClassFiter o2) {
+                return o1.getNo().compareTo(o2.getNo());
+            }
+        });
     }
 
     /**
@@ -177,13 +187,11 @@ public class IocBeanContext {
                 /**
                  * 有全局AOP代理
                  */
-                if (aopSet.size() != 0) {
-                    for (Map.Entry entry : aopSet.entrySet()) {
-                        String aopPorxyBeanName = (String) entry.getKey();
-                        Class<? extends Annotation> ann = (Class<? extends Annotation>) entry.getValue();
+                if (allAopList.size() != 0) {
+                    for (ProxyClassFiter proxyClassFiter : allAopList) {
                         //通过注解判断当前类是否需要代理
-                        if (this.getAopBean(item, ann)) {  //需要代理
-                            setProxy(aopPorxyBeanName, proxys, allAop);
+                        if (this.getAopBean(item, proxyClassFiter.getAnnotation())) {  //需要代理
+                            setProxy(proxyClassFiter.getBeanName(), proxys, allAop);
                         }
                     }
                 }

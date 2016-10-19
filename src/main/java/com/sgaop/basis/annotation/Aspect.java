@@ -24,4 +24,12 @@ public @interface Aspect {
      * @return
      */
     Class<? extends Annotation> annotation();
+
+    /**
+     * 排序号，越小表示越先执行
+     * @return
+     */
+    int No();
+
+
 }
