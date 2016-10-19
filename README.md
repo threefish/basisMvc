@@ -81,7 +81,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 @IocBean("topicAction")
-@Control("/mainController")
+@Action("/mainController")
 public class MainController {
 
    private HttpServletRequest request;
