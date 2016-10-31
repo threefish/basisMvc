@@ -107,8 +107,8 @@ public class ClassScanner {
                 }
                 CacheManager.putTableCache(classKey, daoMethod);
             }
-        }
-        IocBeanContext.me().init(classes);
+         }
+//        IocBeanContext.me().init(classes);
     }
 
 

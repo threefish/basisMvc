@@ -9,6 +9,7 @@ import com.sgaop.basis.aop.ProxyFactory;
 import com.sgaop.basis.aop.proxy.Proxy;
 import com.sgaop.basis.aop.proxy.ProxyClassFiter;
 import com.sgaop.basis.aop.proxy.ProxyMethodFilter;
+import com.sgaop.basis.cache.PropertiesManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.StringsTool;
@@ -75,7 +76,7 @@ public class IocBeanContext {
     /**
      * 存放bean代理对象
      */
-    public void setProxyBean(String key, Object bean) {
+    public void setBean2(String key, Object bean) {
         this.beans.put(key, bean);
     }
 
@@ -160,17 +161,16 @@ public class IocBeanContext {
             String value = item.getValue();//依赖对象的值
             String[] split = key.split(Constant.IOC_SEPARATOR_REG);//数组第一个值表示bean对象名称,第二个值为字段属性名称
             try {
-//                PropertyUtils.setProperty(beans.get(split[0]), split[1], beans.get(value));
                 Object object = beans.get(split[0]);
                 Field field = object.getClass().getDeclaredField(split[1]);
-                field.setAccessible(true);
-                field.set(object, beans.get(value));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                this.injects(field, object, value);
+                this.setBean2(split[0], object);
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
         }
+
+
         /**
          * 注入AOP相关
          */
@@ -217,10 +217,10 @@ public class IocBeanContext {
                     Inject inject = field.getAnnotation(Inject.class);
                     if (iocBeanName != null && inject != null) {
                         String resName = inject.value().equals("") ? field.getName() : inject.value();
-                        this.injectBean(field, beanInstance, resName);
+                        this.injects(field, beanInstance, resName);
                     }
                 }
-                this.setProxyBean(iocBeanName, beanInstance);
+                this.setBean2(iocBeanName, beanInstance);
             }
         }
     }
@@ -259,35 +259,32 @@ public class IocBeanContext {
     /**
      * MVC扫描依赖关系并注入bean
      */
-    public void injectBean(Field field, Object beanInstance, String beanKey) {
+    public void injects(Field field, Object beanInstance, String beanKey) {
         try {
-            field.set(beanInstance, beans.get(beanKey));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
-     * MVC扫描依赖关系并注入bean
-     */
-    public void injectBean(Object beanInstance, String klass) {
-        try {
-            String[] split = klass.split("\\.");
-            Object object = beans.get(split[0]);
-            if (object != null) {
-                Field field = object.getClass().getDeclaredField(split[1]);
-                field.setAccessible(true);
-                field.set(beanInstance, beans.get(split[1]));
+            field.setAccessible(true);
+            if (beanKey.startsWith("java:")) {
+                beanKey = beanKey.replace("java:", "");
+                Class<?> klazz = field.getType();
+                //此处类型明确
+                if (klazz == String.class) {
+                    field.set(beanInstance, PropertiesManager.getCacheStr(beanKey));
+                } else if (klazz == int.class || klazz == Integer.class) {
+                    field.set(beanInstance, PropertiesManager.getIntCache(beanKey));
+                } else if (klazz == Long.class || klazz == long.class) {
+                    field.set(beanInstance, PropertiesManager.getLongCache(beanKey));
+                } else if (klazz == Boolean.class || klazz == boolean.class) {
+                    field.set(beanInstance, PropertiesManager.getBooleanCache(beanKey));
+                } else if (klazz == String[].class) {
+                    field.set(beanInstance, PropertiesManager.getCacheStr(beanKey).split(","));
+                } else {
+                    logger.error(String.format("%s此类型暂未处理,请至%s提交", klazz, Constant.BASIS_AUTHOR_ISSUES));
+                }
             } else {
-                logger.error("没有" + split[1] + "的实现");
+                field.set(beanInstance, beans.get(beanKey));
             }
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
-
 
 }

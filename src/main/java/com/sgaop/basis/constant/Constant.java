@@ -35,4 +35,7 @@ public class Constant {
 
     public static final String IOC_SEPARATOR = "_$$_";
     public static final String IOC_SEPARATOR_REG = "\\_\\$\\$\\_";
+
+    public static final String BASIS_AUTHOR_ISSUES = "https://github.com/threefish/basisMvc/issues";
+
 }

@@ -4,6 +4,7 @@ package com.sgaop.basis.web;
 import com.google.gson.Gson;
 import com.sgaop.basis.cache.CacheManager;
 import com.sgaop.basis.constant.Constant;
+import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.ActionMethod;
 import com.sgaop.basis.mvc.view.ViewsRegister;
 import com.sgaop.basis.scanner.ClassScanner;
@@ -34,6 +35,7 @@ public class ServletInitListener implements ServletContextListener {
         ViewsRegister.RegisterDefaultView();
         //执行自定义启动类
         handlerSetup(Constant.WEB_SETUP_INIT, servletContextEvent);
+        IocBeanContext.me().init(ClassScanner.classes);
         logger.info("环境初始化成功");
         logger.debug("UrlMapping:" + new Gson().toJson(CacheManager.urlMappingList()));
     }
