@@ -41,6 +41,7 @@ public class BasisMvcWebFilter implements Filter {
         servletResponse.setCharacterEncoding(Constant.utf8);
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        DispatcherType dispatcherType=request.getDispatcherType();
         try {
             Map<String, ?> requestParameterMap = request.getParameterMap();
             if (ServletFileUpload.isMultipartContent(request)) {
@@ -66,6 +67,8 @@ public class BasisMvcWebFilter implements Filter {
                     logger.warn("安全警告：不允许访问静态目录中的" + Constant.PAGE_SUFFIX + "文件");
                     DefaultViewsRender.RenderHttpStatus(response, 403, ConstanErrorMsg.ILLEGAL_OPERATION);
                     return;
+                } else if(dispatcherType.name().equals("FORWARD") && servletPath.endsWith(Constant.PAGE_SUFFIX)){
+                    filterChain.doFilter(request, response);
                 } else if (!isStatic) {
                     logger.debug("[" + reqMethod + "] [" + servletPath + "] ");
                     /**
@@ -74,7 +77,7 @@ public class BasisMvcWebFilter implements Filter {
                     ActionResult actionResult = ActionHandler.invokeAction(servletPath, reqMethod, request, response);
 
                     String resultType = actionResult.getResultType();
-                    if (actionResult.getWebErrorMessage().getCode() == 200 && actionResult.getWebErrorMessage().isJsp()) {
+                    if ((actionResult.getWebErrorMessage().getCode() == 200 && actionResult.getWebErrorMessage().isJsp())) {
                         DefaultViewsRender.RenderJSP(servletPath, request, response);
                         return;
                     } else if (actionResult.getWebErrorMessage().getCode() != 500 && actionResult.getWebErrorMessage().getCode() != 404) {
