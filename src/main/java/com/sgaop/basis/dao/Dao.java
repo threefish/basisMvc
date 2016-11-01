@@ -2,6 +2,7 @@ package com.sgaop.basis.dao;
 
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,13 +14,41 @@ import java.util.List;
 
 public interface Dao {
 
-    void commit();
+    /**
+     * 提交事务
+     *
+     * @throws SQLException
+     */
+    void commit() throws SQLException;
 
-    void begin(boolean autoCommit);
+    /**
+     * 启动事务
+     */
+    void begin();
 
-    void rollback();
+    /**
+     * 回滚事务
+     *
+     * @throws SQLException
+     */
+    void rollback() throws SQLException;
 
+    /**
+     * 取得数据库连接-不推荐
+     *
+     * @return
+     * @throws SQLException
+     */
+    Connection getConnection() throws SQLException;
+
+    /**
+     * 设置数据源
+     *
+     * @param dataSource
+     * @throws SQLException
+     */
     void setDataSource(DataSource dataSource) throws SQLException;
+
 
     /**
      * 插入一个对象,返回主键ID

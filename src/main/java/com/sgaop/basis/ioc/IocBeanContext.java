@@ -282,7 +282,7 @@ public class IocBeanContext {
             } else {
                 field.set(beanInstance, beans.get(beanKey));
             }
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

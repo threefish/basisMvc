@@ -1,16 +1,13 @@
 package com.sgaop.basis.dao.impl;
 
-import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.cache.CacheManager;
-import com.sgaop.basis.cache.PropertiesManager;
 import com.sgaop.basis.dao.Dao;
-import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.Pager;
 import com.sgaop.basis.dao.bean.TableInfo;
-import com.sgaop.basis.dao.factory.DataSourceFactory;
-import com.sgaop.basis.util.DaoUtil;
+import com.sgaop.basis.util.DBUtil;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,44 +19,32 @@ import java.util.List;
  * Date: 2016/6/20 0020
  * To change this template use File | Settings | File Templates.
  */
-@IocBean("dao")
 public class DaoImpl implements Dao {
-
-    private static DbType dbtype;
     /**
      * 数据访问器
      */
-    private static JDBC_Accessor accessor;
+    private static JdbcAccessor accessor;
 
-    static {
-        try {
-            if (PropertiesManager.getBooleanCache("useDefaultDao")) {
-                DataSource dataSource = DataSourceFactory.getDataSource();
-                accessor = new JDBC_Accessor(dataSource);
-                dbtype = DaoUtil.getDataBaseType(dataSource.getConnection());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void commit() {
+    public void commit() throws SQLException {
         accessor.commit();
     }
 
-    public void begin(boolean autoCommit) {
-        accessor.setAutoCommit(autoCommit);
+    public void begin() {
+        accessor.begin();
     }
 
-    public void rollback() {
+    public void rollback() throws SQLException {
         accessor.rollback();
     }
 
-    public void setDataSource(DataSource dataSource) throws SQLException {
-        this.accessor = new JDBC_Accessor(dataSource);
-        this.dbtype = DaoUtil.getDataBaseType(dataSource.getConnection());
+    @Override
+    public Connection getConnection() throws SQLException {
+        return accessor.dataSource.getConnection();
     }
 
+    public void setDataSource(DataSource dataSource) throws SQLException {
+        this.accessor = new JdbcAccessor(dataSource);
+    }
 
     /**
      * 插入一个对象,返回主键ID
@@ -151,9 +136,9 @@ public class DaoImpl implements Dao {
      */
     public <T> List<T> queryList(Class cls, Pager pager, String order) {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        String sql = DaoUtil.generateSelectSql(daoMethod, "", "");
+        String sql = DBUtil.generateSelectSql(daoMethod, "", "");
         if (pager != null) {
-            sql = DaoUtil.generatePageSql(this.dbtype, daoMethod.getTableName(), sql, order, pager);
+            sql = DBUtil.generatePageSql(accessor.dbtype, daoMethod.getTableName(), sql, order, pager);
         }
         return accessor.doLoadList(cls, daoMethod, sql);
     }
@@ -168,9 +153,9 @@ public class DaoImpl implements Dao {
      */
     public <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        String sql = DaoUtil.generateSelectSql(daoMethod, "", whereSqlAndOrder);
+        String sql = DBUtil.generateSelectSql(daoMethod, "", whereSqlAndOrder);
         if (pager != null) {
-            sql = DaoUtil.generatePageSql(this.dbtype, daoMethod.getTableName(), sql, "", pager);
+            sql = DBUtil.generatePageSql(accessor.dbtype, daoMethod.getTableName(), sql, "", pager);
         }
         return accessor.doLoadList(cls, daoMethod, sql, params);
     }
@@ -196,7 +181,7 @@ public class DaoImpl implements Dao {
      */
     public <T> T querySinge(Class cls, String whereSql, Object... params) {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        String sql = DaoUtil.generateSelectSql(daoMethod, "", whereSql);
+        String sql = DBUtil.generateSelectSql(daoMethod, "", whereSql);
         return accessor.doLoadSinge(cls, daoMethod, sql, params);
     }
 
@@ -232,7 +217,7 @@ public class DaoImpl implements Dao {
      */
     public <T> T querySingePK(Class cls, Object params) {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        String sql = DaoUtil.generateSelectPKSql(daoMethod);
+        String sql = DBUtil.generateSelectPKSql(daoMethod);
         return accessor.doLoadSinge(cls, daoMethod, sql, params);
     }
 

@@ -15,7 +15,7 @@ import java.sql.*;
  * Date: 2016/5/27 0027
  * To change this template use File | Settings | File Templates.
  */
-public class DaoUtil {
+public class DBUtil {
 
     private static final Logger logger = Logger.getRootLogger();
 
@@ -156,13 +156,30 @@ public class DaoUtil {
             logger.debug(ex.getMessage(), ex);
         }
         try {
-            if (conn != null) {
+            if (conn != null && conn.getAutoCommit()) {
                 conn.close();
             }
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
         }
     }
+
+
+    /**
+     * 释放数据库连接资源
+     *
+     * @param conn
+     */
+    public static void close(Connection conn) {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage(), ex);
+        }
+    }
+
 
     /**
      * 打印sql语句

@@ -1,9 +1,10 @@
 package com.sgaop.basis.dao.impl;
 
+import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.util.ClassTool;
-import com.sgaop.basis.util.DaoUtil;
+import com.sgaop.basis.util.DBUtil;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
@@ -17,43 +18,59 @@ import java.util.*;
  * Date: 2016/6/30 0030
  * To change this template use File | Settings | File Templates.
  */
-public class JDBC_Accessor {
+public class JdbcAccessor {
 
     private static final Logger log = Logger.getRootLogger();
-    public Connection conn;
-    private DataSource dataSource;
+
+    public static DbType dbtype;
+
+    private Connection conn;
+
+    public DataSource dataSource;
 
 
-    public JDBC_Accessor(DataSource dataSource) {
+    public JdbcAccessor(DataSource dataSource) throws SQLException {
         this.dataSource = dataSource;
+        this.dbtype = DBUtil.getDataBaseType(dataSource.getConnection());
     }
 
-    public void commit() {
+    /**
+     * 提交事务
+     * @throws SQLException
+     */
+    public void commit() throws SQLException {
+        conn.commit();
+        DBUtil.close(conn);
+    }
+
+    /**
+     * 设置事务为非自动提交
+     */
+    public void begin() {
         try {
-            conn.commit();
+            if (conn == null || conn.isClosed()) {
+                getConn();
+                conn.setAutoCommit(false);
+            } else {
+                conn.setAutoCommit(false);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void setAutoCommit(boolean autoCommit) {
-        try {
-            conn.setAutoCommit(autoCommit);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    /**
+     * 回滚事务
+     * @throws SQLException
+     */
+    public void rollback() throws SQLException {
+        conn.rollback();
+        DBUtil.close(conn);
     }
 
-    public void rollback() {
-        try {
-            conn.rollback();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void getConn() throws SQLException {
-        conn = dataSource.getConnection();
+    public Connection getConn() throws SQLException {
+        this.conn = dataSource.getConnection();
+        return this.conn;
     }
 
 
@@ -72,9 +89,9 @@ public class JDBC_Accessor {
             getConn();
             pstm = conn.prepareStatement(sql);
             //设置参数
-            DaoUtil.setParams(pstm, params);
+            DBUtil.setParams(pstm, params);
             //打印sql
-            DaoUtil.showSql(pstm.toString());
+            DBUtil.showSql(pstm.toString());
             //执行查询，并取得查询结果
             rs = pstm.executeQuery();
             ResultSetMetaData meta = rs.getMetaData();
@@ -89,7 +106,7 @@ public class JDBC_Accessor {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DaoUtil.close(pstm, rs, conn);
+            DBUtil.close(pstm, rs, conn);
         }
         return data;
     }
@@ -109,9 +126,9 @@ public class JDBC_Accessor {
         getConn();
         pstm = conn.prepareStatement(sql);
         //设置参数
-        DaoUtil.setParams(pstm, params);
+        DBUtil.setParams(pstm, params);
         //打印sql
-        DaoUtil.showSql(pstm.toString());
+        DBUtil.showSql(pstm.toString());
         //执行查询，并取得查询结果
         rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
@@ -123,7 +140,7 @@ public class JDBC_Accessor {
             }
             max++;
         }
-        DaoUtil.close(pstm, rs, conn);
+        DBUtil.close(pstm, rs, conn);
         return data;
     }
 
@@ -243,7 +260,7 @@ public class JDBC_Accessor {
                 i++;
             }
             //打印sql
-            DaoUtil.showSql(pstm.toString());
+            DBUtil.showSql(pstm.toString());
             pstm.addBatch();
 
         }
@@ -256,7 +273,7 @@ public class JDBC_Accessor {
             i++;
         }
 
-        DaoUtil.close(pstm, rs, conn);
+        DBUtil.close(pstm, rs, conn);
         return keys;
     }
 
@@ -300,12 +317,12 @@ public class JDBC_Accessor {
             //设置主键值
             pstm.setObject(i, ClassTool.invokeGetMethod(cls, bean, daoMethod.getDaoFiled(daoMethod.getPkName()).get_getMethodName()));
             //打印sql
-            DaoUtil.showSql(pstm.toString());
+            DBUtil.showSql(pstm.toString());
             pstm.addBatch();
         }
         keys = pstm.executeBatch();
 
-        DaoUtil.close(pstm, rs, conn);
+        DBUtil.close(pstm, rs, conn);
         return keys;
     }
 
@@ -334,14 +351,14 @@ public class JDBC_Accessor {
                 //设置主键值
                 pstm.setObject(1, ClassTool.invokeGetMethod(cls, bean, daoMethod.getDaoFiled(daoMethod.getPkName()).get_getMethodName()));
                 //打印sql
-                DaoUtil.showSql(pstm.toString());
+                DBUtil.showSql(pstm.toString());
                 pstm.addBatch();
             }
             keys = pstm.executeBatch();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DaoUtil.close(pstm, rs, conn);
+            DBUtil.close(pstm, rs, conn);
         }
         return keys;
     }

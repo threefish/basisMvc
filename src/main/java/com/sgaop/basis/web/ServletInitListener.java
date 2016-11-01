@@ -35,6 +35,7 @@ public class ServletInitListener implements ServletContextListener {
         ViewsRegister.RegisterDefaultView();
         //执行自定义启动类
         handlerSetup(Constant.WEB_SETUP_INIT, servletContextEvent);
+        //初始化IOC
         IocBeanContext.me().init(ClassScanner.classes);
         logger.info("环境初始化成功");
         logger.debug("UrlMapping:" + new Gson().toJson(CacheManager.urlMappingList()));
