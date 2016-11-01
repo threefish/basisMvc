@@ -3,6 +3,7 @@ package com.sgaop.basis.dao.impl;
 import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
+import com.sgaop.basis.trans.Transaction;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.DBUtil;
 import org.apache.log4j.Logger;
@@ -22,7 +23,7 @@ public class JdbcAccessor {
 
     private static final Logger log = Logger.getRootLogger();
 
-    public static DbType dbtype;
+    public  DbType dbtype;
 
     private Connection conn;
 
@@ -36,11 +37,17 @@ public class JdbcAccessor {
 
     /**
      * 提交事务
+     *
      * @throws SQLException
      */
     public void commit() throws SQLException {
-        conn.commit();
-        DBUtil.close(conn);
+        try {
+            conn.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e);
+            throw e;
+        }
     }
 
     /**
@@ -56,20 +63,40 @@ public class JdbcAccessor {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            log.error(e);
         }
     }
 
     /**
      * 回滚事务
+     *
      * @throws SQLException
      */
     public void rollback() throws SQLException {
-        conn.rollback();
-        DBUtil.close(conn);
+        this.conn.rollback();
+    }
+
+    /**
+     * 回滚事务
+     *
+     * @throws SQLException
+     */
+    public void Close() throws SQLException {
+        DBUtil.close(this.conn);
     }
 
     public Connection getConn() throws SQLException {
-        this.conn = dataSource.getConnection();
+        if (this.conn == null || this.conn.isClosed()) {
+            this.conn = dataSource.getConnection();
+            boolean flag = Transaction.get();
+            if (flag) {
+                this.conn.setAutoCommit(false);
+                Transaction.TransInfo transInfo = Transaction.getLevel();
+                transInfo.setOldLevel(this.conn.getTransactionIsolation());
+                this.conn.setTransactionIsolation(transInfo.getNewLevel());
+                transInfo.setJdbcAccessor(this);
+            }
+        }
         return this.conn;
     }
 

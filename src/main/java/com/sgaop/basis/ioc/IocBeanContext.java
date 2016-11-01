@@ -11,13 +11,21 @@ import com.sgaop.basis.aop.proxy.ProxyClassFiter;
 import com.sgaop.basis.aop.proxy.ProxyMethodFilter;
 import com.sgaop.basis.cache.PropertiesManager;
 import com.sgaop.basis.constant.Constant;
+import com.sgaop.basis.dao.Dao;
+import com.sgaop.basis.dao.impl.DaoImpl;
+import com.sgaop.basis.trans.TransAop;
+import com.sgaop.basis.trans.TransactionProxy;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -229,6 +237,9 @@ public class IocBeanContext {
     private void setProxy(String aopPorxyBeanName, List<Proxy> proxys, Set<String> proxyList) {
         //取得代理bean
         Proxy proxy = (Proxy) IocBeanContext.me().getBean(aopPorxyBeanName);
+        if (proxy == null) {
+            proxy = getTransProxy(aopPorxyBeanName);
+        }
         //添加AOP代理
         if (!proxys.contains(aopPorxyBeanName)) {
             if (proxy != null) {
@@ -242,6 +253,44 @@ public class IocBeanContext {
             }
         }
     }
+
+    private Proxy getTransProxy(String aopPorxyBeanName) {
+        Proxy proxy = (Proxy) IocBeanContext.me().getBean(aopPorxyBeanName);
+        try {
+            Class klass = TransactionProxy.class;
+            Constructor<TransactionProxy> constructor = null;
+            //判断是否是事务代理
+            switch (aopPorxyBeanName) {
+                case TransAop.NONE:
+                    constructor = klass.getConstructor(int.class);
+                    proxy = constructor.newInstance(Connection.TRANSACTION_NONE);
+                    break;
+                case TransAop.READ_COMMITTED:
+                    constructor = klass.getConstructor(int.class);
+                    proxy = constructor.newInstance(Connection.TRANSACTION_READ_COMMITTED);
+                    break;
+                case TransAop.READ_UNCOMMITTED:
+                    constructor = klass.getConstructor(int.class);
+                    proxy = constructor.newInstance(Connection.TRANSACTION_READ_UNCOMMITTED);
+                    break;
+                case TransAop.REPEATABLE_READ:
+                    constructor = klass.getConstructor(int.class);
+                    proxy = constructor.newInstance(Connection.TRANSACTION_REPEATABLE_READ);
+                    break;
+                case TransAop.SERIALIZABLE:
+                    constructor = klass.getConstructor(int.class);
+                    proxy = constructor.newInstance(Connection.TRANSACTION_SERIALIZABLE);
+                    break;
+            }
+            if (constructor != null) {
+                IocBeanContext.me().setBean(aopPorxyBeanName, proxy);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return proxy;
+    }
+
 
     /**
      * 通过class判断是否需要aop代理

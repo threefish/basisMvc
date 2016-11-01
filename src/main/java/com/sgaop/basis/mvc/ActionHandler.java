@@ -122,7 +122,7 @@ public class ActionHandler {
                 Throwable te = e.getCause();
                 webErrorMessage.setCode(500);
                 webErrorMessage.setMessage(te.getMessage());
-                logger.debug(e.getMessage());
+                logger.debug(te.getMessage());
             } else {
                 webErrorMessage.setCode(500);
                 webErrorMessage.setException(e);

@@ -1,9 +1,13 @@
 package com.sgaop.basis.dao;
 
+import com.sgaop.basis.dao.impl.DaoImpl;
 import com.sgaop.basis.ioc.IocBeanContext;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Constructor;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 /**
  * Created by IntelliJ IDEA.

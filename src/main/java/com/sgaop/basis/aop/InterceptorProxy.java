@@ -15,7 +15,8 @@ import java.lang.reflect.Method;
  */
 public abstract class InterceptorProxy implements Proxy {
 
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger log = Logger.getRootLogger();
+
 
     /**
      * 执行代理链
@@ -34,8 +35,7 @@ public abstract class InterceptorProxy implements Proxy {
             before(cls, method, params);
             result = proxyChain.doProxyChain();
             after(cls, method, params, result);
-        } catch (Exception e) {
-            logger.error("AOP执行异常", e);
+        } catch (Throwable e) {
             exception(cls, method, params, e);
             throw e;
         } finally {

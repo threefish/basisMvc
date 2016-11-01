@@ -1,9 +1,13 @@
 package com.sgaop.basis.aop.proxy;
 
+import com.sgaop.basis.trans.TransAop;
+import com.sgaop.basis.trans.TransactionProxy;
 import com.sgaop.basis.util.ClassTool;
 import net.sf.cglib.proxy.MethodProxy;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +21,6 @@ import java.util.Set;
  * 代理链
  */
 public class ProxyChain {
-
     private final Class targetClass;
     private final Object targetObject;
     private final Method targetMethod;
@@ -69,7 +72,30 @@ public class ProxyChain {
         } else {
             if (proxyIndex < proxyList.size()) {
                 Proxy proxy = proxyList.get(proxyIndex++);
-                String proxyBeanName = ClassTool.getIocBeanName(proxy.getClass());
+                String proxyBeanName = "";
+                //事务切片
+                if (proxy instanceof TransactionProxy) {
+                    TransactionProxy transactionProxy = (TransactionProxy) proxy;
+                    switch (transactionProxy.level) {
+                        case Connection.TRANSACTION_NONE:
+                            proxyBeanName = TransAop.NONE;
+                            break;
+                        case Connection.TRANSACTION_READ_COMMITTED:
+                            proxyBeanName = TransAop.READ_COMMITTED;
+                            break;
+                        case Connection.TRANSACTION_READ_UNCOMMITTED:
+                            proxyBeanName = TransAop.READ_UNCOMMITTED;
+                            break;
+                        case Connection.TRANSACTION_REPEATABLE_READ:
+                            proxyBeanName = TransAop.REPEATABLE_READ;
+                            break;
+                        case Connection.TRANSACTION_SERIALIZABLE:
+                            proxyBeanName = TransAop.SERIALIZABLE;
+                            break;
+                    }
+                } else {
+                    proxyBeanName = ClassTool.getIocBeanName(proxy.getClass());
+                }
                 //首先判断是否是类切片
                 if (allAop.contains(proxyBeanName)) {
                     methodResult = proxy.doProxy(this);
@@ -86,6 +112,7 @@ public class ProxyChain {
         if (doRun) {
             methodResult = invokeSuper();
         }
+
         return methodResult;
     }
 

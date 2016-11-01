@@ -23,7 +23,7 @@ public class DaoImpl implements Dao {
     /**
      * 数据访问器
      */
-    private static JdbcAccessor accessor;
+    private  JdbcAccessor accessor;
 
     public void commit() throws SQLException {
         accessor.commit();
