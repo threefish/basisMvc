@@ -22,7 +22,6 @@ public class ClassTool {
     private static final Logger log = Logger.getRootLogger();
 
 
-
     /**
      * 参数转换
      *

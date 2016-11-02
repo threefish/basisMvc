@@ -11,8 +11,6 @@ import com.sgaop.basis.aop.proxy.ProxyClassFiter;
 import com.sgaop.basis.aop.proxy.ProxyMethodFilter;
 import com.sgaop.basis.cache.PropertiesManager;
 import com.sgaop.basis.constant.Constant;
-import com.sgaop.basis.dao.Dao;
-import com.sgaop.basis.dao.impl.DaoImpl;
 import com.sgaop.basis.trans.TransAop;
 import com.sgaop.basis.trans.TransactionProxy;
 import com.sgaop.basis.util.ClassTool;
@@ -24,8 +22,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.*;
 
 /**

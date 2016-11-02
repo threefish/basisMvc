@@ -11,15 +11,14 @@ import com.sgaop.basis.dao.impl.JdbcAccessor;
  */
 public class Transaction {
 
+    static ThreadLocal<Boolean> trans = new ThreadLocal<>();
+    static ThreadLocal<TransInfo> level = new ThreadLocal<>();
+
     /**
      * 这个类提供的均为静态方法.
      */
     Transaction() {
     }
-
-    static ThreadLocal<Boolean> trans = new ThreadLocal<>();
-
-    static ThreadLocal<TransInfo> level = new ThreadLocal<>();
 
     /**
      * @return 当前线程的事务，如果没有事务，返回 false
@@ -37,14 +36,12 @@ public class Transaction {
         return level.get();
     }
 
+    public static void setLevel(int levels) {
+        level.set(new TransInfo(levels));
+    }
 
     public static void set(boolean flag) {
         trans.set(flag);
-    }
-
-
-    public static void setLevel(int levels) {
-        level.set(new TransInfo(levels));
     }
 
     /**
@@ -59,8 +56,11 @@ public class Transaction {
     public static class TransInfo {
         int newLevel;
         int oldLevel;
-        boolean canCommit = false;
         JdbcAccessor jdbcAccessor;
+
+        public TransInfo(int newLevel) {
+            this.newLevel = newLevel;
+        }
 
         public JdbcAccessor getJdbcAccessor() {
             return jdbcAccessor;
@@ -68,10 +68,6 @@ public class Transaction {
 
         public void setJdbcAccessor(JdbcAccessor jdbcAccessor) {
             this.jdbcAccessor = jdbcAccessor;
-        }
-
-        public TransInfo(int newLevel) {
-            this.newLevel = newLevel;
         }
 
         public int getNewLevel() {
@@ -84,14 +80,6 @@ public class Transaction {
 
         public int getOldLevel() {
             return oldLevel;
-        }
-
-        public boolean isCanCommit() {
-            return canCommit;
-        }
-
-        public void setCanCommit(boolean canCommit) {
-            this.canCommit = canCommit;
         }
 
         public void setOldLevel(int oldLevel) {

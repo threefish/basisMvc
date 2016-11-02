@@ -7,7 +7,7 @@ import com.sgaop.basis.mvc.ActionHandler;
 import com.sgaop.basis.mvc.ActionResult;
 import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.mvc.view.DefaultViewsRender;
-import com.sgaop.basis.mvc.view.ViewsRegister;
+import com.sgaop.basis.mvc.view.ViewHandler;
 import com.sgaop.basis.util.ParameterConverter;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
@@ -16,7 +16,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 
@@ -41,7 +40,7 @@ public class BasisMvcWebFilter implements Filter {
         servletResponse.setCharacterEncoding(Constant.utf8);
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        DispatcherType dispatcherType=request.getDispatcherType();
+        DispatcherType dispatcherType = request.getDispatcherType();
         try {
             Map<String, ?> requestParameterMap = request.getParameterMap();
             if (ServletFileUpload.isMultipartContent(request)) {
@@ -67,7 +66,7 @@ public class BasisMvcWebFilter implements Filter {
                     logger.warn("安全警告：不允许访问静态目录中的" + Constant.PAGE_SUFFIX + "文件");
                     DefaultViewsRender.RenderHttpStatus(response, 403, ConstanErrorMsg.ILLEGAL_OPERATION);
                     return;
-                } else if(dispatcherType.name().equals("FORWARD") && servletPath.endsWith(Constant.PAGE_SUFFIX)){
+                } else if (dispatcherType.name().equals("FORWARD") && servletPath.endsWith(Constant.PAGE_SUFFIX)) {
                     filterChain.doFilter(request, response);
                 } else if (!isStatic) {
                     logger.debug("[" + reqMethod + "] [" + servletPath + "] ");
@@ -75,47 +74,7 @@ public class BasisMvcWebFilter implements Filter {
                      * 访问的不是静态目录，现在注解中查询符合的访问地址
                      */
                     ActionResult actionResult = ActionHandler.invokeAction(servletPath, reqMethod, request, response);
-
-                    String resultType = actionResult.getResultType();
-                    if ((actionResult.getWebErrorMessage().getCode() == 200 && actionResult.getWebErrorMessage().isJsp())) {
-                        DefaultViewsRender.RenderJSP(servletPath, request, response);
-                        return;
-                    } else if (actionResult.getWebErrorMessage().getCode() != 500 && actionResult.getWebErrorMessage().getCode() != 404) {
-                        if (resultType != null) {
-                            if (ViewsRegister.hasRegisterView(resultType)) {
-                                String path[] = resultType.split(":");
-                                Class<?> klass = ViewsRegister.getViewClass(path[0]);
-                                Object view = klass.newInstance();
-                                Method method = klass.getMethod("render", String.class, HttpServletRequest.class, HttpServletResponse.class, Object.class);
-                                method.invoke(view, path[1], request, response, actionResult.getResultData());
-                                return;
-                            } else if (resultType.equals("json")) {
-                                DefaultViewsRender.RenderJSON(response, actionResult.getResultData());
-                            } else if (resultType.startsWith("jsp:") || resultType.startsWith("fw:")) {
-                                String path[] = resultType.split(":");
-                                DefaultViewsRender.RenderJSP(Constant.JSP_PATH + path[1], request, response);
-                                return;
-                            } else if (resultType.startsWith("rd:")) {
-                                String path[] = resultType.split(":");
-                                DefaultViewsRender.RenderRedirect(request.getContextPath() + "/" + path[1], response);
-                                return;
-                            } else if (resultType.startsWith("file")) {
-                                DefaultViewsRender.RenderFile(response, actionResult.getResultData());
-                                return;
-                            } else {
-                                actionResult.getWebErrorMessage().setMessage("没有设置返回类型 [" + servletPath + "]");
-                                logger.error(actionResult.getWebErrorMessage().getMessage());
-                                DefaultViewsRender.RenderErrorPage(response, actionResult.getWebErrorMessage());
-                                return;
-                            }
-                        }
-                    } else {
-                        /**
-                         * 在以上条件都不满足的情况下进入错误页面
-                         */
-                        DefaultViewsRender.RenderErrorPage(response, actionResult.getWebErrorMessage());
-                        return;
-                    }
+                    ViewHandler.invokeAction(servletPath, actionResult, request, response);
                 } else {
                     /**
                      * 访问静态资源文件

@@ -11,23 +11,21 @@ import java.lang.annotation.Annotation;
 public class ProxyClassFiter {
 
     /**
+     * 按注解批量获取需要切片的类
+     *
+     * @return
+     */
+    Class<? extends Annotation> annotation;
+    /**
      * IOC
      */
     private String beanName;
-
     /**
      * 排序号，越小表示越先执行
      *
      * @return
      */
     private Integer no;
-
-    /**
-     * 按注解批量获取需要切片的类
-     *
-     * @return
-     */
-    Class<? extends Annotation> annotation;
 
 
     public ProxyClassFiter(String beanName, Integer no, Class<? extends Annotation> annotation) {

@@ -29,9 +29,7 @@ public class Constant {
 
     public static final String WEB_TEMP_PATH = System.getProperty("java.io.tmpdir");
 
-    public static final String WEB_SETUP_INIT = "$_WEB_INIT_$";
-
-    public static final String WEB_SETUP_DESTROY = "$_WEB_DESTROY_$";
+    public static final String WEB_SETUP = "$_WEB_INIT_$";
 
     public static final String IOC_SEPARATOR = "_$$_";
     public static final String IOC_SEPARATOR_REG = "\\_\\$\\$\\_";

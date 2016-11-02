@@ -34,7 +34,6 @@ public class Mvcs {
      * 销毁
      */
     public static void destroy() {
-        /*设置项目根路径*/
         local.remove();
     }
 

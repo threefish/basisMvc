@@ -6,7 +6,6 @@ import com.sgaop.basis.cache.CacheManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
-import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.ActionMethod;
 import com.sgaop.basis.util.ClassTool;
 
@@ -64,14 +63,7 @@ public class ClassScanner {
                     }
                 }
             } else if (setup != null) {
-                Method[] methods = ks.getMethods();
-                for (Method method : methods) {
-                    if ("init".equals(method.getName())) {
-                        CacheManager.putSetupCache(Constant.WEB_SETUP_INIT, new ActionMethod("init", classKey, ks, method));
-                    } else if ("destroy".equals(method.getName())) {
-                        CacheManager.putSetupCache(Constant.WEB_SETUP_DESTROY, new ActionMethod("destroy", classKey, ks, method));
-                    }
-                }
+                CacheManager.putSetupCache(Constant.WEB_SETUP, ks);
             } else if (table != null) {
                 Field[] fields = ks.getDeclaredFields();
                 TableInfo daoMethod = new TableInfo();
@@ -107,7 +99,7 @@ public class ClassScanner {
                 }
                 CacheManager.putTableCache(classKey, daoMethod);
             }
-         }
+        }
 //        IocBeanContext.me().init(classes);
     }
 

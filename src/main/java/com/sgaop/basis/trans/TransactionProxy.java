@@ -40,7 +40,7 @@ public class TransactionProxy implements Proxy {
             try {
                 Transaction.TransInfo transInfo = Transaction.getLevel();
                 Connection connection = transInfo.getJdbcAccessor().getConn();
-                //恢复事物级别
+                //恢复事务隔离级别
                 connection.setTransactionIsolation(transInfo.getOldLevel());
                 transInfo.getJdbcAccessor().Close();
             } finally {

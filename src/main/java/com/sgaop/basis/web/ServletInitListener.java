@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.sgaop.basis.cache.CacheManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.ioc.IocBeanContext;
-import com.sgaop.basis.mvc.ActionMethod;
 import com.sgaop.basis.mvc.view.ViewsRegister;
 import com.sgaop.basis.scanner.ClassScanner;
 import com.sgaop.basis.scanner.ProperScanner;
@@ -13,7 +12,6 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.lang.reflect.Method;
 
 
 /**
@@ -34,7 +32,7 @@ public class ServletInitListener implements ServletContextListener {
         //注册默认视图
         ViewsRegister.RegisterDefaultView();
         //执行自定义启动类
-        handlerSetup(Constant.WEB_SETUP_INIT, servletContextEvent);
+        handlerInit(servletContextEvent);
         //初始化IOC
         IocBeanContext.me().init(ClassScanner.classes);
         logger.info("环境初始化成功");
@@ -43,24 +41,27 @@ public class ServletInitListener implements ServletContextListener {
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         //执行自定义销毁类
-        handlerSetup(Constant.WEB_SETUP_DESTROY, servletContextEvent);
+        handlerDestroy(servletContextEvent);
         logger.info("环境销毁成功");
     }
 
-    private void handlerSetup(String web_setup, ServletContextEvent servletContextEvent) {
-        if (web_setup != null) {
-            try {
-                ActionMethod actionMethod = (ActionMethod) CacheManager.getSetupCache(web_setup);
-                if (actionMethod != null) {
-                    Class<?> actionClass = actionMethod.getActionClass();
-                    Method handlerMethod = actionMethod.getActionMethod();
-                    Object beanInstance = actionClass.newInstance();
-                    handlerMethod.setAccessible(true);
-                    handlerMethod.invoke(beanInstance, servletContextEvent);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("环境初始化错误！", e);
-            }
+    private void handlerInit(ServletContextEvent servletContextEvent) {
+        try {
+            Class<?> klass = (Class<?>) CacheManager.getSetupCache(Constant.WEB_SETUP);
+            WebSetup setup = (WebSetup) klass.newInstance();
+            setup.init(servletContextEvent);
+        } catch (Exception e) {
+            throw new RuntimeException("环境初始化时发生错误！", e);
+        }
+    }
+
+    private void handlerDestroy(ServletContextEvent servletContextEvent) {
+        try {
+            Class<?> klass = (Class<?>) CacheManager.getSetupCache(Constant.WEB_SETUP);
+            WebSetup setup = (WebSetup) klass.newInstance();
+            setup.destroy(servletContextEvent);
+        } catch (Exception e) {
+            throw new RuntimeException("环境销毁时发生错误！", e);
         }
     }
 }

@@ -4,7 +4,6 @@ import com.sgaop.basis.trans.TransAop;
 import com.sgaop.basis.trans.TransactionProxy;
 import com.sgaop.basis.util.ClassTool;
 import net.sf.cglib.proxy.MethodProxy;
-import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;

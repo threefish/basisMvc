@@ -23,11 +23,9 @@ public class JdbcAccessor {
 
     private static final Logger log = Logger.getRootLogger();
 
-    public  DbType dbtype;
-
-    private Connection conn;
-
+    public DbType dbtype;
     public DataSource dataSource;
+    private Connection conn;
 
 
     public JdbcAccessor(DataSource dataSource) throws SQLException {
