@@ -10,7 +10,7 @@
 
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看更早前的更新日志](https://github.com/threefish/WebFrameWork "更早前的更新日志")
 
-#### TODO 插件装载实现中
+#### TODO 压力测试中
 
 ### 现已实现以下功能
 #### IOC、AOP、ORM、MVC
@@ -71,55 +71,117 @@
 ```
 ### 示例CODE
 ```java
-package com.sgaop.web.action;
+package com.sample.action;
 
-import com.google.gson.Gson;
-import DBConnPool;
-import Mvcs;
-import com.sgaop.web.frame.server.mvc.annotation.*;
-import TempFile;
-import AjaxResult;
-import IoTool;
-import com.sgaop.bean.TestbuildBean;
+import com.sample.entity.Topic;
+import com.sgaop.basis.annotation.*;
+import com.sgaop.basis.dao.Dao;
+import com.sgaop.basis.mvc.AjaxResult;
+import com.sgaop.basis.trans.TransAop;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 
 /**
  * Created by IntelliJ IDEA.
  * User: 306955302@qq.com
  * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
+ *
+ * @OK("rd:testpage.jsp")//重定向
+ * @OK("json")//返回JSON对象
+ * @OK("fw:testpage.jsp")//转发
+ * @GET//请求方式
+ * @Path//默认使用方法名
+ * @Control 标识这是一个可访问的webAction
  */
-@IocBean("topicAction")
-@Action("/mainController")
-public class MainController {
+@IocBean("MainAction")
+@Action("/main")
+public class MainAction {
 
-   private HttpServletRequest request;
+    //注入数据源A
+    @Inject("daoA")
+    private Dao daoA;
 
-   private HttpServletResponse response;
+    //注入数据源B
+    @Inject("daoB")
+    private Dao daoB;
+    
+    //注入配置文件
+    @Inject("java:db.jdbcUrl")
+    private String jdbcUrl;
 
-   private HttpSession session;
+    @Inject("java:db.password")
+    private int password;
 
-   private ServletContext context;
+    @Inject("java:db.testOnBorrow")
+    private boolean testOnBorrow;
 
-   @Inject("dao")
-   private Dao dao;
+//    @OK("beetl:index")
+    @GET
+    @Path("/index")
+    @Aop({TransAop.READ_COMMITTED,"allAop"})
+    public String index(HttpServletRequest request) throws SQLException {
+        System.out.printf("当前访问indx方法{dbPass:%s,password：%d} \r\n", jdbcUrl, password);
+        try {
+            Topic tp = new Topic();
+            tp.setContent("我了个艹A");
+            daoA.insert(Topic.class, tp);
+
+            Topic tp2 = new Topic();
+            tp2.setId(5);
+            tp2.setContent("我了个艹a+");
+
+            daoA.delect(Topic.class,tp2);
+
+            daoA.insert(Topic.class, tp2);
+        } catch (Exception e) {
+            throw e;
+        }
+        return "beetl:index";
+    }
+
+    @OK("beetl:index2")
+    @GET
+    @Path("/index2")
+    public void index2(HttpServletRequest request) {
+        System.out.println("index2");
+    }
+
+    @OK("jsp:testpage.jsp")
+    @GET
+    @Path("/testindex")
+    public AjaxResult index(
+            @Parameter("id") int id,
+            @Parameter("name") String name,
+            @Parameter("age") int age,
+            @Parameter("doubleNum") double doubleNum,
+            @Parameter("flag") boolean flag,
+            @Parameter("ids") String[] ids,
+            HttpServletRequest request) {
+        System.out.println("----" + id + "----" + name + "----" + age);
+        System.out.println("mian index");
+        request.setAttribute("test", "测试request.setAttribute");
+        return new AjaxResult(true, "呵呵呵", "json哦");
+    }
 
 
-    /**
-     * 返回freemarker自定义视图
-     * @return
-     */
-    @OK("freemarker:TestFreeMarker.ftl")
+    @OK("rd:testpage.jsp")
+    @GET
+    @Path("/testpage")
+    public void testpage() {
+        System.out.println("---testpage");
+    }
+
+
+    @OK("freemarker:TestFreeMarker")
     @GET
     @Path("/freemarker")
-    @Aop({"TestAop","TestAop2"})//加入AOP 按数组顺序执行AOP拦截规则
     public Map freemarkerTest() {
         System.out.println("---freemarkerTest");
         Map data1 = new HashMap();
@@ -128,23 +190,52 @@ public class MainController {
         return data1;
     }
 
-    /**
-     * 参数绑定对象加单文件上传
-     * @param bean
-     * @param docName
-     * @return
-     */
+    @OK("beetl:TestBeetl")
+    @GET
+    @Path("/beetl")
+    public Map beetlTest() {
+        System.out.println("---beetlTest");
+        Map data1 = new HashMap();
+        data1.put("name", "张三");
+        data1.put("age", 11);
+        List<Map> datalist=new ArrayList<Map>();
+        for(int i=1;i<=9;i++){
+            Map temp = new HashMap();
+            temp.put("name", "张"+i);
+            temp.put("age", (Math.random() * 100));
+            datalist.add(temp);
+        }
+        data1.put("data", datalist);
+        return data1;
+    }
+
+    @OK("beetl:TestBeetl2")
+    @GET
+    @Path("/beetl2")
+    public User beetl2() {
+        System.out.println("---beetlTest2");
+        User user = new User();
+        user.setAge(18);
+        user.setName("李四");
+        return user;
+    }
+
+    @OK("beetl:TestBeetl2")
+    @GET
+    @Path("/beetl3")
+    public Map beetl3() {
+        System.out.println("---beetlTest3");
+        Map data1 = new HashMap();
+        data1.put("name", "张三");
+        data1.put("age", 11);
+        return data1;
+    }
+
+
     @OK("json")
     @POST
     @Path("/buildBeanFile")
-    public AjaxResult buildBeanFile(
-        @Parameter("data>>") TestbuildBean bean,
-        @Parameter("docName") TempFile docName,
-        HttpServletRequest request,
-        HttpServletResponse response,
-        HttpSession session,
-        ServletContext context
-    ) {
+    public AjaxResult buildBeanFile(@Parameter("data>>") User bean, @Parameter("docName") TempFile docName) {
         System.out.println(new Gson().toJson(bean));
         try {
             if (docName != null) {
@@ -157,16 +248,10 @@ public class MainController {
         return new AjaxResult(true, "呵呵呵", bean);
     }
 
-    /**
-     * 参数绑定对象加同名文件批量上传
-     * @param bean
-     * @param docName
-     * @return
-     */
     @OK("json")
     @POST
     @Path("/buildBeanFiles")
-    public AjaxResult buildBeanFiles(@Parameter("data>>") TestbuildBean bean, @Parameter("docName") TempFile[] docName) {
+    public AjaxResult buildBeanFiles(@Parameter("data>>") User bean, @Parameter("docName") TempFile[] docName) {
         System.out.println(new Gson().toJson(bean));
         for (TempFile file : docName) {
             System.out.println(file.getName());
@@ -175,55 +260,23 @@ public class MainController {
         return new AjaxResult(true, "批量文件上传", bean);
     }
 
-    /**
-     * 参数绑定对象
-     * @param bean
-     * @return
-     * @throws SQLException
-     */
+
     @OK("json")
     @POST
     @Path("/buildBean")
-    public AjaxResult buildBean(@Parameter("data>>") TestbuildBean bean) throws SQLException {
+    public AjaxResult buildBean(@Parameter("data>>") User bean) throws SQLException {
         System.out.println(new Gson().toJson(bean));
         Connection connection = DBConnPool.getDataSource().getConnection();
         System.out.println(connection);
         return new AjaxResult(true, "呵呵呵", bean);
     }
 
-    /**
-     * 文件下载
-     * @return
-     */
+
     @OK("file")
     @GET
     @Path("/dowload")
     public File dowloadFile() {
         return new File("D:\\TEMP\\模版说明.docx");
     }
-
-
-
-    //@OK("rd:testpage.jsp")//重定向
-    //@OK("json")//返回JSON对象
-    @OK("jsp:testpage.jsp")//返回jsp页面
-    //@OK("fw:testpage.jsp")//转发
-    @GET//请求方式
-    @Path//默认使用方法名
-    public AjaxResult index(
-            @Parameter("id") int id,
-            @Parameter("name") String name,
-            @Parameter("age") int age,
-            @Parameter("doubleNum") double doubleNum,
-            @Parameter("flag") boolean flag,
-            @Parameter("ids") String[] ids,
-            HttpServletRequest request) {
-        System.out.println(Mvcs.getReqMap().get("name").toString());
-        System.out.println("----" + id + "----" + name + "----" + age);
-        System.out.println("mian index");
-        request.setAttribute("test", "测试request.setAttribute");
-        return new AjaxResult(true, "呵呵呵", "json哦");
-    }
 }
-
 ```
