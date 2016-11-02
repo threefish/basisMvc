@@ -27,7 +27,7 @@ public class TransactionProxy implements Proxy {
         Object re = null;
         try {
             //通知使用事务
-            Transaction.set(true);
+            Transaction.isTrans(true);
             Transaction.setLevel(level);
             re = proxyChain.invokeSuper();
             //提交事务
@@ -39,11 +39,16 @@ public class TransactionProxy implements Proxy {
         } finally {
             try {
                 Transaction.TransInfo transInfo = Transaction.getLevel();
-                Connection connection = transInfo.getJdbcAccessor().getConn();
-                //恢复事务隔离级别
-                connection.setTransactionIsolation(transInfo.getOldLevel());
-                transInfo.getJdbcAccessor().Close();
-            } finally {
+                if(transInfo.getJdbcAccessor()!=null){
+                    Connection connection = transInfo.getJdbcAccessor().getConn();
+                    //恢复事务隔离级别
+                    connection.setTransactionIsolation(transInfo.getOldLevel());
+                    connection.setAutoCommit(true);
+                    transInfo.getJdbcAccessor().Close();
+                }
+            }catch (Throwable e){
+                throw e;
+            }finally {
                 Transaction.destroy();
             }
         }

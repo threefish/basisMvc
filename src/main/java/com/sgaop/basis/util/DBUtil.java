@@ -157,7 +157,7 @@ public class DBUtil {
         }
         try {
             if (conn != null && !conn.isClosed() && conn.getAutoCommit()) {
-                conn.close();
+//                conn.close();
             }
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
@@ -173,7 +173,7 @@ public class DBUtil {
     public static void close(Connection conn) {
         try {
             if (conn != null && !conn.isClosed()) {
-                conn.close();
+//                conn.close();
             }
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);

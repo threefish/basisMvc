@@ -42,7 +42,8 @@ public class JdbcAccessor {
      */
     public void commit() throws SQLException {
         try {
-            conn.commit();
+            this.conn.commit();
+            this.conn.setAutoCommit(true);
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e);
@@ -74,6 +75,7 @@ public class JdbcAccessor {
      */
     public void rollback() throws SQLException {
         this.conn.rollback();
+        this.conn.setAutoCommit(true);
     }
 
     /**
@@ -88,14 +90,13 @@ public class JdbcAccessor {
     public Connection getConn() throws SQLException {
         if (this.conn == null || this.conn.isClosed()) {
             this.conn = dataSource.getConnection();
-            boolean flag = Transaction.get();
-            if (flag) {
-                this.conn.setAutoCommit(false);
-                Transaction.TransInfo transInfo = Transaction.getLevel();
-                transInfo.setOldLevel(this.conn.getTransactionIsolation());
-                this.conn.setTransactionIsolation(transInfo.getNewLevel());
-                transInfo.setJdbcAccessor(this);
-            }
+        }
+        if (Transaction.isTrans()) {
+            this.conn.setAutoCommit(false);
+            Transaction.TransInfo transInfo = Transaction.getLevel();
+            transInfo.setOldLevel(this.conn.getTransactionIsolation());
+            this.conn.setTransactionIsolation(transInfo.getNewLevel());
+            transInfo.setJdbcAccessor(this);
         }
         return this.conn;
     }
@@ -320,7 +321,7 @@ public class JdbcAccessor {
         getConn();
         for (Object bean : listBean) {
             LinkedHashMap<String, Object> columMap = new LinkedHashMap<String, Object>();
-            StringBuffer sb = new StringBuffer("update " + daoMethod.getTableName() + " set ");
+            StringBuffer sb = new StringBuffer("update " + daoMethod.getTableName() + " isTrans ");
             for (String colum : daoMethod.getColums()) {
                 if (!colum.equals(daoMethod.getPkName())) {
                     TableFiled tableFiled = daoMethod.getDaoFiled(colum);

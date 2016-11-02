@@ -23,7 +23,7 @@ public class Transaction {
     /**
      * @return 当前线程的事务，如果没有事务，返回 false
      */
-    public static Boolean get() {
+    public static Boolean isTrans() {
         if (trans.get() == null) {
             return false;
         } else {
@@ -40,7 +40,7 @@ public class Transaction {
         level.set(new TransInfo(levels));
     }
 
-    public static void set(boolean flag) {
+    public static void isTrans(boolean flag) {
         trans.set(flag);
     }
 
