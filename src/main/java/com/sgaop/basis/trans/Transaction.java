@@ -83,6 +83,7 @@ public class Transaction {
      */
     public static void destroy() {
         trans.remove();
+        trans.remove();
         connLocal.remove();
     }
 
@@ -105,29 +106,11 @@ public class Transaction {
     }
 
 
-    /**
-     * 取得事务连接
-     *
-     * @param conn
-     */
-    public static ConnectionWarper getConn(Connection conn) {
-        HashMap<String, ConnectionWarper> sets = connLocal.get();
-        if (sets != null && sets.containsKey(conn.toString()))
-            return sets.get(conn.toString());
-        return null;
-    }
-
-
     public static int size() {
         HashMap<String, ConnectionWarper> sets = connLocal.get();
         if (sets != null)
             return sets.size();
         return 0;
-    }
-
-
-    public static void destory() {
-        connLocal.remove();
     }
 
 

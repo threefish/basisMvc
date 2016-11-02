@@ -89,7 +89,6 @@ public class BasisMvcWebFilter implements Filter {
             e.printStackTrace();
             DefaultViewsRender.RenderErrorPage(response, e);
         } finally {
-            JdbcConManager.destory();
             Mvcs.destroy();
         }
     }
