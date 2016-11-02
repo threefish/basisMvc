@@ -24,7 +24,9 @@ public class JdbcAccessor {
     private static final Logger log = Logger.getRootLogger();
 
     public DbType dbtype;
+
     public DataSource dataSource;
+
     private Connection conn;
 
 
@@ -75,7 +77,7 @@ public class JdbcAccessor {
     }
 
     /**
-     * 回滚事务
+     * 关闭连接
      *
      * @throws SQLException
      */
@@ -275,7 +277,7 @@ public class JdbcAccessor {
             sb.append(")");
             sb2.append(")");
             sb.append(sb2.toString());
-            if (pstm == null) {
+            if (pstm == null || pstm.isClosed()) {
                 pstm = conn.prepareStatement(sb.toString(), Statement.RETURN_GENERATED_KEYS);
             }
             int i = 1;
@@ -330,7 +332,7 @@ public class JdbcAccessor {
             }
             sb.delete(sb.length() - 1, sb.length());
             sb.append(" where " + daoMethod.getPkName() + "=?");
-            if (pstm == null) {
+            if (pstm == null || pstm.isClosed()) {
                 pstm = conn.prepareStatement(sb.toString());
             }
             int i = 1;
@@ -370,7 +372,7 @@ public class JdbcAccessor {
             for (Object bean : listBean) {
                 StringBuffer sb = new StringBuffer("delete from " + daoMethod.getTableName());
                 sb.append(" where " + daoMethod.getPkName() + "=?");
-                if (pstm == null) {
+                if (pstm == null || pstm.isClosed()) {
                     pstm = conn.prepareStatement(sb.toString());
                 }
                 //设置主键值

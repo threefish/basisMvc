@@ -142,21 +142,21 @@ public class DBUtil {
      */
     public static void close(Statement stmt, ResultSet rs, Connection conn) {
         try {
-            if (rs != null) {
+            if (rs != null && !rs.isClosed()) {
                 rs.close();
             }
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
         }
         try {
-            if (stmt != null) {
+            if (stmt != null && !stmt.isClosed()) {
                 stmt.close();
             }
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
         }
         try {
-            if (conn != null && conn.getAutoCommit()) {
+            if (conn != null && !conn.isClosed() && conn.getAutoCommit()) {
                 conn.close();
             }
         } catch (Exception ex) {
