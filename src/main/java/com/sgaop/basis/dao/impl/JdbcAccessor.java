@@ -78,6 +78,18 @@ public class JdbcAccessor {
         this.conn.setAutoCommit(true);
     }
 
+
+    /**
+     * 恢复事务
+     *
+     * @throws SQLException
+     */
+    public void resumConn(int level) throws SQLException {
+        //恢复事务隔离级别
+        this.conn.setAutoCommit(true);
+        this.conn.setTransactionIsolation(level);
+    }
+
     /**
      * 关闭连接
      *
@@ -91,12 +103,10 @@ public class JdbcAccessor {
         if (this.conn == null || this.conn.isClosed()) {
             this.conn = dataSource.getConnection();
         }
-        if (Transaction.isTrans()) {
+        if (Transaction.beanginTrans()) {
             this.conn.setAutoCommit(false);
-            Transaction.TransInfo transInfo = Transaction.getLevel();
-            transInfo.setOldLevel(this.conn.getTransactionIsolation());
-            this.conn.setTransactionIsolation(transInfo.getNewLevel());
-            transInfo.setJdbcAccessor(this);
+            this.conn.setTransactionIsolation(Transaction.getLevel());
+            Transaction.setConn(this.conn, this.conn.getTransactionIsolation(), Transaction.getLevel(), this);
         }
         return this.conn;
     }
@@ -290,7 +300,6 @@ public class JdbcAccessor {
             //打印sql
             DBUtil.showSql(pstm.toString());
             pstm.addBatch();
-
         }
         pstm.executeBatch();
         //执行查询，并取得查询结果
@@ -300,7 +309,6 @@ public class JdbcAccessor {
             keys[i] = rs.getInt(1);
             i++;
         }
-
         DBUtil.close(pstm, rs, conn);
         return keys;
     }
@@ -321,7 +329,7 @@ public class JdbcAccessor {
         getConn();
         for (Object bean : listBean) {
             LinkedHashMap<String, Object> columMap = new LinkedHashMap<String, Object>();
-            StringBuffer sb = new StringBuffer("update " + daoMethod.getTableName() + " isTrans ");
+            StringBuffer sb = new StringBuffer("update " + daoMethod.getTableName() + " beanginTrans ");
             for (String colum : daoMethod.getColums()) {
                 if (!colum.equals(daoMethod.getPkName())) {
                     TableFiled tableFiled = daoMethod.getDaoFiled(colum);

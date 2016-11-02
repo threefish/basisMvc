@@ -3,8 +3,6 @@ package com.sgaop.basis.trans;
 import com.sgaop.basis.aop.proxy.Proxy;
 import com.sgaop.basis.aop.proxy.ProxyChain;
 
-import java.sql.Connection;
-
 /**
  * Created by IntelliJ IDEA.
  * User: 306955302@qq.com
@@ -27,28 +25,20 @@ public class TransactionProxy implements Proxy {
         Object re = null;
         try {
             //通知使用事务
-            Transaction.isTrans(true);
-            Transaction.setLevel(level);
+            Transaction.beanginTrans(level);
             re = proxyChain.invokeSuper();
             //提交事务
-            Transaction.getLevel().getJdbcAccessor().commit();
+            Transaction.commit();
         } catch (Throwable e) {
             //回滚事务
-            Transaction.getLevel().getJdbcAccessor().rollback();
+            Transaction.rollBack();
             throw e;
         } finally {
             try {
-                Transaction.TransInfo transInfo = Transaction.getLevel();
-                if(transInfo.getJdbcAccessor()!=null){
-                    Connection connection = transInfo.getJdbcAccessor().getConn();
-                    //恢复事务隔离级别
-                    connection.setTransactionIsolation(transInfo.getOldLevel());
-                    connection.setAutoCommit(true);
-                    transInfo.getJdbcAccessor().Close();
-                }
-            }catch (Throwable e){
+                Transaction.resumConn();
+            } catch (Throwable e) {
                 throw e;
-            }finally {
+            } finally {
                 Transaction.destroy();
             }
         }

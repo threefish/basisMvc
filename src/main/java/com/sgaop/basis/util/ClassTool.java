@@ -109,7 +109,7 @@ public class ClassTool {
      * @return
      */
     public static String setMethodName(String methodName) {
-        return "isTrans" + methodName.substring(0, 1).toUpperCase() + methodName.substring(1);
+        return "beanginTrans" + methodName.substring(0, 1).toUpperCase() + methodName.substring(1);
     }
 
     /**

@@ -39,6 +39,7 @@ public class DaoImpl implements Dao {
 
     @Override
     public Connection getConnection() throws SQLException {
+        System.out.println("------"+accessor.getConn().getAutoCommit());
         return accessor.dataSource.getConnection();
     }
 
