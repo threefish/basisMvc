@@ -49,11 +49,11 @@ public class DaoImpl implements Dao {
     /**
      * 插入一个对象,返回主键ID
      *
-     * @param cls
      * @param bean
      * @return
      */
-    public int insert(Class cls, Object bean) throws SQLException {
+    public int insert(Object bean) throws SQLException {
+        Class cls = bean.getClass();
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         ArrayList<Object> list = new ArrayList<Object>();
         list.add(bean);
@@ -76,11 +76,11 @@ public class DaoImpl implements Dao {
     /**
      * 更新一个对象
      *
-     * @param cls
      * @param bean
      * @return
      */
-    public boolean update(Class cls, Object bean) throws SQLException {
+    public boolean update(Object bean) throws SQLException {
+        Class cls= bean.getClass();
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         ArrayList<Object> list = new ArrayList<Object>();
         list.add(bean);
@@ -114,11 +114,11 @@ public class DaoImpl implements Dao {
     /**
      * 删除一个对象
      *
-     * @param cls
      * @param bean
      * @return
      */
-    public boolean delect(Class cls, Object bean) {
+    public boolean delect(Object bean) {
+        Class cls=bean.getClass();
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         ArrayList<Object> list = new ArrayList<Object>();
         list.add(bean);

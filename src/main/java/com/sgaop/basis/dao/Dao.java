@@ -53,11 +53,10 @@ public interface Dao {
     /**
      * 插入一个对象,返回主键ID
      *
-     * @param cls
      * @param bean
      * @return
      */
-    int insert(Class cls, Object bean) throws SQLException;
+    int insert(Object bean) throws SQLException;
 
     /**
      * 批量插入
@@ -72,11 +71,10 @@ public interface Dao {
     /**
      * 更新一个对象
      *
-     * @param cls
      * @param bean
      * @return
      */
-    boolean update(Class cls, Object bean) throws SQLException;
+    boolean update(Object bean) throws SQLException;
 
     /**
      * 批量更新
@@ -99,11 +97,10 @@ public interface Dao {
     /**
      * 删除一个对象
      *
-     * @param cls
      * @param bean
      * @return
      */
-    boolean delect(Class cls, Object bean);
+    boolean delect(Object bean);
 
 
     /**

@@ -69,6 +69,19 @@
     </filter-mapping>
     
 ```
+### 注册数据源和自定义视图就这么简单
+```java
+ public void init(ServletContextEvent servletContextEvent) {
+        ViewsRegister.registerView("freemarker", FreeMarkerView.class);
+        ViewsRegister.registerView("beetl", BeetlView.class);
+        //注册数据源1
+        DaosRegister.registerDao("daoA", DaoImpl.class, getDsA());
+        //注册数据源2
+        DaosRegister.registerDao("daoB", DaoImpl.class, getDsB());
+    }
+```
+
+
 ### 示例CODE
 ```java
 package com.sample.action;
