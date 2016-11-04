@@ -55,7 +55,7 @@ public class Transaction {
         for (Map.Entry connInfo : connLocal.get().entrySet()) {
             ConnectionWarper cw = (ConnectionWarper) connInfo.getValue();
             if (cw.isTrans) {
-                cw.jdbcAccessor.commit();
+                cw.connection.commit();
             }
         }
     }
@@ -64,7 +64,7 @@ public class Transaction {
         for (Map.Entry connInfo : connLocal.get().entrySet()) {
             ConnectionWarper cw = (ConnectionWarper) connInfo.getValue();
             if (cw.isTrans) {
-                cw.jdbcAccessor.rollback();
+                cw.connection.rollback();
             }
         }
     }
@@ -73,7 +73,7 @@ public class Transaction {
         for (Map.Entry connInfo : connLocal.get().entrySet()) {
             ConnectionWarper cw = (ConnectionWarper) connInfo.getValue();
             if (cw.isTrans) {
-                cw.jdbcAccessor.resumConn(cw.oldLevel);
+                JdbcAccessor.resumConn(cw.oldLevel,cw.connection);
             }
         }
     }
@@ -93,14 +93,19 @@ public class Transaction {
      *
      * @param conn
      */
-    public static void setConn(Connection conn, int oldLevel, int newLevel, JdbcAccessor jdbcAccessor) {
+    public static void setConn(Connection conn, int oldLevel, int newLevel) {
         String key = conn.toString();
+        try {
+            key +=conn.getMetaData().getURL();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         HashMap<String, ConnectionWarper> sets = connLocal.get();
         if (sets == null) {
             sets = new HashMap<>();
         }
         if (!sets.containsKey(key)) {
-            sets.put(key, new ConnectionWarper(key, true, newLevel, oldLevel, jdbcAccessor));
+            sets.put(key, new ConnectionWarper(key, true, newLevel, oldLevel, conn));
             connLocal.set(sets);
         }
     }
@@ -119,14 +124,14 @@ public class Transaction {
         boolean isTrans;
         int newLevel;
         int oldLevel;
-        JdbcAccessor jdbcAccessor;
+        Connection connection;
 
-        public ConnectionWarper(String connkey, boolean isTrans, int newLevel, int oldLevel, JdbcAccessor jdbcAccessor) {
+        public ConnectionWarper(String connkey, boolean isTrans, int newLevel, int oldLevel, Connection connection) {
             this.connkey = connkey;
             this.isTrans = isTrans;
             this.newLevel = newLevel;
             this.oldLevel = oldLevel;
-            this.jdbcAccessor = jdbcAccessor;
+            this.connection = connection;
         }
     }
 }

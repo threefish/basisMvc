@@ -21,51 +21,21 @@ import java.util.*;
  */
 public class JdbcAccessor {
 
-    private static final Logger log = Logger.getRootLogger();
-
-    public DbType dbtype;
-
-    public DataSource dataSource;
-
-    private Connection conn;
-
-
-    public JdbcAccessor(DataSource dataSource) throws SQLException {
-        this.dataSource = dataSource;
-        this.dbtype = DBUtil.getDataBaseType(dataSource.getConnection());
-    }
-
     /**
      * 提交事务
      *
      * @throws SQLException
      */
-    public void commit() throws SQLException {
-        try {
-            this.conn.commit();
-            this.conn.setAutoCommit(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error(e);
-            throw e;
-        }
+    public static void commit(Connection conn) throws SQLException {
+        conn.commit();
     }
 
     /**
      * 设置事务为非自动提交
      */
-    public void begin() {
-        try {
-            if (conn == null || conn.isClosed()) {
-                getConn();
-                conn.setAutoCommit(false);
-            } else {
-                conn.setAutoCommit(false);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            log.error(e);
-        }
+    public static void begin(int level, Connection conn) throws SQLException {
+        conn.setAutoCommit(false);
+        conn.setTransactionIsolation(level);
     }
 
     /**
@@ -73,9 +43,8 @@ public class JdbcAccessor {
      *
      * @throws SQLException
      */
-    public void rollback() throws SQLException {
-        this.conn.rollback();
-        this.conn.setAutoCommit(true);
+    public static void rollback(Connection conn) throws SQLException {
+        conn.rollback();
     }
 
 
@@ -84,10 +53,11 @@ public class JdbcAccessor {
      *
      * @throws SQLException
      */
-    public void resumConn(int level) throws SQLException {
+    public static void resumConn(int level, Connection conn) throws SQLException {
         //恢复事务隔离级别
-        this.conn.setAutoCommit(true);
-        this.conn.setTransactionIsolation(level);
+        conn.setAutoCommit(true);
+        conn.setTransactionIsolation(level);
+        Close(conn);
     }
 
     /**
@@ -95,22 +65,9 @@ public class JdbcAccessor {
      *
      * @throws SQLException
      */
-    public void Close() throws SQLException {
-        DBUtil.close(this.conn);
+    public static void Close(Connection conn) throws SQLException {
+        DBUtil.close(conn);
     }
-
-    public Connection getConn() throws SQLException {
-        if (this.conn == null || this.conn.isClosed()) {
-            this.conn = dataSource.getConnection();
-        }
-        if (Transaction.beanginTrans()) {
-            this.conn.setAutoCommit(false);
-            this.conn.setTransactionIsolation(Transaction.getLevel());
-            Transaction.setConn(this.conn, this.conn.getTransactionIsolation(), Transaction.getLevel(), this);
-        }
-        return this.conn;
-    }
-
 
     /**
      * 执行查询，并取得查询结果集合，将结果装入HashMap中
@@ -119,12 +76,11 @@ public class JdbcAccessor {
      * @param params
      * @return
      */
-    public List<HashMap<String, Object>> executeQueryList(String sql, Object... params) {
+    public static List<HashMap<String, Object>> executeQueryList(Connection conn, String sql, Object... params) {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         List<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
         try {
-            getConn();
             pstm = conn.prepareStatement(sql);
             //设置参数
             DBUtil.setParams(pstm, params);
@@ -157,11 +113,10 @@ public class JdbcAccessor {
      * @param params
      * @return
      */
-    public HashMap<String, Object> executeQuerySinge(String sql, Object... params) throws SQLException {
+    public static HashMap<String, Object> executeQuerySinge(Connection conn, String sql, Object... params) throws SQLException {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         HashMap<String, Object> data = new HashMap<String, Object>();
-        getConn();
         pstm = conn.prepareStatement(sql);
         //设置参数
         DBUtil.setParams(pstm, params);
@@ -191,10 +146,10 @@ public class JdbcAccessor {
      * @param <T>
      * @return
      */
-    public <T> T doLoadSinge(Class cls, TableInfo daoMethod, String sql, Object... params) {
+    public static <T> T doLoadSinge(Connection conn, Class cls, TableInfo daoMethod, String sql, Object... params) {
         Object obj = null;
         try {
-            HashMap<String, Object> data = this.executeQuerySinge(sql, params);
+            HashMap<String, Object> data = executeQuerySinge(conn, sql, params);
             if (data.size() == 0) {
                 return null;
             }
@@ -229,10 +184,10 @@ public class JdbcAccessor {
      * @param <T>
      * @return
      */
-    public <T> List<T> doLoadList(Class cls, TableInfo daoMethod, String sql, Object... params) {
+    public static <T> List<T> doLoadList(Connection conn, Class cls, TableInfo daoMethod, String sql, Object... params) {
         List<T> dataList = new ArrayList<T>();
         try {
-            List<HashMap<String, Object>> data = this.executeQueryList(sql, params);
+            List<HashMap<String, Object>> data = executeQueryList(conn, sql, params);
             if (data.size() == 0) {
                 return null;
             }
@@ -265,14 +220,13 @@ public class JdbcAccessor {
      * @param listBean
      * @return
      */
-    public int[] doInsert(Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws SQLException {
+    public static int[] doInsert(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws SQLException {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         int rowCount = listBean.size();
         int[] keys = new int[rowCount];
-        getConn();
         for (Object bean : listBean) {
-            LinkedHashMap<String, Object> columMap = new LinkedHashMap<String, Object>();
+            LinkedHashMap<String, Object> columMap = new LinkedHashMap<>();
             StringBuffer sb = new StringBuffer("insert into " + daoMethod.getTableName() + "(");
             StringBuffer sb2 = new StringBuffer(" values(");
             for (String colum : daoMethod.getColums()) {
@@ -299,9 +253,15 @@ public class JdbcAccessor {
             }
             //打印sql
             DBUtil.showSql(pstm.toString());
-            pstm.addBatch();
+            if(listBean.size()>1){
+                pstm.addBatch();
+            }
         }
-        pstm.executeBatch();
+        if (listBean.size() > 1) {
+            pstm.executeBatch();
+        }else{
+            pstm.executeUpdate();
+        }
         //执行查询，并取得查询结果
         rs = pstm.getGeneratedKeys();
         int i = 0;
@@ -321,14 +281,13 @@ public class JdbcAccessor {
      * @param listBean
      * @return
      */
-    public int[] doUpdateList(Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws SQLException {
+    public static int[] doUpdateList(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws SQLException {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         int rowCount = listBean.size();
         int[] keys = new int[rowCount];
-        getConn();
         for (Object bean : listBean) {
-            LinkedHashMap<String, Object> columMap = new LinkedHashMap<String, Object>();
+            LinkedHashMap<String, Object> columMap = new LinkedHashMap<>();
             StringBuffer sb = new StringBuffer("update " + daoMethod.getTableName() + " beanginTrans ");
             for (String colum : daoMethod.getColums()) {
                 if (!colum.equals(daoMethod.getPkName())) {
@@ -371,13 +330,12 @@ public class JdbcAccessor {
      * @param listBean
      * @return
      */
-    public int[] doDelectList(Class cls, TableInfo daoMethod, ArrayList<Object> listBean) {
+    public static int[] doDelectList(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         int rowCount = listBean.size();
         int[] keys = new int[rowCount];
         try {
-            getConn();
             for (Object bean : listBean) {
                 StringBuffer sb = new StringBuffer("delete from " + daoMethod.getTableName());
                 sb.append(" where " + daoMethod.getPkName() + "=?");

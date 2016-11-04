@@ -8,14 +8,14 @@ package com.sgaop.basis.trans;
  */
 public interface TransAop {
 
-    String NONE = "txNONE";
+    String NONE = "TRANS_NONE";
 
-    String READ_UNCOMMITTED = "txREAD_UNCOMMITTED";
+    String READ_UNCOMMITTED = "TRANS_READ_UNCOMMITTED";
 
-    String READ_COMMITTED = "txREAD_COMMITTED";
+    String READ_COMMITTED = "TRANS_READ_COMMITTED";
 
-    String REPEATABLE_READ = "txREPEATABLE_READ";
+    String REPEATABLE_READ = "TRANS_REPEATABLE_READ";
 
-    String SERIALIZABLE = "txSERIALIZABLE";
+    String SERIALIZABLE = "TRANS_SERIALIZABLE";
 
 }

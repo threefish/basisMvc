@@ -1,7 +1,7 @@
 //package com.sgaop.test;
 //
 //import com.google.gson.Gson;
-//import com.sgaop.basis.dao.Dao;
+//import com.sgaop.basis.dao.DaoImpl;
 //import com.sgaop.basis.dao.Pager;
 //import com.sgaop.basis.dao.impl.DaoImpl;
 //import com.sgaop.basis.scanner.ClassScanner;
@@ -23,7 +23,7 @@
 // * 写这个测试时并没有按照顺序来所以， 最好单个执行，全部执行时，有些数据或许因为被清除掉了而导致报错
 // */
 //public class TestAllDao {
-//    private static Dao dao;
+//    private static DaoImpl dao;
 //    private static tbUser tb = new tbUser();
 //    private static ArrayList<Object> list = new ArrayList<Object>();
 //

@@ -2,8 +2,10 @@ package com.sgaop.basis.dao.impl;
 
 import com.sgaop.basis.cache.CacheManager;
 import com.sgaop.basis.dao.Dao;
+import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.Pager;
 import com.sgaop.basis.dao.bean.TableInfo;
+import com.sgaop.basis.trans.Transaction;
 import com.sgaop.basis.util.DBUtil;
 
 import javax.sql.DataSource;
@@ -20,31 +22,41 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class DaoImpl implements Dao {
-    /**
-     * 数据访问器
-     */
-    private JdbcAccessor accessor;
+
+    private DataSource dataSource = null;
+
+    private Connection conn = null;
+
+    public DbType dbtype;
 
     public void commit() throws SQLException {
-        accessor.commit();
+        JdbcAccessor.commit(getConn());
     }
 
-    public void begin() {
-        accessor.begin();
+    public void begin() throws SQLException {
+        JdbcAccessor.begin(Transaction.getLevel(), getConn());
     }
 
     public void rollback() throws SQLException {
-        accessor.rollback();
+        JdbcAccessor.rollback(getConn());
     }
 
-    @Override
-    public Connection getConnection() throws SQLException {
-        System.out.println("------"+accessor.getConn().getAutoCommit());
-        return accessor.dataSource.getConnection();
+    public Connection getConn() throws SQLException {
+        if (this.conn == null || this.conn.isClosed()) {
+            this.conn = dataSource.getConnection();
+        }
+        if (Transaction.beanginTrans() && this.conn.getAutoCommit()) {
+            this.conn.setAutoCommit(false);
+            int oldLevel = this.conn.getTransactionIsolation();
+            this.conn.setTransactionIsolation(Transaction.getLevel());
+            Transaction.setConn(this.conn, oldLevel, Transaction.getLevel());
+        }
+        return this.conn;
     }
 
     public void setDataSource(DataSource dataSource) throws SQLException {
-        this.accessor = new JdbcAccessor(dataSource);
+        this.dataSource = dataSource;
+        this.dbtype = DBUtil.getDataBaseType(dataSource.getConnection());
     }
 
     /**
@@ -56,9 +68,9 @@ public class DaoImpl implements Dao {
     public int insert(Object bean) throws SQLException {
         Class cls = bean.getClass();
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        ArrayList<Object> list = new ArrayList<Object>();
+        ArrayList<Object> list = new ArrayList<>();
         list.add(bean);
-        return accessor.doInsert(cls, daoMethod, list)[0];
+        return JdbcAccessor.doInsert(getConn(), cls, daoMethod, list)[0];
     }
 
     /**
@@ -70,7 +82,7 @@ public class DaoImpl implements Dao {
      */
     public int[] insert(Class cls, ArrayList<Object> list) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        return accessor.doInsert(cls, daoMethod, list);
+        return JdbcAccessor.doInsert(getConn(), cls, daoMethod, list);
     }
 
 
@@ -81,11 +93,11 @@ public class DaoImpl implements Dao {
      * @return
      */
     public boolean update(Object bean) throws SQLException {
-        Class cls= bean.getClass();
+        Class cls = bean.getClass();
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        ArrayList<Object> list = new ArrayList<Object>();
+        ArrayList<Object> list = new ArrayList<>();
         list.add(bean);
-        return accessor.doUpdateList(cls, daoMethod, list)[0] > 0;
+        return JdbcAccessor.doUpdateList(getConn(), cls, daoMethod, list)[0] > 0;
     }
 
     /**
@@ -97,7 +109,7 @@ public class DaoImpl implements Dao {
      */
     public int[] update(Class cls, ArrayList<Object> list) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        return accessor.doUpdateList(cls, daoMethod, list);
+        return JdbcAccessor.doUpdateList(getConn(), cls, daoMethod, list);
     }
 
     /**
@@ -107,9 +119,9 @@ public class DaoImpl implements Dao {
      * @param list
      * @return
      */
-    public int[] delect(Class cls, ArrayList<Object> list) {
+    public int[] delect(Class cls, ArrayList<Object> list) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        return accessor.doDelectList(cls, daoMethod, list);
+        return JdbcAccessor.doDelectList(getConn(), cls, daoMethod, list);
     }
 
     /**
@@ -118,12 +130,12 @@ public class DaoImpl implements Dao {
      * @param bean
      * @return
      */
-    public boolean delect(Object bean) {
-        Class cls=bean.getClass();
+    public boolean delect(Object bean) throws SQLException {
+        Class cls = bean.getClass();
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        ArrayList<Object> list = new ArrayList<Object>();
+        ArrayList<Object> list = new ArrayList<>();
         list.add(bean);
-        return accessor.doDelectList(cls, daoMethod, list)[0] > 0;
+        return JdbcAccessor.doDelectList(getConn(), cls, daoMethod, list)[0] > 0;
     }
 
 
@@ -135,13 +147,13 @@ public class DaoImpl implements Dao {
      * @param <T>
      * @return
      */
-    public <T> List<T> queryList(Class cls, Pager pager, String order) {
+    public <T> List<T> queryList(Class cls, Pager pager, String order) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         String sql = DBUtil.generateSelectSql(daoMethod, "", "");
         if (pager != null) {
-            sql = DBUtil.generatePageSql(accessor.dbtype, daoMethod.getTableName(), sql, order, pager);
+            sql = DBUtil.generatePageSql(dbtype, daoMethod.getTableName(), sql, order, pager);
         }
-        return accessor.doLoadList(cls, daoMethod, sql);
+        return JdbcAccessor.doLoadList(getConn(), cls, daoMethod, sql);
     }
 
 
@@ -152,13 +164,13 @@ public class DaoImpl implements Dao {
      * @param <T>
      * @return
      */
-    public <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) {
+    public <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         String sql = DBUtil.generateSelectSql(daoMethod, "", whereSqlAndOrder);
         if (pager != null) {
-            sql = DBUtil.generatePageSql(accessor.dbtype, daoMethod.getTableName(), sql, "", pager);
+            sql = DBUtil.generatePageSql(dbtype, daoMethod.getTableName(), sql, "", pager);
         }
-        return accessor.doLoadList(cls, daoMethod, sql, params);
+        return JdbcAccessor.doLoadList(getConn(), cls, daoMethod, sql, params);
     }
 
     /**
@@ -168,9 +180,9 @@ public class DaoImpl implements Dao {
      * @param <T>
      * @return
      */
-    public <T> List<T> querySqlList(Class cls, String sql, Object... params) {
+    public <T> List<T> querySqlList(Class cls, String sql, Object... params) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
-        return accessor.doLoadList(cls, daoMethod, sql, params);
+        return JdbcAccessor.doLoadList(getConn(), cls, daoMethod, sql, params);
     }
 
     /**
@@ -180,10 +192,10 @@ public class DaoImpl implements Dao {
      * @param <T>
      * @return
      */
-    public <T> T querySinge(Class cls, String whereSql, Object... params) {
+    public <T> T querySinge(Class cls, String whereSql, Object... params) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         String sql = DBUtil.generateSelectSql(daoMethod, "", whereSql);
-        return accessor.doLoadSinge(cls, daoMethod, sql, params);
+        return JdbcAccessor.doLoadSinge(getConn(), cls, daoMethod, sql, params);
     }
 
     /**
@@ -194,7 +206,7 @@ public class DaoImpl implements Dao {
      * @return
      */
     public HashMap<String, Object> querySinge(String sql, Object... params) throws SQLException {
-        return accessor.executeQuerySinge(sql, params);
+        return JdbcAccessor.executeQuerySinge(getConn(), sql, params);
     }
 
 
@@ -205,8 +217,8 @@ public class DaoImpl implements Dao {
      * @param params
      * @return
      */
-    public List<HashMap<String, Object>> queryList(String sql, Object... params) {
-        return accessor.executeQueryList(sql, params);
+    public List<HashMap<String, Object>> queryList(String sql, Object... params) throws SQLException {
+        return JdbcAccessor.executeQueryList(getConn(), sql, params);
     }
 
     /**
@@ -216,10 +228,10 @@ public class DaoImpl implements Dao {
      * @param <T>
      * @return
      */
-    public <T> T querySingePK(Class cls, Object params) {
+    public <T> T querySingePK(Class cls, Object params) throws SQLException {
         TableInfo daoMethod = (TableInfo) CacheManager.getTableCache(cls.getName());
         String sql = DBUtil.generateSelectPKSql(daoMethod);
-        return accessor.doLoadSinge(cls, daoMethod, sql, params);
+        return JdbcAccessor.doLoadSinge(getConn(), cls, daoMethod, sql, params);
     }
 
 
