@@ -1,14 +1,10 @@
 package com.sgaop.basis.dao.impl;
 
-import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
-import com.sgaop.basis.trans.Transaction;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.DBUtil;
-import org.apache.log4j.Logger;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.*;
@@ -20,54 +16,6 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class JdbcAccessor {
-
-    /**
-     * 提交事务
-     *
-     * @throws SQLException
-     */
-    public static void commit(Connection conn) throws SQLException {
-        conn.commit();
-    }
-
-    /**
-     * 设置事务为非自动提交
-     */
-    public static void begin(int level, Connection conn) throws SQLException {
-        conn.setAutoCommit(false);
-        conn.setTransactionIsolation(level);
-    }
-
-    /**
-     * 回滚事务
-     *
-     * @throws SQLException
-     */
-    public static void rollback(Connection conn) throws SQLException {
-        conn.rollback();
-    }
-
-
-    /**
-     * 恢复事务
-     *
-     * @throws SQLException
-     */
-    public static void resumConn(int level, Connection conn) throws SQLException {
-        //恢复事务隔离级别
-        conn.setAutoCommit(true);
-        conn.setTransactionIsolation(level);
-        Close(conn);
-    }
-
-    /**
-     * 关闭连接
-     *
-     * @throws SQLException
-     */
-    public static void Close(Connection conn) throws SQLException {
-        DBUtil.close(conn);
-    }
 
     /**
      * 执行查询，并取得查询结果集合，将结果装入HashMap中
@@ -253,13 +201,14 @@ public class JdbcAccessor {
             }
             //打印sql
             DBUtil.showSql(pstm.toString());
-            if(listBean.size()>1){
+            //超过一条记录使用批量操作
+            if (listBean.size() > 1) {
                 pstm.addBatch();
             }
         }
         if (listBean.size() > 1) {
             pstm.executeBatch();
-        }else{
+        } else {
             pstm.executeUpdate();
         }
         //执行查询，并取得查询结果
@@ -313,9 +262,16 @@ public class JdbcAccessor {
             pstm.setObject(i, ClassTool.invokeGetMethod(cls, bean, daoMethod.getDaoFiled(daoMethod.getPkName()).get_getMethodName()));
             //打印sql
             DBUtil.showSql(pstm.toString());
-            pstm.addBatch();
+            //超过一条记录使用批量操作
+            if (listBean.size() > 1) {
+                pstm.addBatch();
+            }
         }
-        keys = pstm.executeBatch();
+        if (listBean.size() > 1) {
+            keys = pstm.executeBatch();
+        } else {
+            keys[0] = pstm.executeUpdate();
+        }
 
         DBUtil.close(pstm, rs, conn);
         return keys;
@@ -346,9 +302,16 @@ public class JdbcAccessor {
                 pstm.setObject(1, ClassTool.invokeGetMethod(cls, bean, daoMethod.getDaoFiled(daoMethod.getPkName()).get_getMethodName()));
                 //打印sql
                 DBUtil.showSql(pstm.toString());
-                pstm.addBatch();
+                //超过一条记录使用批量操作
+                if (listBean.size() > 1) {
+                    pstm.addBatch();
+                }
             }
-            keys = pstm.executeBatch();
+            if (listBean.size() > 1) {
+                keys = pstm.executeBatch();
+            } else {
+                keys[0] = pstm.executeUpdate();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

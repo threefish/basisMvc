@@ -2,7 +2,7 @@ package com.sgaop.basis.web;
 
 
 import com.google.gson.Gson;
-import com.sgaop.basis.cache.CacheManager;
+import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.view.ViewsRegister;
@@ -36,7 +36,7 @@ public class ServletInitListener implements ServletContextListener {
         //初始化IOC
         IocBeanContext.me().init(ClassScanner.classes);
         logger.info("环境初始化成功");
-        logger.debug("UrlMapping:" + new Gson().toJson(CacheManager.urlMappingList()));
+        logger.debug("UrlMapping:" + new Gson().toJson(MvcsManager.urlMappingList()));
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
@@ -47,7 +47,7 @@ public class ServletInitListener implements ServletContextListener {
 
     private void handlerInit(ServletContextEvent servletContextEvent) {
         try {
-            Class<?> klass = (Class<?>) CacheManager.getSetupCache(Constant.WEB_SETUP);
+            Class<?> klass = (Class<?>) MvcsManager.getSetupCache(Constant.WEB_SETUP);
             WebSetup setup = (WebSetup) klass.newInstance();
             setup.init(servletContextEvent);
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class ServletInitListener implements ServletContextListener {
 
     private void handlerDestroy(ServletContextEvent servletContextEvent) {
         try {
-            Class<?> klass = (Class<?>) CacheManager.getSetupCache(Constant.WEB_SETUP);
+            Class<?> klass = (Class<?>) MvcsManager.getSetupCache(Constant.WEB_SETUP);
             WebSetup setup = (WebSetup) klass.newInstance();
             setup.destroy(servletContextEvent);
         } catch (Exception e) {

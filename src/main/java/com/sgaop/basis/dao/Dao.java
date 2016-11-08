@@ -2,7 +2,6 @@ package com.sgaop.basis.dao;
 
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,33 +12,6 @@ import java.util.List;
  */
 
 public interface Dao {
-
-    /**
-     * 提交事务
-     *
-     * @throws SQLException
-     */
-    void commit() throws SQLException;
-
-    /**
-     * 启动事务
-     */
-    void begin() throws SQLException;
-
-    /**
-     * 回滚事务
-     *
-     * @throws SQLException
-     */
-    void rollback() throws SQLException;
-
-    /**
-     * 取得数据库连接-不推荐
-     *
-     * @return
-     * @throws SQLException
-     */
-    Connection getConn() throws SQLException;
 
     /**
      * 设置数据源
@@ -108,38 +80,42 @@ public interface Dao {
      *
      * @param cls
      * @param pager
-     * @param <T>
+     * @param order
      * @return
      */
-    <T> List<T> queryList(Class cls, Pager pager, String order) throws SQLException;
+    <Object> List<Object> queryList(Class cls, Pager pager, String order) throws SQLException;
 
 
     /**
      * 按条件查询全部
      *
      * @param cls
-     * @param <T>
+     * @param pager
+     * @param whereSqlAndOrder
+     * @param params
      * @return
      */
-    <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws SQLException;
+    <Object> List<Object> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws SQLException;
 
     /**
      * 按自定义sql条件查询全部
      *
      * @param cls
-     * @param <T>
+     * @param sql
+     * @param params
      * @return
      */
-    <T> List<T> querySqlList(Class cls, String sql, Object... params) throws SQLException;
+    <Object> List<Object> querySqlList(Class cls, String sql, Object... params) throws SQLException;
 
     /**
      * 按sql条件单条记录
      *
      * @param cls
-     * @param <T>
+     * @param whereSql
+     * @param params
      * @return
      */
-    <T> T querySinge(Class cls, String whereSql, Object... params) throws SQLException;
+    <Object> Object querySinge(Class cls, String whereSql, Object... params) throws SQLException;
 
     /**
      * 根据sql查询单个对象
@@ -163,8 +139,8 @@ public interface Dao {
      * 按主键查询单条记录
      *
      * @param cls
-     * @param <T>
+     * @param params
      * @return
      */
-    <T> T querySingePK(Class cls, Object params) throws SQLException;
+    <Object> Object querySingePK(Class cls, Object params) throws SQLException;
 }

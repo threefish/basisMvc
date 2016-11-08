@@ -2,7 +2,7 @@ package com.sgaop.basis.scanner;
 
 
 import com.sgaop.basis.annotation.*;
-import com.sgaop.basis.cache.CacheManager;
+import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
@@ -63,7 +63,7 @@ public class ClassScanner {
                     }
                 }
             } else if (setup != null) {
-                CacheManager.putSetupCache(Constant.WEB_SETUP, ks);
+                MvcsManager.putSetupCache(Constant.WEB_SETUP, ks);
             } else if (table != null) {
                 Field[] fields = ks.getDeclaredFields();
                 TableInfo daoMethod = new TableInfo();
@@ -97,7 +97,7 @@ public class ClassScanner {
                         }
                     }
                 }
-                CacheManager.putTableCache(classKey, daoMethod);
+                MvcsManager.putTableCache(classKey, daoMethod);
             }
         }
 //        IocBeanContext.me().init(classes);
@@ -111,20 +111,20 @@ public class ClassScanner {
         boolean hasGET = method.isAnnotationPresent(GET.class);
         boolean hasHEAD = method.isAnnotationPresent(HEAD.class);
         if (hasPOST) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("POST", classKey, ks, method, okVal, note));
+            MvcsManager.putUrlCache(relpath, new ActionMethod("POST", classKey, ks, method, okVal, note));
         }
         if (hasHEAD) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("HEAD", classKey, ks, method, okVal, note));
+            MvcsManager.putUrlCache(relpath, new ActionMethod("HEAD", classKey, ks, method, okVal, note));
         }
         if (hasDELETE) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("DELETE", classKey, ks, method, okVal, note));
+            MvcsManager.putUrlCache(relpath, new ActionMethod("DELETE", classKey, ks, method, okVal, note));
         }
         if (hasPUT) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("PUT", classKey, ks, method, okVal, note));
+            MvcsManager.putUrlCache(relpath, new ActionMethod("PUT", classKey, ks, method, okVal, note));
         }
         //默认支持get访问
         if (hasGET || (!hasPOST && !hasDELETE && !hasPUT && !hasHEAD)) {
-            CacheManager.putUrlCache(relpath, new ActionMethod("GET", classKey, ks, method, okVal, note));
+            MvcsManager.putUrlCache(relpath, new ActionMethod("GET", classKey, ks, method, okVal, note));
         }
     }
 

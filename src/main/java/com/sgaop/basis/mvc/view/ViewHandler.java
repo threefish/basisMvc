@@ -40,7 +40,7 @@ public class ViewHandler {
                     DefaultViewsRender.RenderRedirect(request.getContextPath() + "/" + path[1], response);
                 } else if (resultType.startsWith("fw::")) {
                     String path[] = resultType.split(":");
-                    request.getRequestDispatcher(request.getContextPath() + "/" + path[1]) .forward(request,response);
+                    request.getRequestDispatcher(request.getContextPath() + "/" + path[1]).forward(request, response);
                 } else if (resultType.startsWith("file")) {
                     DefaultViewsRender.RenderFile(response, actionResult.getResultData());
                 } else {

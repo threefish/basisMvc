@@ -1,137 +1,74 @@
 package com.sgaop.basis.trans;
 
-
-import com.sgaop.basis.dao.impl.JdbcAccessor;
-
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by IntelliJ IDEA.
  * User: 306955302@qq.com
- * Date: 2016/11/1 0001
+ * Date: 2016/11/7 0007
  * To change this template use File | Settings | File Templates.
+ * 事务上下文
  */
-public class Transaction {
+public abstract class Transaction {
 
-    static ThreadLocal<Boolean> trans = new ThreadLocal<>();
-
-    static ThreadLocal<Integer> levels = new ThreadLocal<>();
-
-    static ThreadLocal<HashMap<String, ConnectionWarper>> connLocal = new ThreadLocal<>();
-
+    private int level;
 
     /**
-     * 这个类提供的均为静态方法.
+     * 创建事务上下文
      */
-    Transaction() {
+    protected Transaction() {
     }
 
     /**
-     * @return 当前线程的事务，如果没有事务，返回 false
-     */
-    public static Boolean beanginTrans() {
-        if (trans.get() == null) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-
-    public static void beanginTrans(int level) {
-        trans.set(true);
-        levels.set(level);
-    }
-
-    public static int getLevel() {
-        return levels.get();
-    }
-
-
-    public static void commit() throws SQLException {
-        for (Map.Entry connInfo : connLocal.get().entrySet()) {
-            ConnectionWarper cw = (ConnectionWarper) connInfo.getValue();
-            if (cw.isTrans) {
-                cw.connection.commit();
-            }
-        }
-    }
-
-    public static void rollBack() throws SQLException {
-        for (Map.Entry connInfo : connLocal.get().entrySet()) {
-            ConnectionWarper cw = (ConnectionWarper) connInfo.getValue();
-            if (cw.isTrans) {
-                cw.connection.rollback();
-            }
-        }
-    }
-
-    public static void resumConn() throws SQLException {
-        for (Map.Entry connInfo : connLocal.get().entrySet()) {
-            ConnectionWarper cw = (ConnectionWarper) connInfo.getValue();
-            if (cw.isTrans) {
-                JdbcAccessor.resumConn(cw.oldLevel,cw.connection);
-            }
-        }
-    }
-
-    /**
-     * 销毁
-     */
-    public static void destroy() {
-        trans.remove();
-        trans.remove();
-        connLocal.remove();
-    }
-
-
-    /**
-     * 添加连接
+     * 获取事务等级, 可能的值为0,1,2,4,8
      *
-     * @param conn
+     * @return 当前的事务等级
      */
-    public static void setConn(Connection conn, int oldLevel, int newLevel) {
-        String key = conn.toString();
-        try {
-            key +=conn.getMetaData().getURL();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        HashMap<String, ConnectionWarper> sets = connLocal.get();
-        if (sets == null) {
-            sets = new HashMap<>();
-        }
-        if (!sets.containsKey(key)) {
-            sets.put(key, new ConnectionWarper(key, true, newLevel, oldLevel, conn));
-            connLocal.set(sets);
-        }
+    public int getLevel() {
+        return level;
     }
 
-
-    public static int size() {
-        HashMap<String, ConnectionWarper> sets = connLocal.get();
-        if (sets != null)
-            return sets.size();
-        return 0;
+    /**
+     * 设置事务等级
+     *
+     * @param level 事务等级
+     */
+    public void setLevel(int level) {
+        if (this.level <= 0)
+            this.level = level;
     }
 
+    /**
+     * 层次id
+     *
+     * @return 当前事物的层次id
+     */
+    public abstract long getId();
 
-    private static class ConnectionWarper {
-        String connkey;
-        boolean isTrans;
-        int newLevel;
-        int oldLevel;
-        Connection connection;
+    /**
+     * 提交
+     */
+    protected abstract void commit();
 
-        public ConnectionWarper(String connkey, boolean isTrans, int newLevel, int oldLevel, Connection connection) {
-            this.connkey = connkey;
-            this.isTrans = isTrans;
-            this.newLevel = newLevel;
-            this.oldLevel = oldLevel;
-            this.connection = connection;
-        }
-    }
+    /**
+     * 回滚
+     */
+    protected abstract void rollback();
+
+    /**
+     * 获取该连接池所关联的连接, 同一个DataSource在一个事务中使用同一个连接
+     *
+     * @param dataSource 数据源
+     * @return 数据库连接
+     * @throws SQLException 获取连接失败或其他异常
+     */
+    public abstract Connection getConnection(DataSource dataSource) throws SQLException;
+
+    /**
+     * 关闭事务,清理现场
+     */
+    public abstract void close();
+
 }
+

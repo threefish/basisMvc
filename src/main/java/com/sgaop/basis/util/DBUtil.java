@@ -157,23 +157,8 @@ public class DBUtil {
         }
         try {
             if (conn != null && !conn.isClosed() && conn.getAutoCommit()) {
-//                conn.close();
-            }
-        } catch (Exception ex) {
-            logger.debug(ex.getMessage(), ex);
-        }
-    }
-
-
-    /**
-     * 释放数据库连接资源
-     *
-     * @param conn
-     */
-    public static void close(Connection conn) {
-        try {
-            if (conn != null && !conn.isClosed()) {
-//                conn.close();
+                // 不自动关闭连接
+                //conn.close();
             }
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
@@ -223,7 +208,6 @@ public class DBUtil {
                 }
             }
             res = sb.toString();
-            // System.out.println(res);
             return res;
         } catch (Exception e) {
             e.printStackTrace();

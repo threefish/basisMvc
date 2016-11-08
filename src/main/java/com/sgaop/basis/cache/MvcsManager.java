@@ -11,7 +11,7 @@ import java.util.*;
  * Date: 2016/5/4 0005
  * To change this template use File | Settings | File Templates.
  */
-public class CacheManager {
+public class MvcsManager {
     /**
      * MVC action相关类缓存
      */
@@ -35,7 +35,7 @@ public class CacheManager {
     /**
      * 单实例构造方法
      */
-    private CacheManager() {
+    private MvcsManager() {
         super();
     }
 

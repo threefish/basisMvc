@@ -24,23 +24,14 @@ public class TransactionProxy implements Proxy {
     public Object doProxy(ProxyChain proxyChain) throws Throwable {
         Object re = null;
         try {
-            //通知使用事务
-            Transaction.beanginTrans(level);
+            Trans.begin(level);
             re = proxyChain.invokeSuper();
-            //提交事务
-            Transaction.commit();
+            Trans.commit();
         } catch (Throwable e) {
-            //回滚事务
-            Transaction.rollBack();
+            Trans.rollback();
             throw e;
         } finally {
-            try {
-                Transaction.resumConn();
-            } catch (Throwable e) {
-                throw e;
-            } finally {
-                Transaction.destroy();
-            }
+            Trans.close();
         }
         return re;
     }

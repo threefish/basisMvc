@@ -2,7 +2,7 @@ package com.sgaop.test;
 
 import com.google.gson.Gson;
 import com.sgaop.basis.annotation.Inject;
-import com.sgaop.basis.cache.CacheManager;
+import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.scanner.ClassScanner;
 import com.sgaop.basis.scanner.ProperScanner;
@@ -31,7 +31,7 @@ public class TestMvc {
 
     @Test
     public void showWebMvcMap() {
-        System.out.println("UrlMapping:" + new Gson().toJson(CacheManager.urlMappingList()));
+        System.out.println("UrlMapping:" + new Gson().toJson(MvcsManager.urlMappingList()));
     }
 
 }

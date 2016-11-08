@@ -1,7 +1,7 @@
 package com.sgaop.basis.mvc;
 
 import com.sgaop.basis.annotation.Parameter;
-import com.sgaop.basis.cache.CacheManager;
+import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.ioc.IocBeanContext;
@@ -44,7 +44,7 @@ public class ActionHandler {
         webErrorMessage.setCode(200);
         ActionResult actionResult = new ActionResult();
         try {
-            ActionMethod actionMethod = CacheManager.getUrlCache(servletPath, methodType);
+            ActionMethod actionMethod = MvcsManager.getUrlCache(servletPath, methodType);
             if (actionMethod != null) {
                 actionResult.setResultType(actionMethod.getOK());
                 Class<?> actionClass = actionMethod.getActionClass();
