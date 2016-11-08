@@ -10,7 +10,7 @@
 
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看更早前的更新日志](https://github.com/threefish/WebFrameWork "更早前的更新日志")
 
-#### TODO 压力测试中
+#### TODO 真实项目的开发  [basisMvcSample](https://github.com/threefish/basisMvcSample "真实项目")
 
 ### 现已实现以下功能
 #### IOC、AOP、ORM、MVC
@@ -32,6 +32,7 @@
     - json对象返回
     - 404、500页面
     - 文件下载
+
 #### 用户自定义视图模版引擎控制器
      - 顾名思义，就是可以由开发者自定义的视图模版引擎 （如freemaker，beetl，vm等等）
 
@@ -55,7 +56,7 @@
     
 ###webxml设置
 ```xml
- <!--basis框架过滤器-->
+  <!--basis框架过滤器-->
     <listener>
         <listener-class>com.sgaop.basis.web.ServletInitListener</listener-class>
     </listener>
@@ -66,8 +67,11 @@
     <filter-mapping>
         <filter-name>basisFilter</filter-name>
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <!--内部转发需要设置 FORWARD-->
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
     </filter-mapping>
-    
 ```
 ### 注册数据源和自定义视图就这么简单
 ```java
