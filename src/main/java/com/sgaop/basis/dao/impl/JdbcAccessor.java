@@ -2,6 +2,7 @@ package com.sgaop.basis.dao.impl;
 
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
+import com.sgaop.basis.dao.entity.Record;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.DBUtil;
 
@@ -16,6 +17,37 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class JdbcAccessor {
+
+    /**
+     * 执行查询，并取得查询结果集合，将结果装入HashMap中
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
+    public static List<Record> executeRecordQueryList(Connection conn, String sql, Object... params) throws Exception {
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        List<Record> data = new ArrayList<>();
+        pstm = conn.prepareStatement(sql);
+        //设置参数
+        DBUtil.setParams(pstm, params);
+        //打印sql
+        DBUtil.showSql(pstm.toString());
+        //执行查询，并取得查询结果
+        rs = pstm.executeQuery();
+        ResultSetMetaData meta = rs.getMetaData();
+        int columnCount = meta.getColumnCount();
+        while (rs.next()) {
+            Record record=new Record();
+            for (int i = 1; i <= columnCount; i++) {
+                record.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
+            }
+            data.add(record);
+        }
+        DBUtil.close(pstm, rs, conn);
+        return data;
+    }
 
     /**
      * 执行查询，并取得查询结果集合，将结果装入HashMap中
@@ -78,6 +110,38 @@ public class JdbcAccessor {
         }
         DBUtil.close(pstm, rs, conn);
         return data;
+    }
+
+
+    /**
+     * 执行查询，并取得查询单个结果，将结果装入HashMap中
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
+    public static Record executeQueryRecordSinge(Connection conn, String sql, Object... params) throws Exception {
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        Record record=new Record();
+        pstm = conn.prepareStatement(sql);
+        //设置参数
+        DBUtil.setParams(pstm, params);
+        //打印sql
+        DBUtil.showSql(pstm.toString());
+        //执行查询，并取得查询结果
+        rs = pstm.executeQuery();
+        ResultSetMetaData meta = rs.getMetaData();
+        int columnCount = meta.getColumnCount();
+        int max = 0;
+        while (rs.next() && max == 0) {
+            for (int i = 1; i <= columnCount; i++) {
+                record.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
+            }
+            max++;
+        }
+        DBUtil.close(pstm, rs, conn);
+        return record;
     }
 
     /**

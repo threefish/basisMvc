@@ -5,6 +5,7 @@ import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.Pager;
 import com.sgaop.basis.dao.bean.TableInfo;
+import com.sgaop.basis.dao.entity.Record;
 import com.sgaop.basis.trans.BasisTransaction;
 import com.sgaop.basis.trans.Trans;
 import com.sgaop.basis.util.DBUtil;
@@ -201,6 +202,11 @@ public class DaoImpl implements Dao {
         return JdbcAccessor.executeQuerySinge(getConnection(), sql, params);
     }
 
+    @Override
+    public Record queryRecord(String sql, Object... params) throws Exception {
+        return JdbcAccessor.executeQueryRecordSinge(getConnection(), sql, params);
+    }
+
 
     /**
      * 根据sql查询多个对象
@@ -211,6 +217,11 @@ public class DaoImpl implements Dao {
      */
     public List<HashMap<String, Object>> queryList(String sql, Object... params) throws Exception {
         return JdbcAccessor.executeQueryList(getConnection(), sql, params);
+    }
+
+    @Override
+    public List<Record> queryRecordList(String sql, Object... params) throws Exception {
+        return JdbcAccessor.executeRecordQueryList(getConnection(), sql, params);
     }
 
     /**

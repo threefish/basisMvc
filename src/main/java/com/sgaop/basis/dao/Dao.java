@@ -1,6 +1,8 @@
 package com.sgaop.basis.dao;
 
 
+import com.sgaop.basis.dao.entity.Record;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -127,6 +129,15 @@ public interface Dao {
     HashMap<String, Object> querySinge(String sql, Object... params) throws Exception;
 
     /**
+     * 根据sql查询单个对象
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
+    Record queryRecord(String sql, Object... params) throws Exception;
+
+    /**
      * 根据sql查询多个对象
      *
      * @param sql
@@ -134,6 +145,15 @@ public interface Dao {
      * @return
      */
     List<HashMap<String, Object>> queryList(String sql, Object... params) throws Exception;
+
+    /**
+     * 根据sql查询多个对象
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
+    List<Record> queryRecordList(String sql, Object... params) throws Exception;
 
     /**
      * 按主键查询单条记录
