@@ -78,14 +78,14 @@ public class ClassScanner {
                     TableFiled tableFiled = new TableFiled();
                     if (colum != null) {
                         if ("".equals(colum.value())) {
-                            tableFiled.setColumName(field.getName());
+                            tableFiled.setColumName(field.getName().toLowerCase());
                             tableFiled.setFiledName(field.getName());
                         } else {
-                            tableFiled.setColumName(colum.value());
+                            tableFiled.setColumName(colum.value().toLowerCase());
                             tableFiled.setFiledName(field.getName());
                         }
                         daoMethod.addColums(tableFiled.getColumName());
-                        tableFiled.set_setMethodName(ClassTool.setMethodName(field.getName()));
+                        tableFiled.set_setMethodName(ClassTool.setMethodName(field.getName(), field.getType()));
                         tableFiled.set_getMethodName(ClassTool.getMethodName(field.getName(), field.getType()));
                         daoMethod.addDaoFiled(tableFiled.getColumName(), tableFiled);
                     }

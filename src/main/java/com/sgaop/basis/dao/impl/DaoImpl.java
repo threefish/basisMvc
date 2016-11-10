@@ -44,7 +44,7 @@ public class DaoImpl implements Dao {
             connection = tn.getConnection(this.dataSource);
         } else {
             if (this.connection == null || this.connection.isClosed()) {
-                this.connection = dataSource.getConnection();
+                connection = this.connection = dataSource.getConnection();
             } else {
                 connection = this.connection;
             }
@@ -53,7 +53,7 @@ public class DaoImpl implements Dao {
     }
 
     @Override
-    public int insert(Object bean) throws SQLException {
+    public int insert(Object bean) throws Exception {
         Class cls = bean.getClass();
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         ArrayList<Object> list = new ArrayList<>();
@@ -68,7 +68,7 @@ public class DaoImpl implements Dao {
      * @param list
      * @return
      */
-    public int[] insert(Class cls, ArrayList<Object> list) throws SQLException {
+    public int[] insert(Class cls, ArrayList<Object> list) throws Exception {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         return JdbcAccessor.doInsert(getConnection(), cls, daoMethod, list);
     }
@@ -80,7 +80,7 @@ public class DaoImpl implements Dao {
      * @param bean
      * @return
      */
-    public boolean update(Object bean) throws SQLException {
+    public boolean update(Object bean) throws Exception {
         Class cls = bean.getClass();
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         ArrayList<Object> list = new ArrayList<>();
@@ -95,7 +95,7 @@ public class DaoImpl implements Dao {
      * @param list
      * @return
      */
-    public int[] update(Class cls, ArrayList<Object> list) throws SQLException {
+    public int[] update(Class cls, ArrayList<Object> list) throws Exception {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         return JdbcAccessor.doUpdateList(getConnection(), cls, daoMethod, list);
     }
@@ -107,7 +107,7 @@ public class DaoImpl implements Dao {
      * @param list
      * @return
      */
-    public int[] delect(Class cls, ArrayList<Object> list) throws SQLException {
+    public int[] delect(Class cls, ArrayList<Object> list) throws Exception {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         return JdbcAccessor.doDelectList(getConnection(), cls, daoMethod, list);
     }
@@ -118,7 +118,7 @@ public class DaoImpl implements Dao {
      * @param bean
      * @return
      */
-    public boolean delect(Object bean) throws SQLException {
+    public boolean delect(Object bean) throws Exception {
         Class cls = bean.getClass();
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         ArrayList<Object> list = new ArrayList<>();
@@ -135,7 +135,7 @@ public class DaoImpl implements Dao {
      * @param order
      * @return
      */
-    public List<Object> queryList(Class cls, Pager pager, String order) throws SQLException {
+    public List<Object> queryList(Class cls, Pager pager, String order) throws Exception {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         String sql = DBUtil.generateSelectSql(daoMethod, "", "");
         if (pager != null) {
@@ -154,7 +154,7 @@ public class DaoImpl implements Dao {
      * @param params
      * @return
      */
-    public List<Object> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws SQLException {
+    public List<Object> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws Exception {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         String sql = DBUtil.generateSelectSql(daoMethod, "", whereSqlAndOrder);
         if (pager != null) {
@@ -171,7 +171,7 @@ public class DaoImpl implements Dao {
      * @param params
      * @return
      */
-    public List<Object> querySqlList(Class cls, String sql, Object... params) throws SQLException {
+    public List<Object> querySqlList(Class cls, String sql, Object... params) throws Exception {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql, params);
     }
@@ -184,7 +184,7 @@ public class DaoImpl implements Dao {
      * @param params
      * @return
      */
-    public Object querySinge(Class cls, String whereSql, Object... params) throws SQLException {
+    public Object querySinge(Class cls, String whereSql, Object... params) throws Exception {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         String sql = DBUtil.generateSelectSql(daoMethod, "", whereSql);
         return JdbcAccessor.doLoadSinge(getConnection(), cls, daoMethod, sql, params);
@@ -197,7 +197,7 @@ public class DaoImpl implements Dao {
      * @param params
      * @return
      */
-    public HashMap<String, Object> querySinge(String sql, Object... params) throws SQLException {
+    public HashMap<String, Object> querySinge(String sql, Object... params) throws Exception {
         return JdbcAccessor.executeQuerySinge(getConnection(), sql, params);
     }
 
@@ -209,7 +209,7 @@ public class DaoImpl implements Dao {
      * @param params
      * @return
      */
-    public List<HashMap<String, Object>> queryList(String sql, Object... params) throws SQLException {
+    public List<HashMap<String, Object>> queryList(String sql, Object... params) throws Exception {
         return JdbcAccessor.executeQueryList(getConnection(), sql, params);
     }
 
@@ -220,7 +220,7 @@ public class DaoImpl implements Dao {
      * @param params
      * @return
      */
-    public Object querySingePK(Class cls, Object params) throws SQLException {
+    public Object querySingePK(Class cls, Object params) throws Exception {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
         String sql = DBUtil.generateSelectPKSql(daoMethod);
         return JdbcAccessor.doLoadSinge(getConnection(), cls, daoMethod, sql, params);

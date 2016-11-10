@@ -108,8 +108,8 @@ public class ClassTool {
      * @param methodName
      * @return
      */
-    public static String setMethodName(String methodName) {
-        return "beanginTrans" + methodName.substring(0, 1).toUpperCase() + methodName.substring(1);
+    public static String setMethodName(String methodName, Class clss) {
+        return "set" + methodName.substring(0, 1).toUpperCase() + methodName.substring(1);
     }
 
     /**

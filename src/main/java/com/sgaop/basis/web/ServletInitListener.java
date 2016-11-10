@@ -20,7 +20,6 @@ import javax.servlet.ServletContextListener;
  * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
  */
-//@WebListener
 public class ServletInitListener implements ServletContextListener {
     private static final Logger logger = Logger.getRootLogger();
 

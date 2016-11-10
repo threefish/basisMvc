@@ -28,7 +28,7 @@ public interface Dao {
      * @param bean
      * @return
      */
-    int insert(Object bean) throws SQLException;
+    int insert(Object bean) throws Exception;
 
     /**
      * 批量插入
@@ -37,7 +37,7 @@ public interface Dao {
      * @param list
      * @return
      */
-    int[] insert(Class cls, ArrayList<Object> list) throws SQLException;
+    int[] insert(Class cls, ArrayList<Object> list) throws Exception;
 
 
     /**
@@ -46,7 +46,7 @@ public interface Dao {
      * @param bean
      * @return
      */
-    boolean update(Object bean) throws SQLException;
+    boolean update(Object bean) throws Exception;
 
     /**
      * 批量更新
@@ -55,7 +55,7 @@ public interface Dao {
      * @param list
      * @return
      */
-    int[] update(Class cls, ArrayList<Object> list) throws SQLException;
+    int[] update(Class cls, ArrayList<Object> list) throws Exception;
 
     /**
      * 批量删除
@@ -64,7 +64,7 @@ public interface Dao {
      * @param list
      * @return
      */
-    int[] delect(Class cls, ArrayList<Object> list) throws SQLException;
+    int[] delect(Class cls, ArrayList<Object> list) throws Exception;
 
     /**
      * 删除一个对象
@@ -72,7 +72,7 @@ public interface Dao {
      * @param bean
      * @return
      */
-    boolean delect(Object bean) throws SQLException;
+    boolean delect(Object bean) throws Exception;
 
 
     /**
@@ -83,7 +83,7 @@ public interface Dao {
      * @param order
      * @return
      */
-    <Object> List<Object> queryList(Class cls, Pager pager, String order) throws SQLException;
+     List<Object> queryList(Class cls, Pager pager, String order) throws Exception;
 
 
     /**
@@ -95,7 +95,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    <Object> List<Object> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws SQLException;
+     List<Object> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws Exception;
 
     /**
      * 按自定义sql条件查询全部
@@ -105,7 +105,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    <Object> List<Object> querySqlList(Class cls, String sql, Object... params) throws SQLException;
+    List<Object> querySqlList(Class cls, String sql, Object... params) throws Exception;
 
     /**
      * 按sql条件单条记录
@@ -115,7 +115,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    <Object> Object querySinge(Class cls, String whereSql, Object... params) throws SQLException;
+    <T> T querySinge(Class cls, String whereSql, Object... params) throws Exception;
 
     /**
      * 根据sql查询单个对象
@@ -124,7 +124,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    HashMap<String, Object> querySinge(String sql, Object... params) throws SQLException;
+    HashMap<String, Object> querySinge(String sql, Object... params) throws Exception;
 
     /**
      * 根据sql查询多个对象
@@ -133,7 +133,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    List<HashMap<String, Object>> queryList(String sql, Object... params) throws SQLException;
+    List<HashMap<String, Object>> queryList(String sql, Object... params) throws Exception;
 
     /**
      * 按主键查询单条记录
@@ -142,5 +142,5 @@ public interface Dao {
      * @param params
      * @return
      */
-    <Object> Object querySingePK(Class cls, Object params) throws SQLException;
+    <T> T querySingePK(Class cls, Object params) throws Exception;
 }

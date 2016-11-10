@@ -24,32 +24,27 @@ public class JdbcAccessor {
      * @param params
      * @return
      */
-    public static List<HashMap<String, Object>> executeQueryList(Connection conn, String sql, Object... params) {
+    public static List<HashMap<String, Object>> executeQueryList(Connection conn, String sql, Object... params) throws Exception {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         List<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
-        try {
-            pstm = conn.prepareStatement(sql);
-            //设置参数
-            DBUtil.setParams(pstm, params);
-            //打印sql
-            DBUtil.showSql(pstm.toString());
-            //执行查询，并取得查询结果
-            rs = pstm.executeQuery();
-            ResultSetMetaData meta = rs.getMetaData();
-            int columnCount = meta.getColumnCount();
-            while (rs.next()) {
-                HashMap<String, Object> dataMap = new HashMap<String, Object>();
-                for (int i = 1; i <= columnCount; i++) {
-                    dataMap.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
-                }
-                data.add(dataMap);
+        pstm = conn.prepareStatement(sql);
+        //设置参数
+        DBUtil.setParams(pstm, params);
+        //打印sql
+        DBUtil.showSql(pstm.toString());
+        //执行查询，并取得查询结果
+        rs = pstm.executeQuery();
+        ResultSetMetaData meta = rs.getMetaData();
+        int columnCount = meta.getColumnCount();
+        while (rs.next()) {
+            HashMap<String, Object> dataMap = new HashMap<String, Object>();
+            for (int i = 1; i <= columnCount; i++) {
+                dataMap.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.close(pstm, rs, conn);
+            data.add(dataMap);
         }
+        DBUtil.close(pstm, rs, conn);
         return data;
     }
 
@@ -61,7 +56,7 @@ public class JdbcAccessor {
      * @param params
      * @return
      */
-    public static HashMap<String, Object> executeQuerySinge(Connection conn, String sql, Object... params) throws SQLException {
+    public static HashMap<String, Object> executeQuerySinge(Connection conn, String sql, Object... params) throws Exception {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         HashMap<String, Object> data = new HashMap<String, Object>();
@@ -94,30 +89,20 @@ public class JdbcAccessor {
      * @param <T>
      * @return
      */
-    public static <T> T doLoadSinge(Connection conn, Class cls, TableInfo daoMethod, String sql, Object... params) {
+    public static <T> T doLoadSinge(Connection conn, Class cls, TableInfo daoMethod, String sql, Object... params) throws Exception {
         Object obj = null;
-        try {
-            HashMap<String, Object> data = executeQuerySinge(conn, sql, params);
-            if (data.size() == 0) {
-                return null;
-            }
-            obj = cls.newInstance();
-            for (String colum : daoMethod.getColums()) {
-                TableFiled tableFiled = daoMethod.getDaoFiled(colum);
-                String colums = tableFiled.getColumName();
-                Object value = data.get(colums);
-                Field field = cls.getDeclaredField(tableFiled.getFiledName());
-                String methodName = tableFiled.get_setMethodName();
-                ClassTool.invokeMethod(field, methodName, cls, obj, value);
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        HashMap<String, Object> data = executeQuerySinge(conn, sql, params);
+        if (data.size() == 0) {
+            return null;
+        }
+        obj = cls.newInstance();
+        for (String colum : daoMethod.getColums()) {
+            TableFiled tableFiled = daoMethod.getDaoFiled(colum);
+            String colums = tableFiled.getColumName();
+            Object value = data.get(colums);
+            Field field = cls.getDeclaredField(tableFiled.getFiledName());
+            String methodName = tableFiled.get_setMethodName();
+            ClassTool.invokeMethod(field, methodName, cls, obj, value);
         }
         return (T) obj;
     }
@@ -132,29 +117,21 @@ public class JdbcAccessor {
      * @param <T>
      * @return
      */
-    public static <T> List<T> doLoadList(Connection conn, Class cls, TableInfo daoMethod, String sql, Object... params) {
+    public static <T> List<T> doLoadList(Connection conn, Class cls, TableInfo daoMethod, String sql, Object... params) throws Exception {
         List<T> dataList = new ArrayList<T>();
-        try {
-            List<HashMap<String, Object>> data = executeQueryList(conn, sql, params);
-            if (data.size() == 0) {
-                return null;
+        List<HashMap<String, Object>> data = executeQueryList(conn, sql, params);
+        if (data.size() == 0) {
+            return null;
+        }
+        for (HashMap<String, Object> map : data) {
+            Object obj = cls.newInstance();
+            for (String colum : daoMethod.getColums()) {
+                TableFiled tableFiled = daoMethod.getDaoFiled(colum);
+                Object value = map.get(colum);
+                String methodName = tableFiled.get_setMethodName();
+                ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
             }
-            for (HashMap<String, Object> map : data) {
-                Object obj = cls.newInstance();
-                for (String colum : daoMethod.getColums()) {
-                    TableFiled tableFiled = daoMethod.getDaoFiled(colum);
-                    Object value = map.get(colum);
-                    String methodName = tableFiled.get_setMethodName();
-                    ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
-                }
-                dataList.add((T) obj);
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            dataList.add((T) obj);
         }
         return dataList;
     }
@@ -168,7 +145,7 @@ public class JdbcAccessor {
      * @param listBean
      * @return
      */
-    public static int[] doInsert(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws SQLException {
+    public static int[] doInsert(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws Exception {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         int rowCount = listBean.size();
@@ -230,7 +207,7 @@ public class JdbcAccessor {
      * @param listBean
      * @return
      */
-    public static int[] doUpdateList(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws SQLException {
+    public static int[] doUpdateList(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws Exception {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         int rowCount = listBean.size();
@@ -286,37 +263,32 @@ public class JdbcAccessor {
      * @param listBean
      * @return
      */
-    public static int[] doDelectList(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) {
+    public static int[] doDelectList(Connection conn, Class cls, TableInfo daoMethod, ArrayList<Object> listBean) throws Exception {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         int rowCount = listBean.size();
         int[] keys = new int[rowCount];
-        try {
-            for (Object bean : listBean) {
-                StringBuffer sb = new StringBuffer("delete from " + daoMethod.getTableName());
-                sb.append(" where " + daoMethod.getPkName() + "=?");
-                if (pstm == null || pstm.isClosed()) {
-                    pstm = conn.prepareStatement(sb.toString());
-                }
-                //设置主键值
-                pstm.setObject(1, ClassTool.invokeGetMethod(cls, bean, daoMethod.getDaoFiled(daoMethod.getPkName()).get_getMethodName()));
-                //打印sql
-                DBUtil.showSql(pstm.toString());
-                //超过一条记录使用批量操作
-                if (listBean.size() > 1) {
-                    pstm.addBatch();
-                }
+        for (Object bean : listBean) {
+            StringBuffer sb = new StringBuffer("delete from " + daoMethod.getTableName());
+            sb.append(" where " + daoMethod.getPkName() + "=?");
+            if (pstm == null || pstm.isClosed()) {
+                pstm = conn.prepareStatement(sb.toString());
             }
+            //设置主键值
+            pstm.setObject(1, ClassTool.invokeGetMethod(cls, bean, daoMethod.getDaoFiled(daoMethod.getPkName()).get_getMethodName()));
+            //打印sql
+            DBUtil.showSql(pstm.toString());
+            //超过一条记录使用批量操作
             if (listBean.size() > 1) {
-                keys = pstm.executeBatch();
-            } else {
-                keys[0] = pstm.executeUpdate();
+                pstm.addBatch();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.close(pstm, rs, conn);
         }
+        if (listBean.size() > 1) {
+            keys = pstm.executeBatch();
+        } else {
+            keys[0] = pstm.executeUpdate();
+        }
+        DBUtil.close(pstm, rs, conn);
         return keys;
     }
 

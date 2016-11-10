@@ -25,7 +25,6 @@ import java.util.Map;
  * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
  */
-//@WebFilter("/*")
 public class BasisMvcWebFilter implements Filter {
     private static final Logger logger = Logger.getRootLogger();
 
