@@ -178,6 +178,18 @@ public class DaoImpl implements Dao {
     }
 
     /**
+     * 查询全部
+     *
+     * @param cls
+     * @return
+     */
+    public List<Object> queryAll(Class cls) throws Exception {
+        TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
+        String sql = DBUtil.generateSelectSql(daoMethod, "", "");
+        return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql);
+    }
+
+    /**
      * 按sql条件单条记录
      *
      * @param cls

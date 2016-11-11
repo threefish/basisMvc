@@ -85,7 +85,7 @@ public interface Dao {
      * @param order
      * @return
      */
-     List<Object> queryList(Class cls, Pager pager, String order) throws Exception;
+    <T> List<T> queryList(Class cls, Pager pager, String order) throws Exception;
 
 
     /**
@@ -97,7 +97,7 @@ public interface Dao {
      * @param params
      * @return
      */
-     List<Object> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws Exception;
+    <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws Exception;
 
     /**
      * 按自定义sql条件查询全部
@@ -107,7 +107,16 @@ public interface Dao {
      * @param params
      * @return
      */
-    List<Object> querySqlList(Class cls, String sql, Object... params) throws Exception;
+   <T> List<T> querySqlList(Class cls, String sql, Object... params) throws Exception;
+
+
+    /**
+     * 查询全部
+     *
+     * @param cls
+     * @return
+     */
+    <T> List<T> queryAll(Class cls) throws Exception;
 
     /**
      * 按sql条件单条记录

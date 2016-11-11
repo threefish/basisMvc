@@ -2,12 +2,14 @@ package com.sgaop.basis.util;
 
 import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.Pager;
+import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.sql.*;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -175,6 +177,19 @@ public class DBUtil {
         sql = sql.substring(sql.indexOf(":") + 1, sql.length());
         logger.debug(sql);
     }
+
+
+    public static <T> T MapToEntity(Class cls, TableInfo tableInfo,HashMap<String, Object> data) throws Exception{
+        Object obj = cls.newInstance();
+        for (String colum : tableInfo.getColums()) {
+            TableFiled tableFiled = tableInfo.getDaoFiled(colum);
+            Object value = data.get(colum);
+            String methodName = tableFiled.get_setMethodName();
+            ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
+        }
+        return (T) obj;
+    }
+
 
     public static String arryToString(String[] ary) {
         StringBuffer sb = new StringBuffer();
