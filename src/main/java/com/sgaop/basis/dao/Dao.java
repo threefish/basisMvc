@@ -85,7 +85,7 @@ public interface Dao {
      * @param order
      * @return
      */
-    <T> List<T> queryList(Class cls, Pager pager, String order) throws Exception;
+    <T> List<T> queryList(Class cls, Pager pager, String order);
 
 
     /**
@@ -97,7 +97,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) throws Exception;
+    <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params);
 
     /**
      * 按自定义sql条件查询全部
@@ -107,7 +107,7 @@ public interface Dao {
      * @param params
      * @return
      */
-   <T> List<T> querySqlList(Class cls, String sql, Object... params) throws Exception;
+   <T> List<T> querySqlList(Class cls, String sql, Object... params);
 
 
     /**
@@ -116,7 +116,7 @@ public interface Dao {
      * @param cls
      * @return
      */
-    <T> List<T> queryAll(Class cls) throws Exception;
+    <T> List<T> queryAll(Class cls) ;
 
     /**
      * 按sql条件单条记录
@@ -126,7 +126,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    <T> T querySinge(Class cls, String whereSql, Object... params) throws Exception;
+    <T> T querySinge(Class cls, String whereSql, Object... params);
 
     /**
      * 根据sql查询单个对象
@@ -135,7 +135,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    HashMap<String, Object> querySinge(String sql, Object... params) throws Exception;
+    HashMap<String, Object> querySinge(String sql, Object... params);
 
     /**
      * 根据sql查询单个对象
@@ -144,7 +144,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    Record queryRecord(String sql, Object... params) throws Exception;
+    Record queryRecord(String sql, Object... params);
 
     /**
      * 根据sql查询多个对象
@@ -153,7 +153,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    List<HashMap<String, Object>> queryList(String sql, Object... params) throws Exception;
+    List<HashMap<String, Object>> queryList(String sql, Object... params);
 
     /**
      * 根据sql查询多个对象
@@ -162,7 +162,7 @@ public interface Dao {
      * @param params
      * @return
      */
-    List<Record> queryRecordList(String sql, Object... params) throws Exception;
+    List<Record> queryRecordList(String sql, Object... params);
 
     /**
      * 按主键查询单条记录
@@ -171,5 +171,5 @@ public interface Dao {
      * @param params
      * @return
      */
-    <T> T querySingePK(Class cls, Object params) throws Exception;
+    <T> T querySingePK(Class cls, Object params);
 }
