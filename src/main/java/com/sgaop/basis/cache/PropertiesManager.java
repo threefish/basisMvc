@@ -69,6 +69,16 @@ public class PropertiesManager {
      * @param key
      * @return
      */
+    public static int getInt(String key) {
+        return Integer.parseInt(propertiesMap.get(key).toString());
+    }
+
+    /**
+     * 得到缓存
+     *
+     * @param key
+     * @return
+     */
     public static boolean getBooleanCache(String key) {
         return Boolean.parseBoolean(propertiesMap.get(key).toString());
     }
