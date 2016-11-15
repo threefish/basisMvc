@@ -4,7 +4,7 @@
 
 ## 代码可能不够好，重复造轮子是为了更加充分的了解框架底层实现原理，写这个这是一种尝试，一种突破自我的方式。欢迎提出建议！谢谢！
 
-## 基于Java注解和servlet3.0+实现通过注解方式访问的web MVC框架
+## 基于Java注解和servlet实现通过注解方式访问的web MVC框架
 
 # 示例项目[basisMvcSample](https://github.com/threefish/basisMvcSample "示例项目")
 
@@ -14,7 +14,7 @@
 
 ### 现已实现以下功能
 #### IOC、AOP、ORM、MVC
-
+#### 集成quartz,beetl
 #### 参数类
 
     - 实现缓存扫描注解action
