@@ -4,6 +4,7 @@ package com.sgaop.basis.web;
 import com.google.gson.Gson;
 import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
+import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.view.ViewsRegister;
 import com.sgaop.basis.scanner.ClassScanner;
@@ -22,6 +23,7 @@ import javax.servlet.ServletContextListener;
  */
 public class ServletInitListener implements ServletContextListener {
     private static final Logger logger = Logger.getRootLogger();
+
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         //加载全局配置文件
@@ -46,20 +48,21 @@ public class ServletInitListener implements ServletContextListener {
 
     private void handlerInit(ServletContextEvent servletContextEvent) {
         try {
-            Class<?> klass = (Class<?>) MvcsManager.getSetupCache(Constant.WEB_SETUP);
-            WebSetup setup = (WebSetup) klass.newInstance();
+            WebSetup setup = (WebSetup) MvcsManager.getSetupCache(Constant.WEB_SETUP);
             setup.init(servletContextEvent);
+            MvcsManager.putSetupCache(Constant.WEB_SETUP,setup);
         } catch (Exception e) {
+            logger.warn("环境初始化时发生错误！", e);
             throw new RuntimeException("环境初始化时发生错误！", e);
         }
     }
 
     private void handlerDestroy(ServletContextEvent servletContextEvent) {
         try {
-            Class<?> klass = (Class<?>) MvcsManager.getSetupCache(Constant.WEB_SETUP);
-            WebSetup setup = (WebSetup) klass.newInstance();
+            WebSetup setup= (WebSetup)MvcsManager.getSetupCache(Constant.WEB_SETUP);
             setup.destroy(servletContextEvent);
         } catch (Exception e) {
+            logger.warn("环境销毁时发生错误！",e);
             throw new RuntimeException("环境销毁时发生错误！", e);
         }
     }

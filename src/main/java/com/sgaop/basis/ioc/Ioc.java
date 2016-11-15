@@ -6,12 +6,12 @@ package com.sgaop.basis.ioc;
  * Date: 2016/11/9 0009
  * To change this template use File | Settings | File Templates.
  */
-public class BasisIoc {
+public class Ioc {
 
     private static IocBeanContext iocBeanContext = IocBeanContext.me();
 
-    public static Object getBean(String beanKey) {
-        return iocBeanContext.getBean(beanKey);
+    public static <T> T getBean(String beanKey) {
+        return (T) iocBeanContext.getBean(beanKey);
     }
 
 }

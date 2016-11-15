@@ -22,14 +22,16 @@ public class DaosRegister {
      * @param klass         数据源的执行类
      * @param dataSource    数据源
      */
-    public static void registerDao(String newIocBeanKey, Class<?> klass, DataSource dataSource) {
+    public static Dao registerDao(String newIocBeanKey, Class<?> klass, DataSource dataSource) {
+        Dao dao = null;
         try {
-            Dao dao = (Dao) klass.newInstance();
+            dao = (Dao) klass.newInstance();
             dao.setDataSource(dataSource);
             IocBeanContext.me().setBean(newIocBeanKey, dao);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("注册数据源时发生错误!", e);
         }
+        return dao;
     }
 }

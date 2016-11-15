@@ -63,7 +63,13 @@ public class ClassScanner {
                     }
                 }
             } else if (setup != null) {
-                MvcsManager.putSetupCache(Constant.WEB_SETUP, ks);
+                try {
+                    MvcsManager.putSetupCache(Constant.WEB_SETUP, ks.newInstance());
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             } else if (table != null) {
                 Field[] fields = ks.getDeclaredFields();
                 TableInfo daoMethod = new TableInfo();

@@ -311,7 +311,7 @@ public class JdbcAccessor {
         int[] keys = new int[rowCount];
         for (Object bean : listBean) {
             LinkedHashMap<String, Object> columMap = new LinkedHashMap<>();
-            StringBuffer sb = new StringBuffer("update " + tableInfo.getTableName() + " beanginTrans ");
+            StringBuffer sb = new StringBuffer("update " + tableInfo.getTableName() + " set ");
             for (String colum : tableInfo.getColums()) {
                 if (!colum.equals(tableInfo.getPkName())) {
                     TableFiled tableFiled = tableInfo.getDaoFiled(colum);
