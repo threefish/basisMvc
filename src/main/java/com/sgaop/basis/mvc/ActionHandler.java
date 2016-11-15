@@ -4,6 +4,7 @@ import com.sgaop.basis.annotation.Parameter;
 import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.error.WebErrorMessage;
+import com.sgaop.basis.ioc.Ioc;
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.ParameterConverter;
@@ -51,26 +52,17 @@ public class ActionHandler {
                 Method handlerMethod = actionMethod.getActionMethod();
                 handlerMethod.setAccessible(true);
                 String iocBeanName = ClassTool.getIocBeanName(actionClass);
-                Object beanInstance = IocBeanContext.me().getBean(iocBeanName);
+                Object beanInstance = Ioc.getBean(iocBeanName);
                 if (beanInstance == null) {
                     beanInstance = actionClass.newInstance();
                 }
                 /**
                  * 自动注入参数
                  */
-                Field[] fields = actionClass.getDeclaredFields();
-                for (Field field : fields) {
-                    field.setAccessible(true);
-                    if (field.getGenericType().equals(HttpServletRequest.class)) {
-                        field.set(beanInstance, request);
-                    } else if (field.getGenericType().equals(HttpServletResponse.class)) {
-                        field.set(beanInstance, response);
-                    } else if (field.getGenericType().equals(HttpSession.class)) {
-                        field.set(beanInstance, request.getSession());
-                    } else if (field.getGenericType().equals(ServletContext.class)) {
-                        field.set(beanInstance, request.getServletContext());
-                    }
-                }
+                inject(actionClass.getDeclaredFields(),beanInstance,request,response);
+                inject(actionClass.getSuperclass().getDeclaredFields(), beanInstance, request, response);
+
+
                 Class<?>[] actionParamTypes = handlerMethod.getParameterTypes();
                 List<Object> actionParamList = new ArrayList<>();
                 Annotation[][] annotations = handlerMethod.getParameterAnnotations();
@@ -118,16 +110,17 @@ public class ActionHandler {
                 webErrorMessage.setCode(404);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             if (e.getMessage() == null) {
                 Throwable te = e.getCause();
                 webErrorMessage.setCode(500);
                 webErrorMessage.setMessage(te.getMessage());
                 logger.trace(te);
+                logger.warn(te);
             } else {
                 webErrorMessage.setCode(500);
                 webErrorMessage.setException(e);
                 logger.trace(e);
+                logger.warn(e);
             }
 
         }
@@ -137,5 +130,28 @@ public class ActionHandler {
         }
         actionResult.setWebErrorMessage(webErrorMessage);
         return actionResult;
+    }
+
+    /**
+     * 自动注入参数
+     * @param fields
+     * @param beanInstance
+     * @param request
+     * @param response
+     * @throws IllegalAccessException
+     */
+    private static void inject(Field[] fields, Object beanInstance, HttpServletRequest request, HttpServletResponse response) throws IllegalAccessException {
+        for (Field field : fields) {
+            field.setAccessible(true);
+            if (field.getGenericType().equals(HttpServletRequest.class)) {
+                field.set(beanInstance, request);
+            } else if (field.getGenericType().equals(HttpServletResponse.class)) {
+                field.set(beanInstance, response);
+            } else if (field.getGenericType().equals(HttpSession.class)) {
+                field.set(beanInstance, request.getSession());
+            } else if (field.getGenericType().equals(ServletContext.class)) {
+                field.set(beanInstance, request.getServletContext());
+            }
+        }
     }
 }

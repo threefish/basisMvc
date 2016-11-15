@@ -1,5 +1,6 @@
 package com.sgaop.basis.util;
 
+import com.sgaop.basis.annotation.Inject;
 import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.mvc.upload.TempFile;
 import org.apache.log4j.Logger;
@@ -196,4 +197,6 @@ public class ClassTool {
         }
         return null;
     }
+
+
 }

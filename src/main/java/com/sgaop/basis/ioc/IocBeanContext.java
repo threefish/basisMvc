@@ -96,7 +96,8 @@ public class IocBeanContext {
         //创建bean,扫描依赖关系
         this.createBeansAndScanDependencies(classes);
         //注入依赖
-        this.injectBeans(classes);
+        this.injectBeans();
+        this.injectAopBeans(classes);
         logger.debug("IocMapping:" + new Gson().toJson(dependencies));
     }
 
@@ -154,11 +155,11 @@ public class IocBeanContext {
         });
     }
 
-    /**
-     * 扫描依赖关系并注入bean
-     */
-    private void injectBeans(Set<Class<?>> classes) {
+    private void injectBeans() {
         Iterator<Map.Entry<String, String>> iterator = dependencies.entrySet().iterator();
+        /**
+         * 注入基础类
+         */
         while (iterator.hasNext()) {
             Map.Entry<String, String> item = iterator.next();
             String key = item.getKey();
@@ -173,7 +174,39 @@ public class IocBeanContext {
                 e.printStackTrace();
             }
         }
+//        Iterator<Map.Entry<String, Object>> superIterator = beans.entrySet().iterator();
+//        /**
+//         * 注入基础类的父类
+//         */
+//        while (superIterator.hasNext()) {
+//            Map.Entry<String, Object> item = superIterator.next();
+//            String key = item.getKey();
+//            Object object = item.getValue();
+//            Class<?> superClass = object.getClass().getSuperclass();
+//            if (superClass != null) {
+//                Field[] fields = superClass.getDeclaredFields();
+//                for (Field field : fields) {
+//                    Inject inject = field.getAnnotation(Inject.class);
+//                    if (inject != null) {
+//                        String injectName = "";
+//                        if ("".equals(inject.value())) {
+//                            injectName=field.getName();
+//                        }else{
+//                            injectName= inject.value();
+//                        }
+//                        this.injects(field, object, injectName);
+//                    }
+//                }
+//            }
+//            this.setBean2(key, object);
+//        }
+    }
 
+
+    /**
+     * 扫描依赖关系并注入bean
+     */
+    private void injectAopBeans(Set<Class<?>> classes) {
 
         /**
          * 注入AOP相关
