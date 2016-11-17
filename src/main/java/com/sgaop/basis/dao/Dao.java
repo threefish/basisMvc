@@ -100,6 +100,34 @@ public interface Dao {
     <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params);
 
     /**
+     * 按条件查询全部
+     *
+     * @param cls
+     * @param pager
+     * @return
+     */
+    <T> List<T> queryCndList(Class cls, Pager pager);
+
+
+    /**
+     * 按条件查询全部
+     *
+     * @param cls
+     * @param whereSql
+     * @param params
+     * @return
+     */
+    int queryCndListCount(Class cls, String whereSql, Object... params);
+
+    /**
+     * 按条件查询全部
+     *
+     * @param cls
+     * @return
+     */
+    int queryCndListCount(Class cls);
+
+    /**
      * 按自定义sql条件查询全部
      *
      * @param cls
@@ -117,6 +145,15 @@ public interface Dao {
      * @return
      */
     <T> List<T> queryAll(Class cls) ;
+
+
+    /**
+     * 查询全部
+     *
+     * @param cls
+     * @return
+     */
+    <T> List<T> queryAll(Class cls,String orderSql);
 
     /**
      * 按sql条件单条记录

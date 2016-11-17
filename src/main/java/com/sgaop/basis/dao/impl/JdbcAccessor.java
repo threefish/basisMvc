@@ -6,7 +6,6 @@ import com.sgaop.basis.dao.entity.Record;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.DBUtil;
 
-import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.*;
 
@@ -26,20 +25,18 @@ public class JdbcAccessor {
      * @return
      */
     public static List<Record> executeRecordQueryList(Connection conn, String sql, Object... params) throws Exception {
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
         List<Record> data = new ArrayList<>();
-        pstm = conn.prepareStatement(sql);
+        PreparedStatement pstm = conn.prepareStatement(sql);
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
         DBUtil.showSql(pstm.toString());
         //执行查询，并取得查询结果
-        rs = pstm.executeQuery();
+        ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();
         while (rs.next()) {
-            Record record=new Record();
+            Record record = new Record();
             for (int i = 1; i <= columnCount; i++) {
                 record.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
             }
@@ -57,16 +54,14 @@ public class JdbcAccessor {
      * @return
      */
     public static List<HashMap<String, Object>> executeQueryList(Connection conn, String sql, Object... params) throws Exception {
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
         List<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
-        pstm = conn.prepareStatement(sql);
+        PreparedStatement pstm = conn.prepareStatement(sql);
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
         DBUtil.showSql(pstm.toString());
         //执行查询，并取得查询结果
-        rs = pstm.executeQuery();
+        ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();
         while (rs.next()) {
@@ -85,17 +80,39 @@ public class JdbcAccessor {
      * 执行查询，并取得查询结果集合，将结果装入HashMap中
      *
      * @param sql
+     * @param params
      * @return
      */
-    public static List<HashMap<String, Object>> executeQueryList(Connection conn, String sql) throws Exception {
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
-        List<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
-        pstm = conn.prepareStatement(sql);
+    public static int executeQueryCount(Connection conn, String sql, Object... params) throws Exception {
+        int count = 0;
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        //设置参数
+        DBUtil.setParams(pstm, params);
         //打印sql
         DBUtil.showSql(pstm.toString());
         //执行查询，并取得查询结果
-        rs = pstm.executeQuery();
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            count = rs.getInt(1);
+        }
+        DBUtil.close(pstm, rs, conn);
+        return count;
+    }
+
+
+    /**
+     * 执行查询，并取得查询结果集合，将结果装入HashMap中
+     *
+     * @param sql
+     * @return
+     */
+    public static List<HashMap<String, Object>> executeQueryList(Connection conn, String sql) throws Exception {
+        List<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        //打印sql
+        DBUtil.showSql(pstm.toString());
+        //执行查询，并取得查询结果
+        ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();
         while (rs.next()) {
@@ -118,16 +135,14 @@ public class JdbcAccessor {
      * @return
      */
     public static HashMap<String, Object> executeQuerySinge(Connection conn, String sql, Object... params) throws Exception {
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
         HashMap<String, Object> data = new HashMap<String, Object>();
-        pstm = conn.prepareStatement(sql);
+        PreparedStatement pstm = conn.prepareStatement(sql);
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
         DBUtil.showSql(pstm.toString());
         //执行查询，并取得查询结果
-        rs = pstm.executeQuery();
+        ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();
         int max = 0;
@@ -150,16 +165,14 @@ public class JdbcAccessor {
      * @return
      */
     public static Record executeQueryRecordSinge(Connection conn, String sql, Object... params) throws Exception {
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
-        Record record=new Record();
-        pstm = conn.prepareStatement(sql);
+        Record record = new Record();
+        PreparedStatement pstm = conn.prepareStatement(sql);
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
         DBUtil.showSql(pstm.toString());
         //执行查询，并取得查询结果
-        rs = pstm.executeQuery();
+        ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();
         int max = 0;
@@ -221,9 +234,9 @@ public class JdbcAccessor {
      * @param <T>
      * @return
      */
-    public static <T> List<T> doLoadList(Connection conn, Class cls, TableInfo tableInfo,String sql) throws Exception {
+    public static <T> List<T> doLoadList(Connection conn, Class cls, TableInfo tableInfo, String sql) throws Exception {
         List<T> dataList = new ArrayList<T>();
-        List<HashMap<String, Object>> data = executeQueryList(conn,sql);
+        List<HashMap<String, Object>> data = executeQueryList(conn, sql);
         if (data.size() == 0) {
             return null;
         }

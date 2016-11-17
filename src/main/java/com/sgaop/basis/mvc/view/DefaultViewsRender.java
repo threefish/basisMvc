@@ -1,14 +1,19 @@
 package com.sgaop.basis.mvc.view;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.error.WebErrorMessage;
+import com.sgaop.basis.json.JsonExclusionStrategy;
+import com.sgaop.basis.json.JsonFormat;
+import com.sgaop.basis.json.TimestampTypeAdapter;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,6 +26,7 @@ public class DefaultViewsRender {
 
     private static final Logger logger = Logger.getRootLogger();
 
+    private static final Gson formatJson=new Gson();
 
     public static void RenderJSP(String jspPath, HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -43,12 +49,31 @@ public class DefaultViewsRender {
     }
 
 
-    public static void RenderJSON(HttpServletResponse response, Object resultObj) {
+    public static void RenderJSON(HttpServletResponse response,String regs,Object resultObj) {
         try {
+            Gson gson=null;
+            if(regs.equals("")){
+                gson=new Gson();
+            }else {
+                //此处可以进行优化，在扫描类时就将返回类型确定，可以进一步提升性能
+                JsonFormat jsonFormat = formatJson.fromJson(regs, JsonFormat.class);
+                GsonBuilder gb = new GsonBuilder();
+                if(jsonFormat.isIgnoreNull()){
+                    gb.serializeNulls();
+                }
+                if(!jsonFormat.getLocked().equals("")){
+                    gb.setExclusionStrategies(new JsonExclusionStrategy(jsonFormat.getLocked().split("\\|")));
+                }
+                if (jsonFormat.getDateFormat()!=null&&!jsonFormat.getDateFormat().equals("")) {
+                    gb.setDateFormat(jsonFormat.getDateFormat());
+                    gb.registerTypeAdapter(Timestamp.class, new TimestampTypeAdapter()).create();
+                }
+                gson = gb.create();
+            }
             response.setContentType("application/json");
             response.setCharacterEncoding(Constant.utf8);
             PrintWriter printWriter = response.getWriter();
-            printWriter.write(new Gson().toJson(resultObj));
+            printWriter.write(gson.toJson(resultObj));
             printWriter.flush();
             printWriter.close();
         } catch (Exception e) {

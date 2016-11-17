@@ -41,8 +41,12 @@ public class ViewHandler {
                     Class<?> klass = ViewsRegister.getViewClass(path[0]);
                     View view = (View) klass.newInstance();
                     view.render(path[1], request, response, actionResult.getResultData());
-                } else if (resultType.equals("json")) {
-                    DefaultViewsRender.RenderJSON(response, actionResult.getResultData());
+                } else if (resultType.equals("json") || resultType.startsWith("json:")) {
+                    String regs = "";
+                    if (resultType.startsWith("json:")) {
+                        regs=resultType.substring(5, resultType.length());
+                    }
+                    DefaultViewsRender.RenderJSON(response, regs, actionResult.getResultData());
                 } else if (resultType.startsWith("jsp:") || resultType.startsWith("fw:")) {
                     String path[] = resultType.split(":");
                     DefaultViewsRender.RenderJSP(Constant.JSP_PATH + path[1], request, response);

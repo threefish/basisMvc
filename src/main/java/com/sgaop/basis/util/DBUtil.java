@@ -99,11 +99,28 @@ public class DBUtil {
      * @param selectSql
      * @param whereSql
      */
-    public static String generateSelectSql(TableInfo daoMethod, String selectSql, String whereSql) {
+    public static String generateSelectSql(TableInfo daoMethod, String selectSql, String whereSql, String orderSql) {
         String sql = "";
         if (selectSql.trim().equals("")) {
             sql = "select " + daoMethod.getColum() + " from " + daoMethod.getTableName();
         }
+        if (!whereSql.trim().equals("")) {
+            sql += " where " + whereSql;
+        }
+        if (!orderSql.trim().equals("")) {
+            sql += " "+orderSql;
+        }
+        return sql;
+    }
+
+    /**
+     * 生成查询语句
+     *
+     * @param daoMethod
+     * @param whereSql
+     */
+    public static String generateCountSql(TableInfo daoMethod,String whereSql) {
+        String sql = "select count(*) from " + daoMethod.getTableName();
         if (!whereSql.trim().equals("")) {
             sql += " where " + whereSql;
         }
@@ -131,8 +148,10 @@ public class DBUtil {
      * @throws SQLException
      */
     public static void setParams(PreparedStatement pstm, Object... params) throws SQLException {
-        for (int x = 1; x <= params.length; x++) {
-            pstm.setObject(x, params[x - 1]);
+        if(params!=null){
+            for (int x = 1; x <= params.length; x++) {
+                pstm.setObject(x, params[x - 1]);
+            }
         }
     }
 
@@ -179,13 +198,15 @@ public class DBUtil {
     }
 
 
-    public static <T> T MapToEntity(Class cls, TableInfo tableInfo,HashMap<String, Object> data) throws Exception{
+    public static <T> T MapToEntity(Class cls, TableInfo tableInfo, HashMap<String, Object> data) throws Exception {
         Object obj = cls.newInstance();
         for (String colum : tableInfo.getColums()) {
             TableFiled tableFiled = tableInfo.getDaoFiled(colum);
             Object value = data.get(colum);
-            String methodName = tableFiled.get_setMethodName();
-            ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
+            if(value!=null){
+                String methodName = tableFiled.get_setMethodName();
+                ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
+            }
         }
         return (T) obj;
     }

@@ -1,4 +1,4 @@
-package com.sgaop.basis.util;
+package com.sgaop.basis.json;
 
 import com.google.gson.*;
 
@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimestampTypeAdapter implements JsonDeserializer<Timestamp>, JsonSerializer<Timestamp> {
+    //默认
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public JsonElement serialize(Timestamp ts, Type t, JsonSerializationContext jsc) {

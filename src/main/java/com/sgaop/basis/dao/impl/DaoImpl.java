@@ -1,5 +1,6 @@
 package com.sgaop.basis.dao.impl;
 
+import com.sgaop.basis.annotation.Parameter;
 import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.dao.DbType;
@@ -131,6 +132,8 @@ public class DaoImpl implements Dao {
     }
 
 
+
+
     /**
      * 查询全部
      *
@@ -141,7 +144,7 @@ public class DaoImpl implements Dao {
      */
     public List<Object> queryList(Class cls, Pager pager, String order)  {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
-        String sql = DBUtil.generateSelectSql(daoMethod, "", "");
+        String sql = DBUtil.generateSelectSql(daoMethod, "", "", "");
         if (pager != null) {
             sql = DBUtil.generatePageSql(dbtype, daoMethod.getTableName(), sql, order, pager);
         }
@@ -154,6 +157,8 @@ public class DaoImpl implements Dao {
     }
 
 
+
+
     /**
      * 按条件查询全部
      *
@@ -163,9 +168,9 @@ public class DaoImpl implements Dao {
      * @param params
      * @return
      */
-    public List<Object> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params)  {
+    public List<Object> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params) {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
-        String sql = DBUtil.generateSelectSql(daoMethod, "", whereSqlAndOrder);
+        String sql = DBUtil.generateSelectSql(daoMethod, "", whereSqlAndOrder, "");
         if (pager != null) {
             sql = DBUtil.generatePageSql(dbtype, daoMethod.getTableName(), sql, "", pager);
         }
@@ -174,6 +179,61 @@ public class DaoImpl implements Dao {
         } catch (Exception e) {
             log.warn(e);
             return null;
+        }
+    }
+
+    /**
+     * 按条件查询全部
+     *
+     * @param cls
+     * @param pager
+     * @return
+     */
+    public List<Object> queryCndList(Class cls, Pager pager) {
+        TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
+        String sql = DBUtil.generateSelectSql(daoMethod, "", "", "");
+        if (pager != null) {
+            sql = DBUtil.generatePageSql(dbtype, daoMethod.getTableName(), sql, "", pager);
+        }
+        try {
+            return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql, null);
+        } catch (Exception e) {
+            log.warn(e);
+            return null;
+        }
+    }
+
+    /**
+     * 按条件查询全部
+     *
+     * @param cls
+     * @return
+     */
+    public int queryCndListCount(Class cls,String whereSql,Object... params) {
+        TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
+        String sql = DBUtil.generateCountSql(daoMethod, whereSql);
+        try {
+            return JdbcAccessor.executeQueryCount(getConnection(), sql, params);
+        } catch (Exception e) {
+            log.warn(e);
+            return 0;
+        }
+    }
+
+    /**
+     * 按条件查询全部
+     *
+     * @param cls
+     * @return
+     */
+    public int queryCndListCount(Class cls) {
+        TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
+        String sql = DBUtil.generateCountSql(daoMethod, "");
+        try {
+            return JdbcAccessor.executeQueryCount(getConnection(), sql, null);
+        } catch (Exception e) {
+            log.warn(e);
+            return 0;
         }
     }
 
@@ -203,7 +263,19 @@ public class DaoImpl implements Dao {
      */
     public List<Object> queryAll(Class cls)  {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
-        String sql = DBUtil.generateSelectSql(daoMethod, "", "");
+        String sql = DBUtil.generateSelectSql(daoMethod, "", "","");
+        try {
+            return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql);
+        } catch (Exception e) {
+            log.warn(e);
+            return null;
+        }
+    }
+
+    @Override
+    public <T> List<T> queryAll(Class cls, String orderSql) {
+        TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
+        String sql = DBUtil.generateSelectSql(daoMethod, "", "",orderSql);
         try {
             return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql);
         } catch (Exception e) {
@@ -222,7 +294,7 @@ public class DaoImpl implements Dao {
      */
     public Object querySinge(Class cls, String whereSql, Object... params)  {
         TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
-        String sql = DBUtil.generateSelectSql(daoMethod, "", whereSql);
+        String sql = DBUtil.generateSelectSql(daoMethod, "", whereSql,"");
         try {
             return JdbcAccessor.doLoadSinge(getConnection(), cls, daoMethod, sql, params);
         } catch (Exception e) {
