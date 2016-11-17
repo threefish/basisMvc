@@ -15,7 +15,13 @@ public class WebErrorMessage {
      * 默认false
      */
     private boolean isJsp = false;
+
     private Exception exception;
+
+    private String redirectUrl = "";
+
+    private boolean ajax = false;
+
 
     public WebErrorMessage() {
 
@@ -30,6 +36,23 @@ public class WebErrorMessage {
         this.code = code;
         this.message = message;
         this.exception = exception;
+    }
+
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
+    public boolean isAjax() {
+        return ajax;
+    }
+
+    public void setAjax(boolean ajax) {
+        this.ajax = ajax;
     }
 
     public boolean isJsp() {

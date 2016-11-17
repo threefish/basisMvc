@@ -24,10 +24,12 @@ public class Mvcs {
      * @param servletResponse
      * @param reqMap
      */
-    public static void initLocal(ServletRequest servletRequest, ServletResponse servletResponse, Map<String, ?> reqMap) {
+    public static void initLocal(ServletRequest servletRequest, ServletResponse servletResponse, Map<String, ?> reqMap, boolean isAjax) {
         /*设置项目根路径*/
         servletRequest.setAttribute("base", servletRequest.getServletContext().getContextPath());
-        local.set(new FrameRequest((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, reqMap));
+        servletRequest.setAttribute("ctxPath", servletRequest.getServletContext().getContextPath());
+        FrameRequest frameRequest = new FrameRequest((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, reqMap, isAjax);
+        local.set(frameRequest);
     }
 
     /**
@@ -53,6 +55,10 @@ public class Mvcs {
         return local.get().getReqMap();
     }
 
+    public static boolean isAjax() {
+        return local.get().isAjax();
+    }
+
     /**
      * 缓存当前http请求内容
      */
@@ -62,11 +68,17 @@ public class Mvcs {
         private HttpServletResponse response;
         private Map<String, ?> reqMap;
 
+        private boolean ajax;
 
-        public FrameRequest(HttpServletRequest request, HttpServletResponse response, Map<String, ?> reqMap) {
+        public boolean isAjax() {
+            return ajax;
+        }
+
+        public FrameRequest(HttpServletRequest request, HttpServletResponse response, Map<String, ?> reqMap, boolean ajax) {
             this.request = request;
             this.response = response;
             this.reqMap = reqMap;
+            this.ajax = ajax;
         }
 
         public HttpServletRequest getRequest() {

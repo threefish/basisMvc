@@ -1,7 +1,9 @@
 package com.sgaop.basis.mvc.view;
 
 import com.sgaop.basis.constant.Constant;
+import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.mvc.ActionResult;
+import com.sgaop.basis.mvc.Mvcs;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,9 +23,18 @@ public class ViewHandler {
         if ("".equals(resultType) && actionResult.getResultData() != null) {
             resultType = (String) actionResult.getResultData();
         }
-        if ((actionResult.getWebErrorMessage().getCode() == 200 && actionResult.getWebErrorMessage().isJsp())) {
+        WebErrorMessage error = actionResult.getWebErrorMessage();
+        if ((error.getCode() == 200 && error.isJsp())) {
             DefaultViewsRender.RenderJSP(servletPath, request, response);
-        } else if (actionResult.getWebErrorMessage().getCode() != 500 && actionResult.getWebErrorMessage().getCode() != 404) {
+        } else if ((error.getCode() == 500 && !"".equals(error.getRedirectUrl()))) {
+            if (error.isAjax()) {
+                DefaultViewsRender.RenderJsonStr(response, error.getMessage());
+            } else {
+                String basePath = Mvcs.getSession().getServletContext().getContextPath();
+                basePath = basePath.equals("/") ? "" : basePath;
+                DefaultViewsRender.RenderRedirect(basePath + error.getRedirectUrl(), response);
+            }
+        } else if (error.getCode() != 500 && error.getCode() != 404) {
             if (resultType != null) {
                 if (ViewsRegister.hasRegisterView(resultType)) {
                     String path[] = resultType.split(":");

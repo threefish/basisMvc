@@ -9,6 +9,8 @@ import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.mvc.view.DefaultViewsRender;
 import com.sgaop.basis.mvc.view.ViewHandler;
 import com.sgaop.basis.util.ParameterConverter;
+import com.sgaop.basis.util.WebUtil;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
@@ -45,7 +47,8 @@ public class BasisMvcWebFilter implements Filter {
             if (ServletFileUpload.isMultipartContent(request)) {
                 requestParameterMap = ParameterConverter.bulidMultipartMap(request);
             }
-            Mvcs.initLocal(servletRequest, servletResponse, requestParameterMap);
+            boolean isAjax= WebUtil.isAjax(request);
+            Mvcs.initLocal(servletRequest, servletResponse, requestParameterMap, isAjax);
             String reqMethod = request.getMethod();
             String servletPath = request.getServletPath();
             if (STATIC_PATH != null) {

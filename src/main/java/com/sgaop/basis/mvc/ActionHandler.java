@@ -3,9 +3,9 @@ package com.sgaop.basis.mvc;
 import com.sgaop.basis.annotation.Parameter;
 import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
+import com.sgaop.basis.error.ShiroAutcException;
 import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.ioc.Ioc;
-import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.ParameterConverter;
 import org.apache.log4j.Logger;
@@ -59,7 +59,7 @@ public class ActionHandler {
                 /**
                  * 自动注入参数
                  */
-                inject(actionClass.getDeclaredFields(),beanInstance,request,response);
+                inject(actionClass.getDeclaredFields(), beanInstance, request, response);
                 inject(actionClass.getSuperclass().getDeclaredFields(), beanInstance, request, response);
 
 
@@ -109,20 +109,18 @@ public class ActionHandler {
             } else {
                 webErrorMessage.setCode(404);
             }
-        } catch (Exception e) {
-            if (e.getMessage() == null) {
-                Throwable te = e.getCause();
-                webErrorMessage.setCode(500);
-                webErrorMessage.setMessage(te.getMessage());
-                logger.trace(te);
-                logger.warn(te);
+        } catch (Throwable e) {
+            Throwable te = e.getCause();
+            if (te instanceof ShiroAutcException) {
+                webErrorMessage.setAjax(Mvcs.isAjax());
+                webErrorMessage.setRedirectUrl(((ShiroAutcException) te).getRedirectUrl());
+                webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\",\"loginUrl\":\"%s\"}", te.getMessage(), webErrorMessage.getRedirectUrl()));
             } else {
-                webErrorMessage.setCode(500);
-                webErrorMessage.setException(e);
-                logger.trace(e);
-                logger.warn(e);
+                webErrorMessage.setMessage(te.getMessage());
             }
-
+            webErrorMessage.setCode(500);
+            logger.trace(te);
+            logger.warn(te);
         }
         if (webErrorMessage.getCode() == 404) {
             webErrorMessage.setMessage("  [" + methodType + "] Not Found URI=" + servletPath);
@@ -134,6 +132,7 @@ public class ActionHandler {
 
     /**
      * 自动注入参数
+     *
      * @param fields
      * @param beanInstance
      * @param request

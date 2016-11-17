@@ -58,6 +58,21 @@ public class DefaultViewsRender {
         }
     }
 
+    public static void RenderJsonStr(HttpServletResponse response, String resultStr) {
+        try {
+            response.setContentType("application/json");
+            response.setCharacterEncoding(Constant.utf8);
+            PrintWriter printWriter = response.getWriter();
+            printWriter.write(resultStr);
+            printWriter.flush();
+            printWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("返回JSON数据出错", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void RenderFile(HttpServletResponse response, Object resultObj) {
         try {
             if (resultObj instanceof File) {
