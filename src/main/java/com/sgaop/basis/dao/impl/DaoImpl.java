@@ -151,7 +151,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -177,7 +177,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -198,7 +198,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql, null);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -215,7 +215,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.executeQueryCount(getConnection(), sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return 0;
         }
     }
@@ -232,7 +232,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.executeQueryCount(getConnection(), sql, null);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return 0;
         }
     }
@@ -250,7 +250,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -267,7 +267,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -279,7 +279,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.doLoadList(getConnection(), cls, daoMethod, sql);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -298,7 +298,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.doLoadSinge(getConnection(), cls, daoMethod, sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -314,7 +314,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.executeQuerySinge(getConnection(), sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -324,7 +324,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.executeQueryRecordSinge(getConnection(), sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -341,7 +341,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.executeQueryList(getConnection(), sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -351,7 +351,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.executeRecordQueryList(getConnection(), sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }
@@ -369,7 +369,7 @@ public class DaoImpl implements Dao {
         try {
             return JdbcAccessor.doLoadSinge(getConnection(), cls, daoMethod, sql, params);
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
             return null;
         }
     }

@@ -95,7 +95,7 @@ public class ActionHandler {
                     } else {
                         webErrorMessage.setCode(500);
                         webErrorMessage.setMessage("Action的参数,除HttpServletRequest,HttpServletResponse外必须使用@" + Parameter.class + "注解");
-                        logger.warn(webErrorMessage.getMessage());
+                        logger.error(webErrorMessage.getMessage());
                     }
                 }
                 Object object = handlerMethod.invoke(beanInstance, actionParamList.toArray());
@@ -120,7 +120,7 @@ public class ActionHandler {
             }
             webErrorMessage.setCode(500);
             logger.trace(te);
-            logger.warn(te);
+            logger.error(te);
         }
         if (webErrorMessage.getCode() == 404) {
             webErrorMessage.setMessage("  [" + methodType + "] Not Found URI=" + servletPath);

@@ -8,7 +8,7 @@ import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.view.ViewsRegister;
 import com.sgaop.basis.scanner.ClassScanner;
-import com.sgaop.basis.scanner.ProperScanner;
+import com.sgaop.basis.scanner.PropertiesHelper;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;
@@ -27,7 +27,7 @@ public class ServletInitListener implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         //加载全局配置文件
-        ProperScanner.init();
+        PropertiesHelper.init();
         //扫描关键注解
         ClassScanner.init();
         //注册默认视图
@@ -52,7 +52,7 @@ public class ServletInitListener implements ServletContextListener {
             setup.init(servletContextEvent);
             MvcsManager.putSetupCache(Constant.WEB_SETUP,setup);
         } catch (Exception e) {
-            logger.warn("环境初始化时发生错误！", e);
+            logger.error("环境初始化时发生错误！", e);
             throw new RuntimeException("环境初始化时发生错误！", e);
         }
     }
@@ -62,7 +62,7 @@ public class ServletInitListener implements ServletContextListener {
             WebSetup setup= (WebSetup)MvcsManager.getSetupCache(Constant.WEB_SETUP);
             setup.destroy(servletContextEvent);
         } catch (Exception e) {
-            logger.warn("环境销毁时发生错误！",e);
+            logger.error("环境销毁时发生错误！",e);
             throw new RuntimeException("环境销毁时发生错误！", e);
         }
     }

@@ -27,7 +27,7 @@ public class ClassScanner {
     public static Set<Class<?>> classes = new HashSet<>();
 
     static {
-        classes = ClassScannerHelper.scanPackage("");
+        classes = ClassHelper.scanPackage("");
     }
 
     public static List<Class<?>> classes() {
