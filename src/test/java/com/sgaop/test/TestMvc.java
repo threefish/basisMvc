@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.sgaop.basis.annotation.Inject;
 import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.dao.Dao;
-import com.sgaop.basis.scanner.ClassScanner;
-import com.sgaop.basis.scanner.PropertiesHelper;
+import com.sgaop.basis.scanner.ClassHelper;
+import com.sgaop.basis.scanner.PropertiesScans;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -25,8 +25,8 @@ public class TestMvc {
     @BeforeClass
     public static void setUp() throws SQLException {
         //加载全局配置文件
-        PropertiesHelper.init();
-        ClassScanner.init();
+        PropertiesScans.init();
+        ClassHelper.init();
     }
 
     @Test

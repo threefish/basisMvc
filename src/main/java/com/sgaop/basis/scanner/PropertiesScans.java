@@ -15,7 +15,7 @@ import java.util.Properties;
  * Date: 2016/11/18 0018
  * To change this template use File | Settings | File Templates.
  */
-public class PropertiesHelper {
+public class PropertiesScans {
 
     private static final Logger log = Logger.getRootLogger();
 

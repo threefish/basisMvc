@@ -4,11 +4,10 @@ package com.sgaop.basis.web;
 import com.google.gson.Gson;
 import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
-import com.sgaop.basis.dao.Dao;
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.view.ViewsRegister;
-import com.sgaop.basis.scanner.ClassScanner;
-import com.sgaop.basis.scanner.PropertiesHelper;
+import com.sgaop.basis.scanner.ClassHelper;
+import com.sgaop.basis.scanner.PropertiesScans;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;
@@ -27,15 +26,15 @@ public class ServletInitListener implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         //加载全局配置文件
-        PropertiesHelper.init();
+        PropertiesScans.init();
         //扫描关键注解
-        ClassScanner.init();
+        ClassHelper.init();
         //注册默认视图
         ViewsRegister.RegisterDefaultView();
         //执行自定义启动类
         handlerInit(servletContextEvent);
         //初始化IOC
-        IocBeanContext.me().init(ClassScanner.classes);
+        IocBeanContext.me().init(ClassHelper.classes);
         logger.info("环境初始化成功");
         logger.debug("UrlMapping:" + new Gson().toJson(MvcsManager.urlMappingList()));
     }

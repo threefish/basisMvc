@@ -1,77 +1,138 @@
 package com.sgaop.basis.scanner;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.LinkedHashSet;
+
+import com.sgaop.basis.annotation.*;
+import com.sgaop.basis.cache.MvcsManager;
+import com.sgaop.basis.constant.Constant;
+import com.sgaop.basis.dao.bean.TableFiled;
+import com.sgaop.basis.dao.bean.TableInfo;
+import com.sgaop.basis.mvc.ActionMethod;
+import com.sgaop.basis.util.ClassTool;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 
 /**
  * Created by IntelliJ IDEA.
  * User: 306955302@qq.com
- * Date: 2016/11/18 0018
+ * Date: 2016/5/8 0008
  * To change this template use File | Settings | File Templates.
  */
 public class ClassHelper {
 
-    private static ClassLoader classLoader = null;
+    public static Set<Class<?>> classes = new HashSet<>();
 
-    private static String basePath = "";
-
-    public static Set<Class<?>> scanPackage(String packageName) {
-        //存放扫描到的类
-        Set<Class<?>> classes = new LinkedHashSet<>();
-        try {
-            classLoader = Thread.currentThread().getContextClassLoader();
-            //将包名转换为文件路径
-            URI base = classLoader.getResource("").toURI();
-            basePath = Paths.get(base).toString();
-            Path path = Paths.get(basePath, packageName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)));
-            Files.walkFileTree(path, new FindFile(classes));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return classes;
+    static {
+        classes = ClassScans.scanPackage("");
     }
 
-    private static class FindFile extends SimpleFileVisitor<Path> {
+    public static List<Class<?>> classes() {
+        return new ArrayList(classes);
+    }
 
-        private Set<Class<?>> classes;
-
-        public FindFile(Set<Class<?>> classes) {
-            this.classes = classes;
-        }
-
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-            try {
-                if (file.toString().endsWith(".class")) {
-                    String packgeClassName = file.toString().replace(basePath, "").replaceAll(Matcher.quoteReplacement(File.separator), ".");
-                    if (packgeClassName.startsWith(".")) {
-                        packgeClassName = packgeClassName.substring(1, packgeClassName.length());
+    public static void init() {
+        for (Class<?> ks : classes) {
+            String classKey = ks.getName();
+            Action action = ks.getAnnotation(Action.class);
+            Setup setup = ks.getAnnotation(Setup.class);
+            Table table = ks.getAnnotation(Table.class);
+            if (action != null) {
+                Method[] methods = ks.getMethods();
+                for (Method method : methods) {
+                    Path webAction = method.getAnnotation(Path.class);
+                    OK ok = method.getAnnotation(OK.class);
+                    String okVal = "";
+                    if (ok != null) {
+                        okVal = ok.value();
                     }
-                    packgeClassName = packgeClassName.replace(".class", "");
-                    classes.add(classLoader.loadClass(packgeClassName));
+                    String relpath = "";
+                    if (webAction != null) {
+                        if (webAction.value().length == 0) {
+                            relpath = action.value() + "/" + method.getName();
+                            putUrlMapping(relpath, method, classKey, ks, okVal, webAction.note());
+                        } else {
+                            for (String path : webAction.value()) {
+                                relpath = action.value() + path;
+                                putUrlMapping(relpath, method, classKey, ks, okVal, webAction.note());
+                            }
+                        }
+                    }
                 }
-//                else if (file.toString().endsWith(".jar")) {
-//                    Path path = file.getFileSystem().getPath("com","sgaop","basis","");
-//                    classes.add(classLoader.loadClass(""));
-//                }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            } else if (setup != null) {
+                try {
+                    MvcsManager.putSetupCache(Constant.WEB_SETUP, ks.newInstance());
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            } else if (table != null) {
+                Field[] fields = ks.getDeclaredFields();
+                TableInfo daoMethod = new TableInfo();
+                if ("".equals(table.value())) {
+                    daoMethod.setTableName(ks.getSimpleName().toLowerCase());
+                } else {
+                    daoMethod.setTableName(table.value());
+                }
+                for (Field field : fields) {
+                    Colum colum = field.getAnnotation(Colum.class);
+                    Pk pk = field.getAnnotation(Pk.class);
+                    TableFiled tableFiled = new TableFiled();
+                    if (colum != null) {
+                        if ("".equals(colum.value())) {
+                            tableFiled.setColumName(field.getName().toLowerCase());
+                            tableFiled.setFiledName(field.getName());
+                        } else {
+                            tableFiled.setColumName(colum.value().toLowerCase());
+                            tableFiled.setFiledName(field.getName());
+                        }
+                        daoMethod.addColums(tableFiled.getColumName());
+                        tableFiled.set_setMethodName(ClassTool.setMethodName(field.getName(), field.getType()));
+                        tableFiled.set_getMethodName(ClassTool.getMethodName(field.getName(), field.getType()));
+                        daoMethod.addDaoFiled(tableFiled.getColumName(), tableFiled);
+                    }
+                    if (pk != null) {
+                        if (!"".equals(pk.value())) {
+                            daoMethod.setPkName(pk.value());
+                        } else {
+                            daoMethod.setPkName(field.getName());
+                        }
+                    }
+                }
+                MvcsManager.putTableCache(classKey, daoMethod);
             }
-            return FileVisitResult.CONTINUE;
+        }
+//        IocBeanContext.me().init(classes);
+    }
+
+
+    private static void putUrlMapping(String relpath, Method method, String classKey, Class<?> ks, String okVal, String note) {
+        boolean hasPOST = method.isAnnotationPresent(POST.class);
+        boolean hasDELETE = method.isAnnotationPresent(DELETE.class);
+        boolean hasPUT = method.isAnnotationPresent(PUT.class);
+        boolean hasGET = method.isAnnotationPresent(GET.class);
+        boolean hasHEAD = method.isAnnotationPresent(HEAD.class);
+        if (hasPOST) {
+            MvcsManager.putUrlCache(relpath, new ActionMethod("POST", classKey, ks, method, okVal, note));
+        }
+        if (hasHEAD) {
+            MvcsManager.putUrlCache(relpath, new ActionMethod("HEAD", classKey, ks, method, okVal, note));
+        }
+        if (hasDELETE) {
+            MvcsManager.putUrlCache(relpath, new ActionMethod("DELETE", classKey, ks, method, okVal, note));
+        }
+        if (hasPUT) {
+            MvcsManager.putUrlCache(relpath, new ActionMethod("PUT", classKey, ks, method, okVal, note));
+        }
+        //默认支持get访问
+        if (hasGET || (!hasPOST && !hasDELETE && !hasPUT && !hasHEAD)) {
+            MvcsManager.putUrlCache(relpath, new ActionMethod("GET", classKey, ks, method, okVal, note));
         }
     }
 
 
-    public static void main(String[] args) {
-        scanPackage("");
-    }
 }
