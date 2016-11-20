@@ -110,17 +110,29 @@ public class ActionHandler {
                 webErrorMessage.setCode(404);
             }
         } catch (Throwable e) {
+            webErrorMessage.setAjax(Mvcs.isAjax());
             Throwable te = e.getCause();
             if (te instanceof ShiroAutcException) {
-                webErrorMessage.setAjax(Mvcs.isAjax());
                 webErrorMessage.setRedirectUrl(((ShiroAutcException) te).getRedirectUrl());
-                webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\",\"loginUrl\":\"%s\"}", te.getMessage(), webErrorMessage.getRedirectUrl()));
+                webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\",\"loginUrl\":\"%s\"}", te.getMessage().replace("\"","\\\""), webErrorMessage.getRedirectUrl()));
+            } else if (te != null) {
+                if (Mvcs.isAjax()) {
+                    webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", te.getMessage().replace("\"","\\\"")));
+                } else {
+                    webErrorMessage.setMessage(te.getMessage());
+                }
+                logger.trace(te);
+                logger.error(te);
             } else {
-                webErrorMessage.setMessage(te.getMessage());
+                if (Mvcs.isAjax()) {
+                    webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", e.getMessage().replace("\"","\\\"")));
+                } else {
+                    webErrorMessage.setMessage(e.getMessage());
+                }
+                logger.trace(e);
+                logger.error(e);
             }
             webErrorMessage.setCode(500);
-            logger.trace(te);
-            logger.error(te);
         }
         if (webErrorMessage.getCode() == 404) {
             webErrorMessage.setMessage("  [" + methodType + "] Not Found URI=" + servletPath);

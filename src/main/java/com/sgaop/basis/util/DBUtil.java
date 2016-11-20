@@ -1,5 +1,6 @@
 package com.sgaop.basis.util;
 
+import com.alibaba.druid.pool.DruidPooledPreparedStatement;
 import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.Pager;
 import com.sgaop.basis.dao.bean.TableFiled;
@@ -108,7 +109,7 @@ public class DBUtil {
             sql += " where " + whereSql;
         }
         if (!orderSql.trim().equals("")) {
-            sql += " "+orderSql;
+            sql += " " + orderSql;
         }
         return sql;
     }
@@ -119,7 +120,7 @@ public class DBUtil {
      * @param daoMethod
      * @param whereSql
      */
-    public static String generateCountSql(TableInfo daoMethod,String whereSql) {
+    public static String generateCountSql(TableInfo daoMethod, String whereSql) {
         String sql = "select count(*) from " + daoMethod.getTableName();
         if (!whereSql.trim().equals("")) {
             sql += " where " + whereSql;
@@ -148,7 +149,7 @@ public class DBUtil {
      * @throws SQLException
      */
     public static void setParams(PreparedStatement pstm, Object... params) throws SQLException {
-        if(params!=null){
+        if (params != null) {
             for (int x = 1; x <= params.length; x++) {
                 pstm.setObject(x, params[x - 1]);
             }
@@ -190,10 +191,16 @@ public class DBUtil {
     /**
      * 打印sql语句
      *
-     * @param sql
+     * @param statement
      */
-    public static void showSql(String sql) {
-        sql = sql.substring(sql.indexOf(":") + 1, sql.length());
+    public static void showSql(Statement statement) {
+        String sql = "";
+        if (statement instanceof DruidPooledPreparedStatement) {
+            sql = ((DruidPooledPreparedStatement) statement).getKey().getSql();
+        } else {
+            sql = statement.toString();
+            sql = sql.substring(sql.indexOf(":") + 1, sql.length());
+        }
         logger.debug(sql);
     }
 
@@ -203,7 +210,7 @@ public class DBUtil {
         for (String colum : tableInfo.getColums()) {
             TableFiled tableFiled = tableInfo.getDaoFiled(colum);
             Object value = data.get(colum);
-            if(value!=null){
+            if (value != null) {
                 String methodName = tableFiled.get_setMethodName();
                 ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
             }

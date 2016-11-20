@@ -34,6 +34,8 @@ public class ViewHandler {
                 basePath = basePath.equals("/") ? "" : basePath;
                 DefaultViewsRender.RenderRedirect(basePath + error.getRedirectUrl(), response);
             }
+        } else if (error.getCode() == 500 && error.isAjax()) {
+            DefaultViewsRender.RenderJsonStr(response, error.getMessage());
         } else if (error.getCode() != 500 && error.getCode() != 404) {
             if (resultType != null) {
                 if (ViewsRegister.hasRegisterView(resultType)) {
@@ -44,7 +46,7 @@ public class ViewHandler {
                 } else if (resultType.equals("json") || resultType.startsWith("json:")) {
                     String regs = "";
                     if (resultType.startsWith("json:")) {
-                        regs=resultType.substring(5, resultType.length());
+                        regs = resultType.substring(5, resultType.length());
                     }
                     DefaultViewsRender.RenderJSON(response, regs, actionResult.getResultData());
                 } else if (resultType.startsWith("jsp:") || resultType.startsWith("fw:")) {

@@ -1,5 +1,6 @@
 package com.sgaop.basis.dao.impl;
 
+import com.alibaba.druid.pool.DruidPooledPreparedStatement;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.dao.entity.Record;
@@ -30,7 +31,7 @@ public class JdbcAccessor {
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
-        DBUtil.showSql(pstm.toString());
+        DBUtil.showSql(pstm);
         //执行查询，并取得查询结果
         ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
@@ -59,7 +60,7 @@ public class JdbcAccessor {
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
-        DBUtil.showSql(pstm.toString());
+        DBUtil.showSql(pstm);
         //执行查询，并取得查询结果
         ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
@@ -89,7 +90,7 @@ public class JdbcAccessor {
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
-        DBUtil.showSql(pstm.toString());
+        DBUtil.showSql(pstm);
         //执行查询，并取得查询结果
         ResultSet rs = pstm.executeQuery();
         while (rs.next()) {
@@ -110,7 +111,7 @@ public class JdbcAccessor {
         List<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
         PreparedStatement pstm = conn.prepareStatement(sql);
         //打印sql
-        DBUtil.showSql(pstm.toString());
+        DBUtil.showSql(pstm);
         //执行查询，并取得查询结果
         ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
@@ -140,7 +141,7 @@ public class JdbcAccessor {
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
-        DBUtil.showSql(pstm.toString());
+        DBUtil.showSql(pstm);
         //执行查询，并取得查询结果
         ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
@@ -170,7 +171,7 @@ public class JdbcAccessor {
         //设置参数
         DBUtil.setParams(pstm, params);
         //打印sql
-        DBUtil.showSql(pstm.toString());
+        DBUtil.showSql(pstm);
         //执行查询，并取得查询结果
         ResultSet rs = pstm.executeQuery();
         ResultSetMetaData meta = rs.getMetaData();
@@ -287,7 +288,7 @@ public class JdbcAccessor {
                 i++;
             }
             //打印sql
-            DBUtil.showSql(pstm.toString());
+            DBUtil.showSql(pstm);
             //超过一条记录使用批量操作
             if (listBean.size() > 1) {
                 pstm.addBatch();
@@ -348,7 +349,7 @@ public class JdbcAccessor {
             //设置主键值
             pstm.setObject(i, ClassTool.invokeGetMethod(cls, bean, tableInfo.getDaoFiled(tableInfo.getPkName()).get_getMethodName()));
             //打印sql
-            DBUtil.showSql(pstm.toString());
+            DBUtil.showSql(pstm);
             //超过一条记录使用批量操作
             if (listBean.size() > 1) {
                 pstm.addBatch();
@@ -387,7 +388,7 @@ public class JdbcAccessor {
             //设置主键值
             pstm.setObject(1, ClassTool.invokeGetMethod(cls, bean, tableInfo.getDaoFiled(tableInfo.getPkName()).get_getMethodName()));
             //打印sql
-            DBUtil.showSql(pstm.toString());
+            DBUtil.showSql(pstm);
             //超过一条记录使用批量操作
             if (listBean.size() > 1) {
                 pstm.addBatch();
