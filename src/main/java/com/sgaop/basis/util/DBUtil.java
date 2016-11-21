@@ -122,7 +122,7 @@ public class DBUtil {
      */
     public static String generateCountSql(TableInfo daoMethod, String whereSql) {
         String sql = "select count(*) from " + daoMethod.getTableName();
-        if (!whereSql.trim().equals("")) {
+        if (!"".equals(whereSql)) {
             sql += " where " + whereSql;
         }
         return sql;
