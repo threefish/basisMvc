@@ -165,12 +165,9 @@ public class ClassTool {
             Method method = clss.getMethod(methodName);
             method.setAccessible(true);
             value = method.invoke(pojo);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception e){
+//            e.printStackTrace();
+            log.debug(e);
         }
         return value;
     }

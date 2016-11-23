@@ -93,6 +93,18 @@ public class DaoImpl implements Dao {
     }
 
     /**
+     * 更新一个对象
+     *
+     * @param bean
+     * @return
+     */
+    public boolean update(Object bean, String whereSql, Object... parm) throws Exception {
+        Class cls = bean.getClass();
+        TableInfo daoMethod = (TableInfo) MvcsManager.getTableCache(cls.getName());
+        return JdbcAccessor.doUpdateWhereSql(getConnection(), cls, daoMethod, bean,whereSql,parm)>0;
+    }
+
+    /**
      * 批量更新
      *
      * @param cls

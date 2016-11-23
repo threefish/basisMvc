@@ -30,7 +30,7 @@ public class ParameterConverter {
             Field field = fieldArray[i];
             Class fieldType = field.getType();
             String fieldName = field.getName();
-            String methodName = "set"+fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+            String methodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
             String fromName = prefix + "." + fieldName;
             Object paramObj = requestParameterMap.get(fromName);
             if (paramObj == null) {

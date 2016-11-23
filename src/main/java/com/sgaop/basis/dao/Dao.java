@@ -50,6 +50,17 @@ public interface Dao {
      */
     boolean update(Object bean) throws Exception;
 
+
+    /**
+     * 更新一个对象
+     *
+     * @param bean
+     * @param whereSql
+     * @return
+     */
+    boolean update(Object bean,String whereSql, Object... parm) throws Exception;
+
+
     /**
      * 批量更新
      *

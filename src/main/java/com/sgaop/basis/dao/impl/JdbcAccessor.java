@@ -1,6 +1,5 @@
 package com.sgaop.basis.dao.impl;
 
-import com.alibaba.druid.pool.DruidPooledPreparedStatement;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.dao.entity.Record;
@@ -331,8 +330,10 @@ public class JdbcAccessor {
                     TableFiled tableFiled = tableInfo.getDaoFiled(colum);
                     String methodName = tableFiled.get_getMethodName();
                     Object value = ClassTool.invokeGetMethod(cls, bean, methodName);
-                    sb.append(colum + "=?,");
-                    columMap.put(tableFiled.getColumName(), value);
+                    if (value != null) {
+                        sb.append(colum + "=?,");
+                        columMap.put(tableFiled.getColumName(), value);
+                    }
                 }
             }
             sb.delete(sb.length() - 1, sb.length());
@@ -361,6 +362,63 @@ public class JdbcAccessor {
             keys[0] = pstm.executeUpdate();
         }
 
+        DBUtil.close(pstm, rs, conn);
+        return keys;
+    }
+
+
+    /**
+     * 批量更新
+     *
+     * @param cls
+     * @param tableInfo
+     * @return
+     */
+    public static int doUpdateWhereSql(Connection conn, Class cls, TableInfo tableInfo, Object bean, String whereSql, Object... parm) throws Exception {
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        int keys = 0;
+        LinkedHashMap<String, Object> columMap = new LinkedHashMap<>();
+        StringBuffer sb = new StringBuffer("update " + tableInfo.getTableName() + " set ");
+        for (String colum : tableInfo.getColums()) {
+            if (!colum.equals(tableInfo.getPkName())) {
+                TableFiled tableFiled = tableInfo.getDaoFiled(colum);
+                String methodName = tableFiled.get_getMethodName();
+                Object value = ClassTool.invokeGetMethod(cls, bean, methodName);
+                if (value != null) {
+                    sb.append(colum + "=?,");
+                    columMap.put(tableFiled.getColumName(), value);
+                }
+            }
+        }
+        sb.delete(sb.length() - 1, sb.length());
+        if (tableInfo.getPkName()==null) {
+            sb.append(" where " + whereSql + " ");
+        } else {
+            sb.append(" where " + tableInfo.getPkName() + "=?");
+        }
+
+        if (pstm == null || pstm.isClosed()) {
+            pstm = conn.prepareStatement(sb.toString());
+        }
+
+        int i = 1;
+        for (Map.Entry entry : columMap.entrySet()) {
+            Object val = entry.getValue();
+            pstm.setObject(i, val);
+            i++;
+        }
+        for (Object par : parm) {
+            pstm.setObject(i, par);
+            i++;
+        }
+        if (tableInfo.getPkName() != null) {
+            //设置主键值
+            pstm.setObject(i, ClassTool.invokeGetMethod(cls, bean, tableInfo.getDaoFiled(tableInfo.getPkName()).get_getMethodName()));
+        }
+        //打印sql
+        DBUtil.showSql(pstm);
+        keys = pstm.executeUpdate();
         DBUtil.close(pstm, rs, conn);
         return keys;
     }
