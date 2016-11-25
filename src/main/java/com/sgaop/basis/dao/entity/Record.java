@@ -134,7 +134,6 @@ public class Record implements Map<String, Object>, Serializable {
 
     public void putAll(Map<? extends String, ? extends Object> out) {
         Iterator var2 = out.entrySet().iterator();
-
         while (var2.hasNext()) {
             Entry entry = (Entry) var2.next();
             this.map.put(((String) entry.getKey()).toLowerCase(), entry.getValue());

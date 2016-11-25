@@ -8,6 +8,7 @@ import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.mvc.ActionMethod;
 import com.sgaop.basis.util.ClassTool;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -23,7 +24,7 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class ClassHelper {
-
+    protected static final Logger log = Logger.getRootLogger();
     public static Set<Class<?>> classes = new HashSet<>();
 
     static {
@@ -35,76 +36,87 @@ public class ClassHelper {
     }
 
     public static void init() {
-        for (Class<?> ks : classes) {
-            String classKey = ks.getName();
-            Action action = ks.getAnnotation(Action.class);
-            Setup setup = ks.getAnnotation(Setup.class);
-            Table table = ks.getAnnotation(Table.class);
-            if (action != null) {
-                Method[] methods = ks.getMethods();
-                for (Method method : methods) {
-                    Path webAction = method.getAnnotation(Path.class);
-                    OK ok = method.getAnnotation(OK.class);
-                    String okVal = "";
-                    if (ok != null) {
-                        okVal = ok.value();
-                    }
-                    String relpath = "";
-                    if (webAction != null) {
-                        if (webAction.value().length == 0) {
-                            relpath = action.value() + "/" + method.getName();
-                            putUrlMapping(relpath, method, classKey, ks, okVal, webAction.note());
-                        } else {
-                            for (String path : webAction.value()) {
-                                relpath = action.value() + path;
+        try {
+            for (Class<?> ks : classes) {
+                String classKey = ks.getName();
+                Action action = ks.getAnnotation(Action.class);
+                Setup setup = ks.getAnnotation(Setup.class);
+                Table table = ks.getAnnotation(Table.class);
+                if (action != null) {
+                    Method[] methods = ks.getMethods();
+                    for (Method method : methods) {
+                        Path webAction = method.getAnnotation(Path.class);
+                        OK ok = method.getAnnotation(OK.class);
+                        String okVal = "";
+                        if (ok != null) {
+                            okVal = ok.value();
+                        }
+                        String relpath = "";
+                        if (webAction != null) {
+                            if (webAction.value().length == 0) {
+                                relpath = action.value() + "/" + method.getName();
                                 putUrlMapping(relpath, method, classKey, ks, okVal, webAction.note());
+                            } else {
+                                for (String path : webAction.value()) {
+                                    relpath = action.value() + path;
+                                    putUrlMapping(relpath, method, classKey, ks, okVal, webAction.note());
+                                }
                             }
                         }
                     }
-                }
-            } else if (setup != null) {
-                try {
-                    MvcsManager.putSetupCache(Constant.WEB_SETUP, ks.newInstance());
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            } else if (table != null) {
-                Field[] fields = ks.getDeclaredFields();
-                TableInfo daoMethod = new TableInfo();
-                if ("".equals(table.value())) {
-                    daoMethod.setTableName(ks.getSimpleName().toLowerCase());
-                } else {
-                    daoMethod.setTableName(table.value());
-                }
-                for (Field field : fields) {
-                    Colum colum = field.getAnnotation(Colum.class);
-                    Pk pk = field.getAnnotation(Pk.class);
-                    TableFiled tableFiled = new TableFiled();
-                    if (colum != null) {
-                        if ("".equals(colum.value())) {
-                            tableFiled.setColumName(field.getName().toLowerCase());
-                            tableFiled.setFiledName(field.getName());
-                        } else {
-                            tableFiled.setColumName(colum.value().toLowerCase());
-                            tableFiled.setFiledName(field.getName());
-                        }
-                        daoMethod.addColums(tableFiled.getColumName());
-                        tableFiled.set_setMethodName(ClassTool.setMethodName(field.getName(), field.getType()));
-                        tableFiled.set_getMethodName(ClassTool.getMethodName(field.getName(), field.getType()));
-                        daoMethod.addDaoFiled(tableFiled.getColumName(), tableFiled);
+                } else if (setup != null) {
+                    try {
+                        MvcsManager.putSetupCache(Constant.WEB_SETUP, ks.newInstance());
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
                     }
+                } else if (table != null) {
+                    Field[] fields = ks.getDeclaredFields();
+                    TableInfo tbinfo = new TableInfo();
+                    Pk pk = ks.getAnnotation(Pk.class);
                     if (pk != null) {
-                        if (!"".equals(pk.value())) {
-                            daoMethod.setPkName(pk.value());
-                        } else {
-                            daoMethod.setPkName(field.getName());
+                        tbinfo.setPkName(pk.value());
+                    }
+                    if ("".equals(table.value())) {
+                        tbinfo.setTableName(ks.getSimpleName().toLowerCase());
+                    } else {
+                        tbinfo.setTableName(table.value());
+                    }
+                    for (Field field : fields) {
+                        Colum colum = field.getAnnotation(Colum.class);
+                        ID id = field.getAnnotation(ID.class);
+                        TableFiled tf = new TableFiled();
+                        if (colum != null) {
+                            if ("".equals(colum.value())) {
+                                tf.setColumName(field.getName().toLowerCase());
+                                tf.setFiledName(field.getName());
+                            } else {
+                                tf.setColumName(colum.value().toLowerCase());
+                                tf.setFiledName(field.getName());
+                            }
+                            tbinfo.addColums(tf.getColumName());
+                            tf.set_setMethodName(ClassTool.setMethodName(field.getName(), field.getType()));
+                            tf.set_getMethodName(ClassTool.getMethodName(field.getName(), field.getType()));
+                            tbinfo.addDaoFiled(tf.getColumName(), tf);
+                        }
+                        if (id != null) {
+                            if (tbinfo.getPkName()==null) {
+                                if (id.value().equals("")) {
+                                    tbinfo.setPkName(new String[]{field.getName()});
+                                } else {
+                                    tbinfo.setPkName(new String[]{id.value()});
+                                }
+                            }
                         }
                     }
+                    MvcsManager.putTableCache(classKey, tbinfo);
                 }
-                MvcsManager.putTableCache(classKey, daoMethod);
             }
+
+        } catch (Exception e) {
+            log.error("classes Helper init error! "+e);
         }
 //        IocBeanContext.me().init(classes);
     }

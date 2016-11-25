@@ -18,9 +18,9 @@ public class TableInfo {
     private String tableName;
 
     /**
-     * 主键
+     * 主键组
      */
-    private String pkName;
+    private String[] pkName;
 
     /**
      * 表列字段
@@ -41,11 +41,11 @@ public class TableInfo {
         return daoFileds.get(colum);
     }
 
-    public String getPkName() {
+    public String[] getPkName() {
         return pkName;
     }
 
-    public void setPkName(String pkName) {
+    public void setPkName(String[] pkName) {
         this.pkName = pkName;
     }
 

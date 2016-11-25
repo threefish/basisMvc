@@ -5,12 +5,15 @@ import com.sgaop.basis.dao.DbType;
 import com.sgaop.basis.dao.Pager;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
+import com.sgaop.basis.dao.entity.Record;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -177,14 +180,14 @@ public class DBUtil {
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
         }
-        try {
-            if (conn != null && !conn.isClosed() && conn.getAutoCommit()) {
-                // 不自动关闭连接
-                //conn.close();
-            }
-        } catch (Exception ex) {
-            logger.debug(ex.getMessage(), ex);
-        }
+//        try {
+//            if (conn != null && !conn.isClosed() && conn.getAutoCommit()) {
+//                 不自动关闭连接
+//                conn.close();
+//            }
+//        } catch (Exception ex) {
+//            logger.debug(ex.getMessage(), ex);
+//        }
     }
 
 
@@ -204,6 +207,19 @@ public class DBUtil {
         logger.debug(sql);
     }
 
+    public static <E> E RecordToEntity(Class cls, TableInfo tableInfo, Record record) throws Exception {
+        Object obj = cls.newInstance();
+        for (String colum : tableInfo.getColums()) {
+            TableFiled tableFiled = tableInfo.getDaoFiled(colum);
+            Object value = record.get(colum.toLowerCase());
+            if (value != null) {
+                String methodName = tableFiled.get_setMethodName();
+                ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
+            }
+        }
+        return (E) obj;
+    }
+
 
     public static <T> T MapToEntity(Class cls, TableInfo tableInfo, HashMap<String, Object> data) throws Exception {
         Object obj = cls.newInstance();
@@ -216,6 +232,45 @@ public class DBUtil {
             }
         }
         return (T) obj;
+    }
+
+
+    /**
+     * 执行查询，并取得查询单个结果，将结果装入HashMap中
+     *
+     * @return
+     */
+    public static Record getRecord(ResultSet rs) throws Exception {
+        Record data = new Record();
+        ResultSetMetaData meta = rs.getMetaData();
+        int columnCount = meta.getColumnCount();
+        int max = 0;
+        while (rs.next() && max == 0) {
+            for (int i = 1; i <= columnCount; i++) {
+                data.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
+            }
+            max++;
+        }
+        return data;
+    }
+
+    /**
+     * 执行查询，并取得查询单个结果，将结果装入HashMap中
+     *
+     * @return
+     */
+    public static List<Record> getRecords(ResultSet rs) throws Exception {
+        List<Record> records = new ArrayList<>();
+        ResultSetMetaData meta = rs.getMetaData();
+        int columnCount = meta.getColumnCount();
+        while (rs.next()) {
+            Record record = new Record();
+            for (int i = 1; i <= columnCount; i++) {
+                record.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
+            }
+            records.add(record);
+        }
+        return records;
     }
 
 
@@ -259,4 +314,6 @@ public class DBUtil {
             is.close();
         }
     }
+
+
 }

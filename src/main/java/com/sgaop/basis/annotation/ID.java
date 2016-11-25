@@ -1,22 +1,16 @@
 package com.sgaop.basis.annotation;
 
+import java.lang.annotation.*;
+
 /**
  * Created by IntelliJ IDEA.
  * User: 306955302@qq.com
- * Date: 2016/6/24 0024
+ * Date: 2016/11/23 0023
  * To change this template use File | Settings | File Templates.
  */
-
-import java.lang.annotation.*;
-
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.FIELD})
 @Documented
-public @interface Pk {
-    /**
-     * 字段名称
-     *
-     * @return
-     */
-    String[] value();
+public @interface ID {
+   String value() default "";
 }

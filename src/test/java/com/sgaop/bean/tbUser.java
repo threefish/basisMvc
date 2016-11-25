@@ -1,6 +1,7 @@
 package com.sgaop.bean;
 
 import com.sgaop.basis.annotation.Colum;
+import com.sgaop.basis.annotation.ID;
 import com.sgaop.basis.annotation.Pk;
 import com.sgaop.basis.annotation.Table;
 
@@ -13,9 +14,9 @@ import java.sql.Timestamp;
  * To change this template use File | Settings | File Templates.
  */
 @Table("tb_user")
+@Pk({"id","tk"})
 public class tbUser {
 
-    @Pk
     @Colum
     private int id;
 

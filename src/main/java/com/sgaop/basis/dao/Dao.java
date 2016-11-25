@@ -1,223 +1,246 @@
 package com.sgaop.basis.dao;
 
-
 import com.sgaop.basis.dao.entity.Record;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by 30695 on 2016/9/25 0025.
+ * Created by IntelliJ IDEA.
+ * User: 306955302@qq.com
+ * Date: 2016/11/23 0023
+ * To change this template use File | Settings | File Templates.
  */
-
 public interface Dao {
 
     /**
      * 设置数据源
      *
-     * @param dataSource
+     * @param dataSource  数据源
      * @throws SQLException
      */
     void setDataSource(DataSource dataSource) throws SQLException;
 
+    /**
+     * 添加操作
+     *
+     * @param entity 对象实体
+     * @param <E>    泛型
+     * @return 主键ID
+     */
+    <E> int insert(E entity);
 
     /**
-     * 插入一个对象,返回主键ID
+     * 添加操作
      *
-     * @param bean
-     * @return
+     * @param entitys 对象实体
+     * @param <E>     泛型
+     * @return 返回插入实体
      */
-    int insert(Object bean) throws Exception;
+    <E> int[] insert(List<E> entitys);
 
     /**
-     * 批量插入
+     * 更新表中一行数据
      *
-     * @param cls
-     * @param list
-     * @return
+     * @param entity 对象实体
+     * @param <E>    泛型
+     * @return 是否成功
      */
-    int[] insert(Class cls, ArrayList<Object> list) throws Exception;
-
-
-    /**
-     * 更新一个对象
-     *
-     * @param bean
-     * @return
-     */
-    boolean update(Object bean) throws Exception;
-
-
-    /**
-     * 更新一个对象
-     *
-     * @param bean
-     * @param whereSql
-     * @return
-     */
-    boolean update(Object bean,String whereSql, Object... parm) throws Exception;
+    <E> boolean update(E entity);
 
 
     /**
-     * 批量更新
+     * 更新表中一行数据
      *
-     * @param cls
-     * @param list
-     * @return
+     * @param entity 对象实体
+     * @param condition 条件实体
+     * @param <E>    泛型
+     * @return 是否成功
      */
-    int[] update(Class cls, ArrayList<Object> list) throws Exception;
-
-    /**
-     * 批量删除
-     *
-     * @param cls
-     * @param list
-     * @return
-     */
-    int[] delect(Class cls, ArrayList<Object> list) throws Exception;
-
-    /**
-     * 删除一个对象
-     *
-     * @param bean
-     * @return
-     */
-    boolean delect(Object bean) throws Exception;
+    <E> boolean update(E entity,Condition condition);
 
 
     /**
-     * 查询全部
+     * 更新表中一行数据
      *
-     * @param cls
-     * @param pager
-     * @param order
-     * @return
+     * @param entity    对象实体
+     * @param colum     字段
+     * @param <E>       泛型
+     * @return 是否成功
      */
-    <T> List<T> queryList(Class cls, Pager pager, String order);
+    <E> boolean update(E entity,String colum,Object val);
+
+    /**
+     * 批量更新表中数据
+     *
+     * @param entitys 对象实体
+     * @param <E>     泛型
+     * @return 是否成功
+     */
+    <E> int[] update(List<E> entitys);
+
+
 
 
     /**
-     * 按条件查询全部
+     * 删除表中一行数据
      *
-     * @param cls
-     * @param pager
-     * @param whereSqlAndOrder
-     * @param params
-     * @return
+     * @param entity 对象实体
+     * @param <E>    泛型
+     * @return 是否成功
      */
-    <T> List<T> queryCndList(Class cls, Pager pager, String whereSqlAndOrder, Object... params);
+    <E> boolean delete(E entity);
 
     /**
-     * 按条件查询全部
+     * 删除表中一行数据
      *
-     * @param cls
-     * @param pager
-     * @return
+     * @param entity 对象实体
+     * @param condition 条件实体
+     * @param <E>    泛型
+     * @return 是否成功
      */
-    <T> List<T> queryCndList(Class cls, Pager pager);
-
-
-    /**
-     * 按条件查询全部
-     *
-     * @param cls
-     * @param whereSql
-     * @param params
-     * @return
-     */
-    int queryCndListCount(Class cls, String whereSql, Object... params);
+    <E> boolean delete(E entity,Condition condition);
 
     /**
-     * 按条件查询全部
+     * 删除表中多行数据
      *
-     * @param cls
-     * @return
+     * @param entitys 对象的集合
+     * @param <E>     泛型
+     * @return 是否成功
      */
-    int queryCndListCount(Class cls);
+    <E> boolean delete(List<E> entitys);
 
     /**
-     * 按自定义sql条件查询全部
-     *
-     * @param cls
-     * @param sql
-     * @param params
-     * @return
+     * @param entityClass 实体类
+     * @param id          主键ID
+     * @param <E>         泛型
+     * @return 要获得的异常返回null
      */
-   <T> List<T> querySqlList(Class cls, String sql, Object... params);
+    <E> E fetch(Class<E> entityClass, long id);
 
 
     /**
-     * 查询全部
-     *
-     * @param cls
-     * @return
+     * @param entityClass 实体类
+     * @param condition   条件实体
+     * @param <E>         泛型
+     * @return 要获得的异常返回null
      */
-    <T> List<T> queryAll(Class cls) ;
+    <E> E fetch(Class<E> entityClass, Condition condition);
 
 
     /**
-     * 查询全部
-     *
-     * @param cls
-     * @return
+     * @param entityClass 实体类
+     * @param colum       字段名
+     * @param value       属性值
+     * @param <E>         泛型
+     * @return 要获得的如果不存在返回null
      */
-    <T> List<T> queryAll(Class cls,String orderSql);
+    <E> E fetch(Class<E> entityClass, String colum, Object value);
+
 
     /**
-     * 按sql条件单条记录
+     * 查询所有数据
      *
-     * @param cls
-     * @param whereSql
-     * @param params
-     * @return
+     * @param entityClass 实体类
+     * @param <E>         泛型
+     * @return 数据列表
      */
-    <T> T querySinge(Class cls, String whereSql, Object... params);
+
+    <E> List<E> query(Class<E> entityClass);
+
 
     /**
-     * 根据sql查询单个对象
+     * 查询所有数据
      *
-     * @param sql
-     * @param params
-     * @return
+     * @param entityClass 实体类
+     * @param <E>         泛型
+     * @return 数据列表
      */
-    HashMap<String, Object> querySinge(String sql, Object... params);
+
+    <E> List<E> query(Class<E> entityClass,Pager pager);
 
     /**
-     * 根据sql查询单个对象
+     * 查询所有数据
      *
-     * @param sql
-     * @param params
-     * @return
+     * @param entityClass 实体类
+     * @param <E>         泛型
+     * @return 数据列表
      */
-    Record queryRecord(String sql, Object... params);
+
+    <E> List<E> query(Class<E> entityClass, Pager pager, Condition condition);
+
 
     /**
-     * 根据sql查询多个对象
+     * 查询所有数据
      *
-     * @param sql
-     * @param params
-     * @return
+     * @param entityClass 实体类
+     * @param condition   条件实体
+     * @param <E>         泛型
+     * @return 数据列表
      */
-    List<HashMap<String, Object>> queryList(String sql, Object... params);
+    <E> List<E> query(Class<E> entityClass, Condition condition);
+
 
     /**
-     * 根据sql查询多个对象
+     * 查询字段名等值的实体列表
      *
-     * @param sql
-     * @param params
-     * @return
+     * @param entityClass 实体类
+     * @param colum       属性名
+     * @param value       属性值
+     * @param <E>         泛型
+     * @return 数据列表
      */
-    List<Record> queryRecordList(String sql, Object... params);
+    <E> List<E> query(Class<E> entityClass, String colum, Object value);
+
 
     /**
-     * 按主键查询单条记录
+     * 获得查询的对象实体总数
      *
-     * @param cls
-     * @param params
-     * @return
+     * @param entityClass 实体类
+     * @return 对象实体总数 异常返回 0
      */
-    <T> T querySingePK(Class cls, Object params);
+    int count(Class<?> entityClass);
+
+    /**
+     * 获得查询的对象实体总数
+     *
+     * @param entityClass 实体类
+     * @param entityClass 条件实体
+     * @return 对象实体总数 异常返回 0
+     */
+    int count(Class<?> entityClass, Condition condition);
+
+
+    /**
+     * 根据实体条件查询数量
+     *
+     * @param entityClass 实体类
+     * @param colum       属性名
+     * @param value       属性值
+     * @return 数量
+     */
+    int count(Class<?> entityClass, String colum, Object value);
+
+
+    /**
+     * 执行非查询的SQL语言 使用 ? 做参数
+     *
+     * @param sql    sql语句
+     * @param values 参数值数组
+     * @return 返回影响的行数 异常返回-1
+     */
+    int execute(String sql, Object... values);
+
+
+    /**
+     * 执行查询的SQL语言 使用 ? 做参数
+     *
+     * @param sql    sql语句
+     * @param values 参数值数组
+     * @return 返回影响的行数 异常返回-1
+     */
+    List<Record> query(String sql, Object... values);
+
+
 }
