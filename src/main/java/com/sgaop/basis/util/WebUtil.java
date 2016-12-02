@@ -1,7 +1,5 @@
 package com.sgaop.basis.util;
 
-import com.sgaop.basis.mvc.Mvcs;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -17,8 +15,7 @@ public class WebUtil {
     }
 
 
-    public static String ip() {
-        HttpServletRequest request = Mvcs.getReq();
+    public static String ip(HttpServletRequest request) {
         if (request == null) {
             return "";
         }
@@ -32,8 +29,12 @@ public class WebUtil {
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
-        if (ip == null)
+        if (ip == null) {
             ip = "";
+        }
+        if (ip != null && ip.equals("0:0:0:0:0:0:0:1")) {
+            ip = "本地";
+        }
         return ip;
     }
 }
