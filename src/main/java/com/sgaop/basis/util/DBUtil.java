@@ -208,6 +208,9 @@ public class DBUtil {
     }
 
     public static <E> E RecordToEntity(Class cls, TableInfo tableInfo, Record record) throws Exception {
+        if(record.size()==0){
+            return null;
+        }
         Object obj = cls.newInstance();
         for (String colum : tableInfo.getColums()) {
             TableFiled tableFiled = tableInfo.getDaoFiled(colum);
