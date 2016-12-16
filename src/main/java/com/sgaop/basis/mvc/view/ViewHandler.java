@@ -42,6 +42,7 @@ public class ViewHandler {
                     String path[] = resultType.split(":");
                     Class<?> klass = ViewsRegister.getViewClass(path[0]);
                     View view = (View) klass.newInstance();
+                    view.afterProcess(request,response);
                     view.render(path[1], request, response, actionResult.getResultData());
                 } else if (resultType.equals("json") || resultType.startsWith("json:")) {
                     String regs = "";

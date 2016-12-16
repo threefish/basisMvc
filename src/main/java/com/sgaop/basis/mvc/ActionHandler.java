@@ -114,7 +114,7 @@ public class ActionHandler {
             Throwable te = e.getCause();
             if (te instanceof ShiroAutcException) {
                 webErrorMessage.setRedirectUrl(((ShiroAutcException) te).getRedirectUrl());
-                webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\",\"loginUrl\":\"%s\"}", te.getMessage().replace("\"","\\\""), webErrorMessage.getRedirectUrl()));
+                webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\",\"redirecUrl\":\"%s\"}", te.getMessage().replace("\"","\\\""), webErrorMessage.getRedirectUrl()));
             } else if (te != null) {
                 if (Mvcs.isAjax()) {
                     webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", te.getMessage().replace("\"","\\\"")));

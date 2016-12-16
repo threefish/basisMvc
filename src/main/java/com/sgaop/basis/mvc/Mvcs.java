@@ -2,6 +2,7 @@ package com.sgaop.basis.mvc;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -17,6 +18,17 @@ public class Mvcs {
 
     private static ThreadLocal<FrameRequest> local = new ThreadLocal();
 
+    private static ThreadLocal<String> i18nLang = new ThreadLocal();
+
+    public static void setI18nLang(String lang) {
+        i18nLang.set(lang);
+    }
+
+    public static String getI18nLang() {
+        //默认中文
+        return i18nLang.get() == null ? "zh_CN" : i18nLang.get();
+    }
+
     /**
      * 初始化
      *
@@ -30,6 +42,12 @@ public class Mvcs {
         servletRequest.setAttribute("ctxPath", servletRequest.getServletContext().getContextPath());
         FrameRequest frameRequest = new FrameRequest((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, reqMap, isAjax);
         local.set(frameRequest);
+        Cookie[] cookies = ((HttpServletRequest) servletRequest).getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("lang")) {
+                setI18nLang(cookie.getValue());
+            }
+        }
     }
 
     /**

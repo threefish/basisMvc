@@ -22,55 +22,80 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ParameterConverter {
-
+    /**
+     * 参数转对象
+     * @param cls
+     * @param prefix
+     * @param requestParameterMap
+     * @param <T>
+     * @return
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws ParseException
+     */
     public static <T> T bulid(Class<T> cls, String prefix, Map<String, ?> requestParameterMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException, ParseException {
-        Object obj = cls.newInstance();
-        Field[] fieldArray = cls.getDeclaredFields();
-        for (int i = 0; i < fieldArray.length; i++) {
-            Field field = fieldArray[i];
-            Class fieldType = field.getType();
-            String fieldName = field.getName();
-            String methodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-            String fromName = prefix + "." + fieldName;
-            Object paramObj = requestParameterMap.get(fromName);
-            if (paramObj == null) {
-                continue;
-            }
-            Method method = null;
-            Class classDef = obj.getClass();
-            if (fieldType.equals(String.class)) {
-                method = classDef.getMethod(methodName, String.class);
-            } else if (fieldType.equals(String[].class)) {
-                method = classDef.getMethod(methodName, String[].class);
-            } else if (fieldType.equals(int[].class)) {
-                method = classDef.getMethod(methodName, int[].class);
-            } else if (fieldType.equals(int.class)) {
-                method = classDef.getMethod(methodName, int.class);
-            } else if (fieldType.equals(double.class)) {
-                method = classDef.getMethod(methodName, double.class);
-            } else if (fieldType.equals(long.class)) {
-                method = classDef.getMethod(methodName, long.class);
-            } else if (fieldType.equals(float.class)) {
-                method = classDef.getMethod(methodName, float.class);
-            } else if (fieldType.equals(boolean.class)) {
-                method = classDef.getMethod(methodName, boolean.class);
-            } else if (fieldType.equals(Date.class)) {
-                method = classDef.getMethod(methodName, Date.class);
-            } else if (fieldType.equals(java.sql.Date.class)) {
-                method = classDef.getMethod(methodName, java.sql.Date.class);
-            } else if (fieldType.equals(Timestamp.class)) {
-                method = classDef.getMethod(methodName, Timestamp.class);
-            }
-            try {
-                Object objevalue = ClassTool.ParamCast(fieldType, paramObj);
-                if (objevalue != null) {
-                    method.invoke(obj, new Object[]{objevalue});
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("参数" + fromName + "  (" + fieldType + ")转换错误： " + e.getMessage());
+        boolean b = false;
+        sw:
+        for (String key : requestParameterMap.keySet()) {
+            if (key.startsWith(prefix + ".")) {
+                b = true;
+                break sw;
             }
         }
-        return (T) obj;
+        if (b) {
+            Object obj = cls.newInstance();
+            Field[] fieldArray = cls.getDeclaredFields();
+            for (int i = 0; i < fieldArray.length; i++) {
+                Field field = fieldArray[i];
+                Class fieldType = field.getType();
+                String fieldName = field.getName();
+                String methodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                String fromName = prefix + "." + fieldName;
+                Object paramObj = requestParameterMap.get(fromName);
+                if (paramObj == null) {
+                    continue;
+                }
+                Method method = null;
+                Class classDef = obj.getClass();
+                if (fieldType.equals(String.class)) {
+                    method = classDef.getMethod(methodName, String.class);
+                } else if (fieldType.equals(String[].class)) {
+                    method = classDef.getMethod(methodName, String[].class);
+                } else if (fieldType.equals(int[].class)) {
+                    method = classDef.getMethod(methodName, int[].class);
+                } else if (fieldType.equals(int.class)) {
+                    method = classDef.getMethod(methodName, int.class);
+                } else if (fieldType.equals(double.class)) {
+                    method = classDef.getMethod(methodName, double.class);
+                } else if (fieldType.equals(long.class)) {
+                    method = classDef.getMethod(methodName, long.class);
+                } else if (fieldType.equals(float.class)) {
+                    method = classDef.getMethod(methodName, float.class);
+                } else if (fieldType.equals(boolean.class)) {
+                    method = classDef.getMethod(methodName, boolean.class);
+                } else if (fieldType.equals(Date.class)) {
+                    method = classDef.getMethod(methodName, Date.class);
+                } else if (fieldType.equals(java.sql.Date.class)) {
+                    method = classDef.getMethod(methodName, java.sql.Date.class);
+                } else if (fieldType.equals(Timestamp.class)) {
+                    method = classDef.getMethod(methodName, Timestamp.class);
+                }
+                try {
+                    Object objevalue = ClassTool.ParamCast(fieldType, paramObj);
+                    if (objevalue != null) {
+                        method.invoke(obj, new Object[]{objevalue});
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException("参数" + fromName + "  (" + fieldType + ")转换错误： " + e.getMessage());
+                }
+            }
+            return (T) obj;
+        } else {
+            return null;
+        }
+
     }
 
     /**
@@ -96,11 +121,12 @@ public class ParameterConverter {
 
 
     /**
-     * 转成正常map
+     * 转成带文件的正常map
      *
      * @param request
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, Object[]> bulidMultipartMap(HttpServletRequest request) throws Exception {
         Map<String, Object[]> req = new HashMap<String, Object[]>();
         if (ServletFileUpload.isMultipartContent(request)) {

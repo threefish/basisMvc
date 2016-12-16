@@ -10,14 +10,16 @@ import java.io.InputStream;
  * To change this template use File | Settings | File Templates.
  */
 public class TempFile {
-
+    /**
+     * 文件名
+     */
     private String name;
-
-
+    /**
+     * 文件流
+     */
     private InputStream InputStream;
 
     private String contentType;
-
 
     public TempFile(String name, InputStream InputStream, String contentType) {
         this.name = name;
