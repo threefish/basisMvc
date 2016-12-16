@@ -17,7 +17,7 @@ public class JsonFormat {
 
 
     public String getLocked() {
-        return locked;
+        return locked == null ? "" : locked;
     }
 
     public void setLocked(String locked) {

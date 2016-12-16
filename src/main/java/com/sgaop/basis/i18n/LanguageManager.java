@@ -43,7 +43,7 @@ public class LanguageManager {
      * @param i18n 语言编码
      * @param key
      */
-    public static String get(String i18n, String key) {
+    public static String getMap(String i18n, String key) {
         String value = languageMap.get(i18n).get(key);
         return value == null ? "" : value;
     }
@@ -51,15 +51,15 @@ public class LanguageManager {
     /**
      * @param key
      */
-    public static String getVal(String key) {
-        String value = languageMap.get(Mvcs.getI18nLang()).get(key);
+    public static String get(String key) {
+        String value = getMap(Mvcs.getI18nLang()).get(key);
         return value == null ? "" : value;
     }
 
     /**
      * @param i18n 语言编码
      */
-    public static HashMap<String, String> get(String i18n) {
+    public static HashMap<String, String> getMap(String i18n) {
         HashMap<String, String> value = new HashMap<>();
         //是否开发模式
         if (PropertiesManager.getBooleanCache("isDevelop")) {
