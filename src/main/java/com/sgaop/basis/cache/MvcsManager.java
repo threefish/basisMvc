@@ -76,20 +76,31 @@ public class MvcsManager {
     public static void putUrlCache(String key, ActionMethod method) {
         switch (method.getMethod()) {
             case "POST":
+                checkUrl(key, postUrlClassMap);
                 postUrlClassMap.put(key, method);
                 break;
             case "GET":
+                checkUrl(key, getUrlClassMap);
                 getUrlClassMap.put(key, method);
                 break;
             case "DELETE":
+                checkUrl(key, deleteUrlClassMap);
                 deleteUrlClassMap.put(key, method);
                 break;
             case "HEAD":
+                checkUrl(key, headUrlClassMap);
                 headUrlClassMap.put(key, method);
                 break;
             case "PUT":
+                checkUrl(key, putUrlClassMap);
                 putUrlClassMap.put(key, method);
                 break;
+        }
+    }
+
+    private static void checkUrl(String pathKey, Map data) {
+        if (data.containsKey(pathKey)) {
+            throw new RuntimeException("URL地址已经存在"+ pathKey );
         }
     }
 
