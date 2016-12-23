@@ -6,6 +6,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,7 +22,11 @@ public class Mvcs {
     private static ThreadLocal<String> i18nLang = new ThreadLocal();
 
     public static void setI18nLang(String lang) {
-        i18nLang.set(lang);
+        if (lang != null) {
+            if (lang.length() > 0) {
+                i18nLang.set(lang);
+            }
+        }
     }
 
     public static String getI18nLang() {
@@ -40,14 +45,15 @@ public class Mvcs {
         /*设置项目根路径*/
         servletRequest.setAttribute("base", servletRequest.getServletContext().getContextPath());
         servletRequest.setAttribute("ctxPath", servletRequest.getServletContext().getContextPath());
-        FrameRequest frameRequest = new FrameRequest((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, reqMap, isAjax);
-        local.set(frameRequest);
+        Map<String, String> cookiesMap = new HashMap<>();
         Cookie[] cookies = ((HttpServletRequest) servletRequest).getCookies();
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("lang")) {
-                setI18nLang(cookie.getValue());
-            }
+            cookiesMap.put(cookie.getName(), cookie.getValue());
         }
+        String lang = cookiesMap.get("lang");
+        setI18nLang(lang);
+        FrameRequest frameRequest = new FrameRequest((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, reqMap, isAjax, cookiesMap);
+        local.set(frameRequest);
     }
 
     /**
@@ -59,6 +65,14 @@ public class Mvcs {
 
     public static HttpServletRequest getReq() {
         return local.get().getRequest();
+    }
+
+    public static String getCookie(String key) {
+        return local.get().getCookies().get(key);
+    }
+
+    public static Map<String, String> getCookies() {
+        return local.get().getCookies();
     }
 
     public static HttpSession getSession() {
@@ -83,8 +97,12 @@ public class Mvcs {
     static class FrameRequest {
 
         private HttpServletRequest request;
+
         private HttpServletResponse response;
+
         private Map<String, ?> reqMap;
+
+        private Map<String, String> cookies;
 
         private boolean ajax;
 
@@ -92,11 +110,12 @@ public class Mvcs {
             return ajax;
         }
 
-        public FrameRequest(HttpServletRequest request, HttpServletResponse response, Map<String, ?> reqMap, boolean ajax) {
+        public FrameRequest(HttpServletRequest request, HttpServletResponse response, Map<String, ?> reqMap, boolean ajax, Map<String, String> cookies) {
             this.request = request;
             this.response = response;
             this.reqMap = reqMap;
             this.ajax = ajax;
+            this.cookies = cookies;
         }
 
         public HttpServletRequest getRequest() {
@@ -109,6 +128,10 @@ public class Mvcs {
 
         public Map<String, ?> getReqMap() {
             return reqMap;
+        }
+
+        public Map<String, String> getCookies() {
+            return cookies;
         }
 
 
