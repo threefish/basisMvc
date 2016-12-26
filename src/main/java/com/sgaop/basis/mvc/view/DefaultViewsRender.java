@@ -26,7 +26,7 @@ public class DefaultViewsRender {
 
     private static final Logger logger = Logger.getRootLogger();
 
-    private static final Gson formatJson=new Gson();
+    private static final Gson formatJson = new Gson();
 
     public static void RenderJSP(String jspPath, HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -49,22 +49,22 @@ public class DefaultViewsRender {
     }
 
 
-    public static void RenderJSON(HttpServletResponse response,String regs,Object resultObj) {
+    public static void RenderJSON(HttpServletResponse response, String regs, Object resultObj) {
         try {
-            Gson gson=null;
-            if(regs.equals("")){
-                gson=new Gson();
-            }else {
+            Gson gson = null;
+            if (regs == null || "".equals(regs)) {
+                gson = new Gson();
+            } else {
                 //此处可以进行优化，在扫描类时就将返回类型确定，可以进一步提升性能
                 JsonFormat jsonFormat = formatJson.fromJson(regs, JsonFormat.class);
                 GsonBuilder gb = new GsonBuilder();
-                if(jsonFormat.isIgnoreNull()){
+                if (jsonFormat.isIgnoreNull()) {
                     gb.serializeNulls();
                 }
-                if(!jsonFormat.getLocked().equals("")){
+                if (!jsonFormat.getLocked().equals("")) {
                     gb.setExclusionStrategies(new JsonExclusionStrategy(jsonFormat.getLocked().split("\\|")));
                 }
-                if (jsonFormat.getDateFormat()!=null&&!jsonFormat.getDateFormat().equals("")) {
+                if (jsonFormat.getDateFormat() != null && !jsonFormat.getDateFormat().equals("")) {
                     gb.setDateFormat(jsonFormat.getDateFormat());
                     gb.registerTypeAdapter(Timestamp.class, new TimestampTypeAdapter()).create();
                 }
