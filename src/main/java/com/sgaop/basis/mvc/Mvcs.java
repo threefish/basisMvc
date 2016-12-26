@@ -47,8 +47,10 @@ public class Mvcs {
         servletRequest.setAttribute("ctxPath", servletRequest.getServletContext().getContextPath());
         Map<String, String> cookiesMap = new HashMap<>();
         Cookie[] cookies = ((HttpServletRequest) servletRequest).getCookies();
-        for (Cookie cookie : cookies) {
-            cookiesMap.put(cookie.getName(), cookie.getValue());
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookiesMap.put(cookie.getName(), cookie.getValue());
+            }
         }
         String lang = cookiesMap.get("lang");
         setI18nLang(lang);
