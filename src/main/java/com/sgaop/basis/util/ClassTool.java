@@ -1,12 +1,10 @@
 package com.sgaop.basis.util;
 
-import com.sgaop.basis.annotation.Inject;
 import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.mvc.upload.TempFile;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -59,7 +57,14 @@ public class ClassTool {
             } else if (klazz.equals(float.class)) {
                 val = Float.valueOf(String.valueOf(((Object[]) value)[0]));
             } else if (klazz.equals(boolean.class)) {
-                val = Boolean.valueOf(String.valueOf(((Object[]) value)[0]));
+                String valStr = String.valueOf(((Object[]) value)[0]);
+                if ("1".equals(valStr)) {
+                    val = true;
+                } else if ("0".equals(valStr)) {
+                    val = false;
+                } else {
+                    val = Boolean.valueOf(valStr);
+                }
             } else if (klazz.equals(Date.class)) {
                 val = DateTool.parseDate(String.valueOf(((Object[]) value)[0]));
             } else if (klazz.equals(java.sql.Date.class)) {
@@ -144,7 +149,7 @@ public class ClassTool {
             Method method = clss.getMethod(methodName, field.getType());
             method.setAccessible(true);
             method.invoke(pojo, value);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.debug(e);
         }
@@ -165,7 +170,7 @@ public class ClassTool {
             Method method = clss.getMethod(methodName);
             method.setAccessible(true);
             value = method.invoke(pojo);
-        } catch (Exception e){
+        } catch (Exception e) {
 //            e.printStackTrace();
             log.debug(e);
         }
