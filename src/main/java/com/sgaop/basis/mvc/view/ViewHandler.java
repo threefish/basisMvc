@@ -38,11 +38,15 @@ public class ViewHandler {
             DefaultViewsRender.RenderJsonStr(response, error.getMessage());
         } else if (error.getCode() != 500 && error.getCode() != 404) {
             if (resultType != null) {
+                String[] path = resultType.split(":");
+                if (path.length == 1) {
+                    String temp = path[0];
+                    path = new String[]{temp, ""};
+                }
                 if (ViewsRegister.hasRegisterView(resultType)) {
-                    String path[] = resultType.split(":");
                     Class<?> klass = ViewsRegister.getViewClass(path[0]);
                     View view = (View) klass.newInstance();
-                    view.afterProcess(request,response);
+                    view.afterProcess(request, response);
                     view.render(path[1], request, response, actionResult.getResultData());
                 } else if (resultType.equals("json") || resultType.startsWith("json:")) {
                     String regs = "";
@@ -51,16 +55,15 @@ public class ViewHandler {
                     }
                     DefaultViewsRender.RenderJSON(response, regs, actionResult.getResultData());
                 } else if (resultType.startsWith("jsp:") || resultType.startsWith("fw:")) {
-                    String path[] = resultType.split(":");
                     DefaultViewsRender.RenderJSP(Constant.JSP_PATH + path[1], request, response);
                 } else if (resultType.startsWith("rd:")) {
-                    String path[] = resultType.split(":");
                     DefaultViewsRender.RenderRedirect(request.getContextPath() + "/" + path[1], response);
-                } else if (resultType.startsWith("fw::")) {
-                    String path[] = resultType.split(":");
+                } else if (resultType.startsWith("fw:")) {
                     request.getRequestDispatcher(request.getContextPath() + "/" + path[1]).forward(request, response);
                 } else if (resultType.startsWith("file")) {
                     DefaultViewsRender.RenderFile(response, actionResult.getResultData());
+                } else if (resultType.startsWith("raw")) {
+                    RawViewRender.RenderRaw(request, response, actionResult.getResultData(), path[1]);
                 } else {
                     actionResult.getWebErrorMessage().setMessage("没有设置返回类型 [" + servletPath + "]");
                     logger.error(actionResult.getWebErrorMessage().getMessage());
