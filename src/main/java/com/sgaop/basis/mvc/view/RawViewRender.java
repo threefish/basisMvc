@@ -2,6 +2,7 @@ package com.sgaop.basis.mvc.view;
 
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.util.IoTool;
+import com.sgaop.basis.util.Logs;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 public class RawViewRender {
 
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger logger = Logs.get();
 
     public static final boolean DISABLE_RANGE_DOWNLOAD = false; //禁用断点续传
 

@@ -7,6 +7,7 @@ import com.sgaop.basis.error.ShiroAutcException;
 import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.ioc.Ioc;
 import com.sgaop.basis.util.ClassTool;
+import com.sgaop.basis.util.Logs;
 import com.sgaop.basis.util.ParameterConverter;
 import org.apache.log4j.Logger;
 
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 public class ActionHandler {
 
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger logger = Logs.get();
 
     /**
      * 执行action

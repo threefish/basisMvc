@@ -27,6 +27,7 @@ import java.util.Properties;
  * Date: 2016/11/23 0023
  * To change this template use File | Settings | File Templates.
  */
+@SuppressWarnings("all")
 public class AllDao {
 
     private static Dao dao;

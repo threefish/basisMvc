@@ -8,6 +8,7 @@ import com.sgaop.basis.mvc.ActionResult;
 import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.mvc.view.DefaultViewsRender;
 import com.sgaop.basis.mvc.view.ViewHandler;
+import com.sgaop.basis.util.Logs;
 import com.sgaop.basis.util.ParameterConverter;
 import com.sgaop.basis.util.WebUtil;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -27,7 +28,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class BasisMvcWebFilter implements Filter {
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger logger = Logs.get();
 
     private static final String STATIC_PATH = PropertiesManager.getCache(Constant.STATIC_PATH_KEY).toString();
 

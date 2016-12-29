@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -18,11 +19,11 @@ import java.util.Date;
  */
 public class ClassTool {
 
-    private static final Logger log = Logger.getRootLogger();
+    private static final Logger log = Logger.getLogger(ClassTool.class);
 
 
     /**
-     * 参数转换
+     * 表单参数转换
      *
      * @param klazz
      * @param value
@@ -133,28 +134,27 @@ public class ClassTool {
         }
     }
 
+
     /**
      * 执行一个方法
      *
      * @param field
      * @param clss
-     * @param pojo
+     * @param bean
      * @param value
      */
-    public static void invokeMethod(Field field, String methodName, Class clss, Object pojo, Object value) {
+    public static void invokeMethod(Field field, String methodName, Class clss, Object bean, Object value) {
         if (value == null) {
             return;
         }
         try {
             Method method = clss.getMethod(methodName, field.getType());
             method.setAccessible(true);
-            method.invoke(pojo, value);
+            method.invoke(bean, value);
         } catch (Exception e) {
-            e.printStackTrace();
             log.debug(e);
         }
     }
-
 
     /**
      * 执行一个方法,取得值
@@ -171,7 +171,6 @@ public class ClassTool {
             method.setAccessible(true);
             value = method.invoke(pojo);
         } catch (Exception e) {
-//            e.printStackTrace();
             log.debug(e);
         }
         return value;
@@ -197,5 +196,58 @@ public class ClassTool {
         return null;
     }
 
+    /**
+     * 类参数转换
+     */
+    public static Object coverParam(Class<?> field, int counmType, Object value) {
+        switch (counmType) {
+            case Types.BIGINT:
+            case Types.INTEGER:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+            case Types.NUMERIC:
+            case Types.DATE:
+            case Types.TIMESTAMP:
+                value = coverParam(field, value);
+                break;
+        }
+        return value;
+    }
 
+    /**
+     * 类参数转换
+     */
+    public static Object coverParam(Class<?> klazz, Object value) {
+        Object val = null;
+        try {
+            if (klazz.equals(String.class)) {
+                val = String.valueOf(value);
+            } else if (klazz.equals(String[].class)) {
+                val = (String[]) value;
+            } else if (klazz.equals(int[].class)) {
+                val = (int[]) value;
+            } else if (klazz.equals(int.class)) {
+                val = Integer.parseInt(String.valueOf(value));
+            } else if (klazz.equals(double.class)) {
+                val = Double.parseDouble(String.valueOf(value));
+            } else if (klazz.equals(long.class)) {
+                val = Long.parseLong(String.valueOf(value));
+            } else if (klazz.equals(float.class)) {
+                val = Float.parseFloat(String.valueOf(value));
+            } else if (klazz.equals(boolean.class)) {
+                val = Boolean.parseBoolean(String.valueOf(value));
+            } else if (klazz.equals(Date.class)) {
+                val = DateUtil.string2date(String.valueOf(value), DateUtil.YYYY_MM_DD_HH_MM_SS);
+            } else if (klazz.equals(java.sql.Date.class)) {
+                val = DateUtil.string2javaDate(String.valueOf(value), DateUtil.YYYY_MM_DD_HH_MM_SS);
+            } else if (klazz.equals(Timestamp.class)) {
+                val = new Timestamp(DateUtil.string2date(String.valueOf(value), DateUtil.YYYY_MM_DD_HH_MM_SS).getTime());
+            } else {
+                throw new RuntimeException("没有识别到的类型[" + klazz.getName() + "]");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return val;
+    }
 }

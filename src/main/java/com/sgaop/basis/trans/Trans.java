@@ -1,5 +1,6 @@
 package com.sgaop.basis.trans;
 
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
@@ -8,7 +9,7 @@ import java.sql.SQLException;
 
 public abstract class Trans {
 
-    private static final Logger log = Logger.getRootLogger();
+    private static final Logger log = Logs.get();
 
 
     /**

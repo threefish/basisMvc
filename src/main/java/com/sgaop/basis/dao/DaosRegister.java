@@ -1,6 +1,7 @@
 package com.sgaop.basis.dao;
 
 import com.sgaop.basis.ioc.IocBeanContext;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
@@ -13,7 +14,7 @@ import javax.sql.DataSource;
  */
 public class DaosRegister {
 
-    private static final Logger log = Logger.getRootLogger();
+    private static final Logger log = Logs.get();
 
     /**
      * 注册数据源

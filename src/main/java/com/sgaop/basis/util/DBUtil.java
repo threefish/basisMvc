@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +22,10 @@ import java.util.List;
  * Date: 2016/5/27 0027
  * To change this template use File | Settings | File Templates.
  */
+@SuppressWarnings("all")
 public class DBUtil {
 
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger logger = Logs.get();
 
     /**
      * 判断数据库类型
@@ -180,14 +182,6 @@ public class DBUtil {
         } catch (Exception ex) {
             logger.debug(ex.getMessage(), ex);
         }
-//        try {
-//            if (conn != null && !conn.isClosed() && conn.getAutoCommit()) {
-//                 不自动关闭连接
-//                conn.close();
-//            }
-//        } catch (Exception ex) {
-//            logger.debug(ex.getMessage(), ex);
-//        }
     }
 
 
@@ -211,30 +205,33 @@ public class DBUtil {
         if (record.size() == 0) {
             return null;
         }
-        Object obj = cls.newInstance();
+        Object bean = cls.newInstance();
         for (String colum : tableInfo.getColums()) {
             TableFiled tableFiled = tableInfo.getDaoFiled(colum);
             Object value = record.get(colum.toLowerCase());
             if (value != null) {
+                Field field = cls.getDeclaredField(tableFiled.getFiledName());
+                value = ClassTool.coverParam(field.getType(), record.getCounmType(colum.toLowerCase()), value);
                 String methodName = tableFiled.get_setMethodName();
-                ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
+                ClassTool.invokeMethod(field, methodName, cls, bean, value);
             }
         }
-        return (E) obj;
+        return (E) bean;
     }
 
 
     public static <T> T MapToEntity(Class cls, TableInfo tableInfo, HashMap<String, Object> data) throws Exception {
-        Object obj = cls.newInstance();
+        Object bean = cls.newInstance();
         for (String colum : tableInfo.getColums()) {
             TableFiled tableFiled = tableInfo.getDaoFiled(colum);
             Object value = data.get(colum);
             if (value != null) {
+                Field field = cls.getDeclaredField(tableFiled.getFiledName());
                 String methodName = tableFiled.get_setMethodName();
-                ClassTool.invokeMethod(cls.getDeclaredField(tableFiled.getFiledName()), methodName, cls, obj, value);
+                ClassTool.invokeMethod(field, methodName, cls, bean, ClassTool.coverParam(field.getType(),value));
             }
         }
-        return (T) obj;
+        return (T) bean;
     }
 
 
@@ -244,17 +241,19 @@ public class DBUtil {
      * @return
      */
     public static Record getRecord(ResultSet rs) throws Exception {
-        Record data = new Record();
+        Record record = new Record();
         ResultSetMetaData meta = rs.getMetaData();
         int columnCount = meta.getColumnCount();
         int max = 0;
         while (rs.next() && max == 0) {
             for (int i = 1; i <= columnCount; i++) {
-                data.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
+                String columnName = String.valueOf(meta.getColumnName(i)).toLowerCase();
+                record.put(columnName, rs.getObject(i));
+                record.setCounmType(columnName, meta.getColumnType(i));
             }
             max++;
         }
-        return data;
+        return record;
     }
 
     /**
@@ -269,7 +268,9 @@ public class DBUtil {
         while (rs.next()) {
             Record record = new Record();
             for (int i = 1; i <= columnCount; i++) {
-                record.put(String.valueOf(meta.getColumnName(i)).toLowerCase(), rs.getObject(i));
+                String columnName = String.valueOf(meta.getColumnName(i)).toLowerCase();
+                record.put(columnName, rs.getObject(i));
+                record.setCounmType(columnName, meta.getColumnType(i));
             }
             records.add(record);
         }

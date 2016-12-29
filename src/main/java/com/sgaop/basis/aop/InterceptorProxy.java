@@ -2,6 +2,7 @@ package com.sgaop.basis.aop;
 
 import com.sgaop.basis.aop.proxy.Proxy;
 import com.sgaop.basis.aop.proxy.ProxyChain;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
@@ -15,7 +16,7 @@ import java.lang.reflect.Method;
  */
 public abstract class InterceptorProxy implements Proxy {
 
-    private static final Logger log = Logger.getRootLogger();
+    private static final Logger log = Logs.get();
 
 
     /**

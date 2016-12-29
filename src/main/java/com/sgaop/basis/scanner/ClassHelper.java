@@ -8,6 +8,7 @@ import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.mvc.ActionMethod;
 import com.sgaop.basis.util.ClassTool;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
@@ -24,7 +25,7 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class ClassHelper {
-    protected static final Logger log = Logger.getRootLogger();
+    protected static final Logger log = Logs.get();
     public static Set<Class<?>> classes = new HashSet<>();
 
     static {

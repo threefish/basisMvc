@@ -7,6 +7,7 @@ import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.json.JsonExclusionStrategy;
 import com.sgaop.basis.json.JsonFormat;
 import com.sgaop.basis.json.TimestampTypeAdapter;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ import java.sql.Timestamp;
  */
 public class DefaultViewsRender {
 
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger logger = Logs.get();
 
     private static final Gson formatJson = new Gson();
 

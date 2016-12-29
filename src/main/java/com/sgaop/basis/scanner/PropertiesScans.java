@@ -3,6 +3,7 @@ package com.sgaop.basis.scanner;
 import com.sgaop.basis.cache.PropertiesManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.i18n.LanguageManager;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -21,7 +22,7 @@ import java.util.Properties;
  */
 public class PropertiesScans {
 
-    private static final Logger log = Logger.getRootLogger();
+    private static final Logger log = Logs.get();
 
     public static void init() {
         try {

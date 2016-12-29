@@ -8,6 +8,7 @@ import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.view.ViewsRegister;
 import com.sgaop.basis.scanner.ClassHelper;
 import com.sgaop.basis.scanner.PropertiesScans;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;
@@ -21,7 +22,7 @@ import javax.servlet.ServletContextListener;
  * To change this template use File | Settings | File Templates.
  */
 public class ServletInitListener implements ServletContextListener {
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger logger = Logs.get();
 
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {

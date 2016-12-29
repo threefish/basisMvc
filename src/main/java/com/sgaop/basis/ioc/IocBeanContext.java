@@ -14,6 +14,7 @@ import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.trans.TransAop;
 import com.sgaop.basis.trans.TransactionProxy;
 import com.sgaop.basis.util.ClassTool;
+import com.sgaop.basis.util.Logs;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 
@@ -32,7 +33,7 @@ import java.util.*;
  */
 public class IocBeanContext {
 
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger logger = Logs.get();
 
     private static IocBeanContext me = new IocBeanContext();
     //存放bean

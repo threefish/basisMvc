@@ -2,6 +2,7 @@ package com.sgaop.basis.quartz;
 
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.util.ClassTool;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
@@ -13,9 +14,10 @@ import org.quartz.impl.StdSchedulerFactory;
  * Date: 2016/11/15 0015
  * To change this template use File | Settings | File Templates.
  */
+@SuppressWarnings("all")
 public class QuartzRegister {
 
-    private static final Logger log = Logger.getRootLogger();
+    private static final Logger log = Logs.get();
 
     /**
      * 注册定时任务管理器

@@ -3,6 +3,7 @@ package com.sgaop.basis.dao.impl;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.util.ClassTool;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import java.util.LinkedList;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public class JdbcBuilder {
 
-    private static final Logger log = Logger.getRootLogger();
+    private static final Logger log = Logs.get();
 
     public JdbcBuilder(TableInfo tableInfo, Class klass, Object bean) {
         this.tableInfo = tableInfo;

@@ -2,6 +2,7 @@ package com.sgaop.basis.quartz;
 
 import com.sgaop.basis.ioc.Ioc;
 import com.sgaop.basis.util.ClassTool;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.Scheduler;
@@ -20,7 +21,7 @@ import org.quartz.spi.TriggerFiredBundle;
 //@IocBean
 public class BasisJobFactory implements JobFactory {
 
-    private static final Logger log = Logger.getRootLogger();
+    private static final Logger log = Logs.get();
 
     protected SimpleJobFactory simple = new SimpleJobFactory();
 

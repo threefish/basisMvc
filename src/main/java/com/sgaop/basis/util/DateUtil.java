@@ -92,6 +92,21 @@ public class DateUtil {
         return formateDate;
     }
 
+    /**
+     * @param dateString
+     * @param formatStr
+     * @描述 —— 字符串转换成时间对象
+     */
+    public static java.sql.Date string2javaDate(String dateString, String formatStr) {
+        java.sql.Date formateDate = null;
+        DateFormat format = new SimpleDateFormat(formatStr);
+        try {
+            formateDate =new java.sql.Date(format.parse(dateString).getTime());
+        } catch (ParseException e) {
+            return null;
+        }
+        return formateDate;
+    }
 
     /**
      * @param date

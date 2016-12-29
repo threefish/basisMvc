@@ -20,6 +20,9 @@ public class Record implements Map<String, Object>, Serializable {
 
     private Map<String, Object> map = new LinkedHashMap();
 
+    private Map<String, Integer> counmType = new LinkedHashMap();
+
+
     protected static int DEFAULT_INT = -1;
 
     public Object remove(String name) {
@@ -86,6 +89,14 @@ public class Record implements Map<String, Object>, Serializable {
         gb.registerTypeAdapter(Timestamp.class, new TimestampTypeAdapter()).create();
         Gson gson = gb.create();
         return gson.toJson(this.map);
+    }
+
+    public void setCounmType(String counm, int type) {
+        counmType.put(counm, type);
+    }
+
+    public int getCounmType(String counm) {
+        return counmType.get(counm);
     }
 
     public String toString() {

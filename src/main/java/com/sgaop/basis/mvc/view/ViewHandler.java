@@ -4,6 +4,7 @@ import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.mvc.ActionResult;
 import com.sgaop.basis.mvc.Mvcs;
+import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  * To change this template use File | Settings | File Templates.
  */
 public class ViewHandler {
-    private static final Logger logger = Logger.getRootLogger();
+    private static final Logger logger = Logs.get();
 
     public static void invokeAction(String servletPath, ActionResult actionResult, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String resultType = actionResult.getResultType();
