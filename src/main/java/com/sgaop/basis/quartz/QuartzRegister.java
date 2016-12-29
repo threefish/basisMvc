@@ -1,7 +1,5 @@
 package com.sgaop.basis.quartz;
 
-import com.sgaop.basis.annotation.IocBean;
-import com.sgaop.basis.ioc.Ioc;
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.util.ClassTool;
 import org.apache.log4j.Logger;
@@ -29,8 +27,8 @@ public class QuartzRegister {
         Scheduler scheduler = null;
         try {
             scheduler = StdSchedulerFactory.getDefaultScheduler();
-            BasisJobFactory basisJobFactory= new BasisJobFactory();
-            IocBeanContext.me().setBean(ClassTool.getIocBeanName(BasisJobFactory.class),basisJobFactory);
+            BasisJobFactory basisJobFactory = new BasisJobFactory();
+            IocBeanContext.me().setBean(ClassTool.getIocBeanName(BasisJobFactory.class), basisJobFactory);
             scheduler.setJobFactory(basisJobFactory);
             IocBeanContext.me().setBean(newIocBeanKey, scheduler);
         } catch (Exception e) {

@@ -17,7 +17,7 @@ public interface Dao {
     /**
      * 设置数据源
      *
-     * @param dataSource  数据源
+     * @param dataSource 数据源
      * @throws SQLException
      */
     void setDataSource(DataSource dataSource) throws SQLException;
@@ -53,23 +53,23 @@ public interface Dao {
     /**
      * 更新表中一行数据
      *
-     * @param entity 对象实体
+     * @param entity    对象实体
      * @param condition 条件实体
-     * @param <E>    泛型
+     * @param <E>       泛型
      * @return 是否成功
      */
-    <E> boolean update(E entity,Condition condition);
+    <E> boolean update(E entity, Condition condition);
 
 
     /**
      * 更新表中一行数据
      *
-     * @param entity    对象实体
-     * @param colum     字段
-     * @param <E>       泛型
+     * @param entity 对象实体
+     * @param colum  字段
+     * @param <E>    泛型
      * @return 是否成功
      */
-    <E> boolean update(E entity,String colum,Object val);
+    <E> boolean update(E entity, String colum, Object val);
 
     /**
      * 批量更新表中数据
@@ -79,8 +79,6 @@ public interface Dao {
      * @return 是否成功
      */
     <E> int[] update(List<E> entitys);
-
-
 
 
     /**
@@ -95,12 +93,12 @@ public interface Dao {
     /**
      * 删除表中一行数据
      *
-     * @param entity 对象实体
+     * @param entity    对象实体
      * @param condition 条件实体
-     * @param <E>    泛型
+     * @param <E>       泛型
      * @return 是否成功
      */
-    <E> boolean delete(E entity,Condition condition);
+    <E> boolean delete(E entity, Condition condition);
 
     /**
      * 删除表中多行数据
@@ -158,7 +156,7 @@ public interface Dao {
      * @return 数据列表
      */
 
-    <E> List<E> query(Class<E> entityClass,Pager pager);
+    <E> List<E> query(Class<E> entityClass, Pager pager);
 
     /**
      * 查询所有数据

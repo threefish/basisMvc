@@ -15,7 +15,7 @@ public class WebUtil {
     }
 
 
-    public void toJson(){
+    public void toJson() {
 
     }
 

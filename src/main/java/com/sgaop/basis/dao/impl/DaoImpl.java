@@ -286,7 +286,7 @@ public class DaoImpl implements Dao {
             DBUtil.setParams(pstm, builder.getOnePKVals().toArray());
             i = pstm.executeUpdate();
             DBUtil.showSql(pstm);
-            DBUtil.close(pstm,null,null);
+            DBUtil.close(pstm, null, null);
         } catch (SQLException e) {
             e.printStackTrace();
         }

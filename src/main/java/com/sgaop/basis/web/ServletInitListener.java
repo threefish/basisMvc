@@ -49,7 +49,7 @@ public class ServletInitListener implements ServletContextListener {
         try {
             WebSetup setup = (WebSetup) MvcsManager.getSetupCache(Constant.WEB_SETUP);
             setup.init(servletContextEvent);
-            MvcsManager.putSetupCache(Constant.WEB_SETUP,setup);
+            MvcsManager.putSetupCache(Constant.WEB_SETUP, setup);
         } catch (Exception e) {
             logger.error("环境初始化时发生错误！", e);
             throw new RuntimeException("环境初始化时发生错误！", e);
@@ -58,10 +58,10 @@ public class ServletInitListener implements ServletContextListener {
 
     private void handlerDestroy(ServletContextEvent servletContextEvent) {
         try {
-            WebSetup setup= (WebSetup)MvcsManager.getSetupCache(Constant.WEB_SETUP);
+            WebSetup setup = (WebSetup) MvcsManager.getSetupCache(Constant.WEB_SETUP);
             setup.destroy(servletContextEvent);
         } catch (Exception e) {
-            logger.error("环境销毁时发生错误！",e);
+            logger.error("环境销毁时发生错误！", e);
             throw new RuntimeException("环境销毁时发生错误！", e);
         }
     }

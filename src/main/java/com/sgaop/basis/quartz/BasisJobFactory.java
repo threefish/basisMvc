@@ -1,6 +1,5 @@
 package com.sgaop.basis.quartz;
 
-import com.sgaop.basis.annotation.IocBean;
 import com.sgaop.basis.ioc.Ioc;
 import com.sgaop.basis.util.ClassTool;
 import org.apache.log4j.Logger;

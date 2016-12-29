@@ -8,13 +8,13 @@ import java.io.Serializable;
  * Date: 2016/11/17 0017
  * To change this template use File | Settings | File Templates.
  */
-public class ShiroAutcException extends Throwable implements Serializable{
+public class ShiroAutcException extends Throwable implements Serializable {
 
     static final long serialVersionUID = -3387516993124229948L;
 
-    private String redirectUrl ="";
+    private String redirectUrl = "";
 
-    private boolean ajax=false;
+    private boolean ajax = false;
 
     public boolean isAjax() {
         return ajax;

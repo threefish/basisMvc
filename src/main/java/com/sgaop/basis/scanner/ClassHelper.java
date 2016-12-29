@@ -102,7 +102,7 @@ public class ClassHelper {
                             tbinfo.addDaoFiled(tf.getColumName(), tf);
                         }
                         if (id != null) {
-                            if (tbinfo.getPkName()==null) {
+                            if (tbinfo.getPkName() == null) {
                                 if (id.value().equals("")) {
                                     tbinfo.setPkName(new String[]{field.getName()});
                                 } else {
@@ -116,7 +116,7 @@ public class ClassHelper {
             }
 
         } catch (Exception e) {
-            log.error("classes Helper init error! "+e);
+            log.error("classes Helper init error! " + e);
         }
 //        IocBeanContext.me().init(classes);
     }

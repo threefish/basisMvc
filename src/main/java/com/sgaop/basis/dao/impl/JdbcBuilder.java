@@ -107,7 +107,7 @@ public class JdbcBuilder {
         StringBuffer sb = new StringBuffer("update " + tableInfo.getTableName() + " set ");
         for (String colum : tableInfo.getColums()) {
             boolean b = true;
-            if(tableInfo.getPkName()!=null){
+            if (tableInfo.getPkName() != null) {
                 sw:
                 for (String pk : tableInfo.getPkName()) {
                     if (colum.equals(pk)) {

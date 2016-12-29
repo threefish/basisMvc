@@ -100,7 +100,7 @@ public class MvcsManager {
 
     private static void checkUrl(String pathKey, Map data) {
         if (data.containsKey(pathKey)) {
-            throw new RuntimeException("URL地址已经存在"+ pathKey );
+            throw new RuntimeException("URL地址已经存在" + pathKey);
         }
     }
 

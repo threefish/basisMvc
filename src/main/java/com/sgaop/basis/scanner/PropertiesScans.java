@@ -57,7 +57,7 @@ public class PropertiesScans {
                     fileName = file.getName();
                     if (fileName.startsWith(i18n)) {
                         fileName = fileName.replaceAll(i18n, "").replaceAll(_suffix, "");
-                        LanguageManager.add(path,fileName, props);
+                        LanguageManager.add(path, fileName, props);
                     } else {
                         PropertiesManager.putCache(props);
                     }

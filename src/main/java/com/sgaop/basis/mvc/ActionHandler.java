@@ -114,10 +114,10 @@ public class ActionHandler {
             Throwable te = e.getCause();
             if (te instanceof ShiroAutcException) {
                 webErrorMessage.setRedirectUrl(((ShiroAutcException) te).getRedirectUrl());
-                webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\",\"redirecUrl\":\"%s\"}", te.getMessage().replace("\"","\\\""), webErrorMessage.getRedirectUrl()));
+                webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\",\"redirecUrl\":\"%s\"}", te.getMessage().replace("\"", "\\\""), webErrorMessage.getRedirectUrl()));
             } else if (te != null) {
                 if (Mvcs.isAjax()) {
-                    webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", te.getMessage().replace("\"","\\\"")));
+                    webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", te.getMessage().replace("\"", "\\\"")));
                 } else {
                     webErrorMessage.setMessage(te.getMessage());
                 }
@@ -125,7 +125,7 @@ public class ActionHandler {
                 logger.error(te);
             } else {
                 if (Mvcs.isAjax()) {
-                    webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", e.getMessage().replace("\"","\\\"")));
+                    webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", e.getMessage().replace("\"", "\\\"")));
                 } else {
                     webErrorMessage.setMessage(e.getMessage());
                 }

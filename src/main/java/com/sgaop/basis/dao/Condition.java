@@ -21,7 +21,7 @@ public class Condition {
      * @return cnd
      */
     public Condition asc(String sql) {
-        criteriaLinkedList.add(new Criteria("order","order by "+sql+" asc"));
+        criteriaLinkedList.add(new Criteria("order", "order by " + sql + " asc"));
         return this;
     }
 
@@ -30,7 +30,7 @@ public class Condition {
      * @return cnd
      */
     public Condition desc(String sql) {
-        criteriaLinkedList.add(new Criteria("order","order by " + sql + " desc"));
+        criteriaLinkedList.add(new Criteria("order", "order by " + sql + " desc"));
         return this;
     }
 
@@ -40,7 +40,7 @@ public class Condition {
      * @return cnd
      */
     public Condition strs(String sql) {
-        criteriaLinkedList.add(new Criteria("strs",sql));
+        criteriaLinkedList.add(new Criteria("strs", sql));
         return this;
     }
 
@@ -49,7 +49,7 @@ public class Condition {
      * @return cnd
      */
     public Condition strs(String sql, Object... parme) {
-        criteriaLinkedList.add(new Criteria("strs",sql, parme));
+        criteriaLinkedList.add(new Criteria("strs", sql, parme));
         return this;
     }
 
@@ -135,7 +135,7 @@ public class Condition {
                     sb.append(assembly(criteria.getCriteriaLinkedList()));
                     sb.append(")");
                 }
-            }else if( "strs".equals(criteria.getType())){
+            } else if ("strs".equals(criteria.getType())) {
                 sb.append(" " + criteria.getStrs());
                 if (criteria.getVals() != null && criteria.getVals().length != 0) {
                     for (Object val : criteria.getVals()) {
@@ -155,7 +155,7 @@ public class Condition {
         if (sql.startsWith(" and")) {
             sql = " where" + sql.substring(4, sql.length());
         }
-        if (sql.startsWith(" or")&& !sql.startsWith(" order")) {
+        if (sql.startsWith(" or") && !sql.startsWith(" order")) {
             sql = " where" + sql.substring(3, sql.length());
         }
         return sql;

@@ -21,7 +21,6 @@ public interface View {
     void render(String path, HttpServletRequest request, HttpServletResponse response, Object data);
 
     /**
-     *
      * @param request
      * @param response
      */
