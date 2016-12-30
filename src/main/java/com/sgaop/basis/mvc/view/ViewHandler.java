@@ -4,6 +4,7 @@ import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.mvc.ActionResult;
 import com.sgaop.basis.mvc.Mvcs;
+import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
@@ -46,7 +47,7 @@ public class ViewHandler {
                 }
                 if (ViewsRegister.hasRegisterView(resultType)) {
                     Class<?> klass = ViewsRegister.getViewClass(path[0]);
-                    View view = (View) klass.newInstance();
+                    View view = (View) ClassTool.getInstance(klass);
                     view.afterProcess(request, response);
                     view.render(path[1], request, response, actionResult.getResultData());
                 } else if (resultType.equals("json") || resultType.startsWith("json:")) {

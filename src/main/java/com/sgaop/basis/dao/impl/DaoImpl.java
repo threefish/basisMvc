@@ -351,6 +351,37 @@ public class DaoImpl implements Dao {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } catch (NullPointerException e) {
+            log.error("不能删除无主键的数据，请使用其他方法删除");
+            return false;
+        }
+    }
+
+    /**
+     * 删除表中多行数据
+     *
+     * @param klass  对象的集合
+     * @param condition
+     * @return 是否成功
+     */
+    @Override
+    public boolean delete(Class klass, Condition condition) {
+        TableInfo tableInfo = (TableInfo) MvcsManager.getTableCache(klass.getName());
+        JdbcBuilder builder = new JdbcBuilder(tableInfo, klass, null);
+        String delSql = builder.getDelPkSql() + condition.toSql();
+        try {
+            PreparedStatement pstm = getConnection().prepareStatement(delSql);
+            DBUtil.setParams(pstm, condition.valToArry());
+            pstm.execute();
+            DBUtil.showSql(pstm);
+            DBUtil.close(pstm, null, null);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } catch (NullPointerException e) {
+            log.error("不能删除无主键的数据，请使用其他方法删除");
+            return false;
         }
     }
 

@@ -1,5 +1,6 @@
 package com.sgaop.basis.mvc;
 
+import com.google.gson.Gson;
 import com.sgaop.basis.annotation.Parameter;
 import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
@@ -19,6 +20,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +57,7 @@ public class ActionHandler {
                 String iocBeanName = ClassTool.getIocBeanName(actionClass);
                 Object beanInstance = Ioc.getBean(iocBeanName);
                 if (beanInstance == null) {
-                    beanInstance = actionClass.newInstance();
+                    beanInstance = ClassTool.getInstance(actionClass);
                 }
                 /**
                  * 自动注入参数
@@ -99,9 +101,13 @@ public class ActionHandler {
                         logger.error(webErrorMessage.getMessage());
                     }
                 }
-                Object object = handlerMethod.invoke(beanInstance, actionParamList.toArray());
-                actionResult.setResultData(object);
-
+                try {
+                    Object object = handlerMethod.invoke(beanInstance, actionParamList.toArray());
+                    actionResult.setResultData(object);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    logger.error(e);
+                }
             } else if (servletPath.endsWith(Constant.PAGE_SUFFIX)) {
                 /**
                  * 在没有找到注解的情况下，并且访问的是jsp文件
@@ -113,12 +119,17 @@ public class ActionHandler {
         } catch (Throwable e) {
             webErrorMessage.setAjax(Mvcs.isAjax());
             Throwable te = e.getCause();
+            String message = te.getMessage() == null ? te.toString() : te.getMessage();
+            Map map = new HashMap();
+            map.put("ok", false);
+            map.put("msg", message);
             if (te instanceof ShiroAutcException) {
                 webErrorMessage.setRedirectUrl(((ShiroAutcException) te).getRedirectUrl());
-                webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\",\"redirecUrl\":\"%s\"}", te.getMessage().replace("\"", "\\\""), webErrorMessage.getRedirectUrl()));
+                map.put("redirecUrl", webErrorMessage.getRedirectUrl());
+                webErrorMessage.setMessage(new Gson().toJson(map));
             } else if (te != null) {
                 if (Mvcs.isAjax()) {
-                    webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", te.getMessage().replace("\"", "\\\"")));
+                    webErrorMessage.setMessage(new Gson().toJson(map));
                 } else {
                     webErrorMessage.setMessage(te.getMessage());
                 }
@@ -126,7 +137,7 @@ public class ActionHandler {
                 logger.error(te);
             } else {
                 if (Mvcs.isAjax()) {
-                    webErrorMessage.setMessage(String.format("{\"ok\":false,\"msg\":\"%s\"}", e.getMessage().replace("\"", "\\\"")));
+                    webErrorMessage.setMessage(new Gson().toJson(map));
                 } else {
                     webErrorMessage.setMessage(e.getMessage());
                 }

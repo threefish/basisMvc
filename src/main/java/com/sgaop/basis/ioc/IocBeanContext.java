@@ -113,13 +113,7 @@ public class IocBeanContext {
             Class<?> item = iterator.next();
             String beanName = ClassTool.getIocBeanName(item);
             if (beanName != null) {
-                try {
-                    this.setBean(beanName, item.newInstance());
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+                this.setBean(beanName, ClassTool.getInstance(item));
                 /**
                  * 记录依赖关系
                  */

@@ -46,9 +46,9 @@ public class ClassTool {
             if (klazz.equals(String.class)) {
                 val = ((Object[]) value)[0];
             } else if (klazz.equals(String[].class)) {
-                val = value;
+                val = String.valueOf(((Object[]) value)[0]).split(",");
             } else if (klazz.equals(int[].class)) {
-                val = value;
+                val = StringsTool.stringsToints(String.valueOf(((Object[]) value)[0]).split(","));
             } else if (klazz.equals(int.class)) {
                 val = Integer.valueOf(String.valueOf(((Object[]) value)[0]));
             } else if (klazz.equals(double.class)) {
@@ -249,5 +249,20 @@ public class ClassTool {
             e.printStackTrace();
         }
         return val;
+    }
+
+    /**
+     * 实例化类
+     *
+     * @param cls
+     * @return
+     */
+    public static Object getInstance(Class cls) {
+        try {
+            return cls.newInstance();
+        } catch (Exception e) {
+            log.error("请检查"+ cls+ "是否含有无参构造函数");
+        }
+        return null;
     }
 }

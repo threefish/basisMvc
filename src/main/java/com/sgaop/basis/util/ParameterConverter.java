@@ -46,7 +46,7 @@ public class ParameterConverter {
             }
         }
         if (b) {
-            Object obj = cls.newInstance();
+            Object obj = ClassTool.getInstance(cls);
             Field[] fieldArray = cls.getDeclaredFields();
             for (int i = 0; i < fieldArray.length; i++) {
                 Field field = fieldArray[i];

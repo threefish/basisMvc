@@ -2,8 +2,11 @@ package com.sgaop.basis.dao.entity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sgaop.basis.cache.MvcsManager;
+import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.json.TimestampTypeAdapter;
 import com.sgaop.basis.util.ClassTool;
+import com.sgaop.basis.util.DBUtil;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

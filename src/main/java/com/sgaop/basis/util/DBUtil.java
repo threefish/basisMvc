@@ -205,7 +205,7 @@ public class DBUtil {
         if (record.size() == 0) {
             return null;
         }
-        Object bean = cls.newInstance();
+        Object bean = ClassTool.getInstance(cls);
         for (String colum : tableInfo.getColums()) {
             TableFiled tableFiled = tableInfo.getDaoFiled(colum);
             Object value = record.get(colum.toLowerCase());
@@ -221,14 +221,14 @@ public class DBUtil {
 
 
     public static <T> T MapToEntity(Class cls, TableInfo tableInfo, HashMap<String, Object> data) throws Exception {
-        Object bean = cls.newInstance();
+        Object bean = ClassTool.getInstance(cls);
         for (String colum : tableInfo.getColums()) {
             TableFiled tableFiled = tableInfo.getDaoFiled(colum);
             Object value = data.get(colum);
             if (value != null) {
                 Field field = cls.getDeclaredField(tableFiled.getFiledName());
                 String methodName = tableFiled.get_setMethodName();
-                ClassTool.invokeMethod(field, methodName, cls, bean, ClassTool.coverParam(field.getType(),value));
+                ClassTool.invokeMethod(field, methodName, cls, bean, ClassTool.coverParam(field.getType(), value));
             }
         }
         return (T) bean;

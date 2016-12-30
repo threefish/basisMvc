@@ -185,4 +185,19 @@ public class StringsTool {
         return Pattern.matches("\\d{4}-\\d{2}-\\d{2}\\s{1}\\d{2}:\\d{2}:\\d{2}", str);
     }
 
+
+    /**
+     * 判断是否是数字
+     *
+     * @param str
+     * @return
+     */
+    public static int[] stringsToints(String[] str) {
+        int[] ints = new int[str.length];
+        for (int i = 0, len = str.length; i < len; i++) {
+            ints[i] = Integer.parseInt(str[i]);
+        }
+        return ints;
+    }
+
 }

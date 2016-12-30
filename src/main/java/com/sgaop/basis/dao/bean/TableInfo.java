@@ -42,7 +42,7 @@ public class TableInfo {
     }
 
     public String[] getPkName() {
-        return pkName;
+        return  pkName;
     }
 
     public void setPkName(String[] pkName) {

@@ -109,6 +109,15 @@ public interface Dao {
      */
     <E> boolean delete(List<E> entitys);
 
+
+    /**
+     * 删除表中多行数据
+     *
+     * @param klass 表
+     * @return 是否成功
+     */
+    boolean delete(Class klass, Condition condition);
+
     /**
      * @param entityClass 实体类
      * @param id          主键ID

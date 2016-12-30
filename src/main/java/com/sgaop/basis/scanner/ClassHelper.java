@@ -66,13 +66,7 @@ public class ClassHelper {
                         }
                     }
                 } else if (setup != null) {
-                    try {
-                        MvcsManager.putSetupCache(Constant.WEB_SETUP, ks.newInstance());
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
+                    MvcsManager.putSetupCache(Constant.WEB_SETUP, ClassTool.getInstance(ks));
                 } else if (table != null) {
                     Field[] fields = ks.getDeclaredFields();
                     TableInfo tbinfo = new TableInfo();

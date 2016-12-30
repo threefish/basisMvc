@@ -1,6 +1,7 @@
 package com.sgaop.basis.dao;
 
 import com.sgaop.basis.ioc.IocBeanContext;
+import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.Logs;
 import org.apache.log4j.Logger;
 
@@ -26,7 +27,7 @@ public class DaosRegister {
     public static Dao registerDao(String newIocBeanKey, Class<?> klass, DataSource dataSource) {
         Dao dao = null;
         try {
-            dao = (Dao) klass.newInstance();
+            dao = (Dao) ClassTool.getInstance(klass);
             dao.setDataSource(dataSource);
             IocBeanContext.me().setBean(newIocBeanKey, dao);
         } catch (Exception e) {

@@ -70,16 +70,21 @@ public class JdbcBuilder {
      */
     public String getDelPkSql() {
         StringBuffer sb = new StringBuffer("delete from " + tableInfo.getTableName());
-        sb.append(" where ");
-        String[] pks = tableInfo.getPkName();
-        int i = 0;
-        for (String pk : pks) {
-            if (i == 0) {
-                sb.append(pk + "=? ");
-            } else {
-                sb.append("and " + pk + "=? ");
+        if(tableInfo.getPkName()!=null){
+            sb.append(" where ");
+            String[] pks = tableInfo.getPkName();
+            if (pks.length == 0) {
+
             }
-            i++;
+            int i = 0;
+            for (String pk : pks) {
+                if (i == 0) {
+                    sb.append(pk + "=? ");
+                } else {
+                    sb.append("and " + pk + "=? ");
+                }
+                i++;
+            }
         }
         return sb.toString();
     }
