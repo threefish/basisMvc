@@ -29,7 +29,7 @@ public class BasisJobFactory implements JobFactory {
         try {
             return Ioc.getBean(ClassTool.getIocBeanName(bundle.getJobDetail().getJobClass()));
         } catch (Exception e) {
-            log.warn("Not ioc bean? fallback to SimpleJobFactory", e);
+            log.warn("Not ioc bean? fallback to BasisJobFactory", e);
             return simple.newJob(bundle, scheduler);
         }
     }
