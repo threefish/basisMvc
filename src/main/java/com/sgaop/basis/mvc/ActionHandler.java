@@ -118,7 +118,7 @@ public class ActionHandler {
             }
         } catch (Throwable e) {
             webErrorMessage.setAjax(Mvcs.isAjax());
-            Throwable te = e.getCause();
+            Throwable te = e == null ? e.getCause() : e;
             String message = te.getMessage() == null ? te.toString() : te.getMessage();
             Map map = new HashMap();
             map.put("ok", false);
@@ -133,18 +133,17 @@ public class ActionHandler {
                 } else {
                     webErrorMessage.setMessage(te.getMessage());
                 }
-                logger.trace(te);
-                logger.error(te);
             } else {
                 if (Mvcs.isAjax()) {
                     webErrorMessage.setMessage(new Gson().toJson(map));
                 } else {
                     webErrorMessage.setMessage(e.getMessage());
                 }
-                logger.trace(e);
-                logger.error(e);
             }
             webErrorMessage.setCode(500);
+            te.printStackTrace();
+            logger.trace(te);
+            logger.error(te);
         }
         if (webErrorMessage.getCode() == 404) {
             webErrorMessage.setMessage("  [" + methodType + "] Not Found URI=" + servletPath);

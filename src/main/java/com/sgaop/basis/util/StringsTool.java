@@ -1,5 +1,7 @@
 package com.sgaop.basis.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -187,15 +189,21 @@ public class StringsTool {
 
 
     /**
-     * 判断是否是数字
+     *转换字符串数组为数值数组
      *
-     * @param str
+     * @param strs
      * @return
      */
-    public static int[] stringsToints(String[] str) {
-        int[] ints = new int[str.length];
-        for (int i = 0, len = str.length; i < len; i++) {
-            ints[i] = Integer.parseInt(str[i]);
+    public static int[] stringsToints(String[] strs) {
+        List<Integer> integers = new ArrayList<>();
+        for (String str : strs) {
+            if (!"".equals(str)) {
+                integers.add(Integer.parseInt(str));
+            }
+        }
+        int[] ints = new int[integers.size()];
+        for (int i = 0, len = integers.size(); i < len; i++) {
+            ints[i] = integers.get(i);
         }
         return ints;
     }

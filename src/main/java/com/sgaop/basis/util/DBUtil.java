@@ -79,6 +79,9 @@ public class DBUtil {
         if (order == null) {
             order = "";
         }
+        if (pager.getPageEnd() - pager.getPageStart() > 500) {
+            throw new RuntimeException("请检查前端分页数据大小，分页数据过多可能导致检索变慢！");
+        }
         return new StringBuffer().append(sql).append(" " + order).append(" limit ").append(pager.getPageStart()).append(",").append(pager.getPageSize()).toString();
     }
 

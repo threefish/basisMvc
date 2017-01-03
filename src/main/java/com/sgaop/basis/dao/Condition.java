@@ -16,6 +16,8 @@ public class Condition {
     private LinkedList<Object> valLinkedList = new LinkedList<>();
 
 
+    private boolean valIsAssembly = false;
+
     /**
      * @param sql 字段
      * @return cnd
@@ -136,19 +138,24 @@ public class Condition {
                     sb.append(")");
                 }
             } else if ("strs".equals(criteria.getType())) {
-                sb.append(" " + criteria.getStrs());
-                if (criteria.getVals() != null && criteria.getVals().length != 0) {
-                    for (Object val : criteria.getVals()) {
-                        valLinkedList.add(val);
+                sb.append(" " + criteria.getStrs()+" ");
+
+                if (valIsAssembly == false) {
+                    if (criteria.getVals() != null && criteria.getVals().length != 0) {
+                        for (Object val : criteria.getVals()) {
+                            valLinkedList.add(val);
+                        }
                     }
                 }
             } else if ("order".equals(criteria.getType())) {
                 sb.append(" " + criteria.getStrs());
             } else {
-                sb.append(" " + criteria.getType());
-                sb.append(" " + criteria.getColum());
-                sb.append(criteria.getOperator() + "?");
-                valLinkedList.add(criteria.getVal());
+                sb.append(" " + criteria.getType() + " ");
+                sb.append(" " + criteria.getColum() + " ");
+                sb.append(criteria.getOperator() + " ?");
+                if (valIsAssembly == false) {
+                    valLinkedList.add(criteria.getVal());
+                }
             }
         }
         String sql = sb.toString();
@@ -158,26 +165,7 @@ public class Condition {
         if (sql.startsWith(" or") && !sql.startsWith(" order")) {
             sql = " where" + sql.substring(3, sql.length());
         }
+        valIsAssembly = true;
         return sql;
-    }
-
-    public static void main(String[] args) {
-        Condition cnd = new Condition();
-//        cnd.or("name", "=", "test");
-//        cnd.and("id", "=", 2);
-//        cnd.or("xx", "=", 99);
-//        cnd.strs("find_in_set(?,?)", 1, 2);
-//        Condition cndCom = new Condition();
-//        cndCom.and("dd", "=", 123);
-//        cndCom.or("mm", "=", "wq");
-//        cndCom.and("mmxx", "=", "xxx");
-//        cnd.and(cndCom);
-        cnd.asc("mmxx1");
-
-
-        System.out.println(cnd.toSql());
-        for (Object object : cnd.valToArry()) {
-            System.out.println("【" + object + "】");
-        }
     }
 }

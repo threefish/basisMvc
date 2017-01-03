@@ -34,6 +34,9 @@ public class Pager {
      */
     public Pager(int pageNumber, int pageSize) {
         this.compute(pageNumber, pageSize);
+        if (this.getPageEnd() - this.getPageStart() > 500) {
+            throw new RuntimeException("请检查前端分页数据大小，分页数据过多可能导致检索变慢！");
+        }
     }
 
     /**
