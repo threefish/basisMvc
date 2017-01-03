@@ -1,5 +1,6 @@
 package com.sgaop.basis.mvc;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
@@ -56,6 +57,16 @@ public class Mvcs {
         setI18nLang(lang);
         FrameRequest frameRequest = new FrameRequest((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, reqMap, isAjax, cookiesMap);
         local.set(frameRequest);
+    }
+
+
+    /**
+     * 获取 Servlet 执行的上下文
+     *
+     * @return Servlet 执行的上下文
+     */
+    public static ServletContext getServletContext() {
+        return getReq().getServletContext();
     }
 
     /**

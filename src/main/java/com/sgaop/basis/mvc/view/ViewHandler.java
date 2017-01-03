@@ -67,9 +67,7 @@ public class ViewHandler {
                 } else if (resultType.startsWith("raw")) {
                     RawViewRender.RenderRaw(request, response, actionResult.getResultData(), path[1]);
                 } else {
-                    actionResult.getWebErrorMessage().setMessage("没有设置返回类型 [" + servletPath + "]");
-                    logger.error(actionResult.getWebErrorMessage().getMessage());
-                    DefaultViewsRender.RenderErrorPage(response, actionResult.getWebErrorMessage());
+                    RawViewRender.RenderRaw(request, response, actionResult.getResultData(), path[1]);
                 }
             }
         } else {

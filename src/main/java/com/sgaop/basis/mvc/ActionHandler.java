@@ -106,7 +106,6 @@ public class ActionHandler {
                     actionResult.setResultData(object);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    logger.error(e);
                 }
             } else if (servletPath.endsWith(Constant.PAGE_SUFFIX)) {
                 /**

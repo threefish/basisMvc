@@ -133,8 +133,8 @@ public class RawViewRender {
                 OutputStream out = resp.getOutputStream();
                 IoTool.writeAndClose(out, (InputStream) obj);
             }
-            // 普通对象
-            else {
+            //普通对象
+            else if(obj!=null){
                 byte[] data = String.valueOf(obj).getBytes(Constant.utf8);
                 resp.setHeader("Content-Length", "" + data.length);
                 OutputStream out = resp.getOutputStream();

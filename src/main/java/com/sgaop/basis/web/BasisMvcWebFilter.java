@@ -32,6 +32,8 @@ public class BasisMvcWebFilter implements Filter {
 
     private static final String STATIC_PATH = PropertiesManager.getCache(Constant.STATIC_PATH_KEY).toString();
 
+    protected ServletContext sc;
+
     public void init(FilterConfig filterConfig) throws ServletException {
         logger.info("过滤器启动");
     }
