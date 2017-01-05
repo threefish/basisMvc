@@ -50,13 +50,33 @@ public class ClassTool {
             } else if (klazz.equals(int[].class)) {
                 val = StringsTool.stringsToints(String.valueOf(((Object[]) value)[0]).split(","));
             } else if (klazz.equals(int.class)) {
-                val = Integer.valueOf(String.valueOf(((Object[]) value)[0]));
+                String valStr = String.valueOf(((Object[]) value)[0]);
+                if (StringsTool.isNullorEmpty(valStr)) {
+                    val = 0;
+                } else {
+                    val = Integer.valueOf(String.valueOf(((Object[]) value)[0]));
+                }
             } else if (klazz.equals(double.class)) {
-                val = Double.valueOf(String.valueOf(((Object[]) value)[0]));
+                String valStr = String.valueOf(((Object[]) value)[0]);
+                if (StringsTool.isNullorEmpty(valStr)) {
+                    val = 0.00;
+                } else {
+                    val = Double.valueOf(String.valueOf(((Object[]) value)[0]));
+                }
             } else if (klazz.equals(long.class)) {
-                val = Long.valueOf(String.valueOf(((Object[]) value)[0]));
+                String valStr = String.valueOf(((Object[]) value)[0]);
+                if (StringsTool.isNullorEmpty(valStr)) {
+                    val = 0L;
+                } else {
+                    val = Long.valueOf(String.valueOf(((Object[]) value)[0]));
+                }
             } else if (klazz.equals(float.class)) {
-                val = Float.valueOf(String.valueOf(((Object[]) value)[0]));
+                String valStr = String.valueOf(((Object[]) value)[0]);
+                if (StringsTool.isNullorEmpty(valStr)) {
+                    val = 0F;
+                } else {
+                    val = Float.valueOf(String.valueOf(((Object[]) value)[0]));
+                }
             } else if (klazz.equals(boolean.class)) {
                 String valStr = String.valueOf(((Object[]) value)[0]);
                 if ("1".equals(valStr)) {
@@ -261,7 +281,7 @@ public class ClassTool {
         try {
             return cls.newInstance();
         } catch (Exception e) {
-            log.error("请检查"+ cls+ "是否含有无参构造函数");
+            log.error("请检查" + cls + "是否含有无参构造函数");
         }
         return null;
     }

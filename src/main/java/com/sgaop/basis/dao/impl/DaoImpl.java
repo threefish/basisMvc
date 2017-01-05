@@ -82,7 +82,6 @@ public class DaoImpl implements Dao {
             while (rs.next()) {
                 id = rs.getInt(1);
             }
-            DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
         } catch (SQLException e) {
             log.debug(e);

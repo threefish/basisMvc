@@ -128,8 +128,15 @@ public class ParameterConverter {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, Object[]> bulidMultipartMap(HttpServletRequest request) throws Exception {
-        Map<String, Object[]> req = new HashMap<String, Object[]>();
+    public static Map<String, Object[]> bulidMultipartMap(HttpServletRequest request, Map<String, ?> requestParameterMap) throws Exception {
+        Map<String, Object[]> dataMap = new HashMap();
+        for (Map.Entry entry : requestParameterMap.entrySet()) {
+            if (entry.getValue() instanceof String[]) {
+                dataMap.put(String.valueOf(entry.getKey()), (String[]) entry.getValue());
+            } else {
+                dataMap.put(String.valueOf(entry.getKey()), new Object[]{entry.getValue()});
+            }
+        }
         if (ServletFileUpload.isMultipartContent(request)) {
             FileItemFactory factory = new DiskFileItemFactory();
             ServletFileUpload upload = new ServletFileUpload(factory);
@@ -156,21 +163,21 @@ public class ParameterConverter {
                     }
                     TempFile tempFile = new TempFile(fileName, fileItem.getInputStream(), fileItem.getContentType());
                     if (isNull) {
-                        if (req.get(name) == null || req.get(name).length > 0) {
+                        if (dataMap.get(name) == null || dataMap.get(name).length > 0) {
                             if (isFiles.get(name) > 1) {
-                                req.put(name, new TempFile[]{});
+                                dataMap.put(name, new TempFile[]{});
                             } else {
-                                req.put(name, new Object[]{null});
+                                dataMap.put(name, new Object[]{null});
                             }
                         }
                     } else {
                         FileUploadAdapter.checkFile(fileName, fileItem.getInputStream().available());
                         //map中当前名称的文件个数不为空并且第一个文件不为null
-                        if (req.get(name) != null) {
-                            Object[] fileObjs = req.get(name);
+                        if (dataMap.get(name) != null) {
+                            Object[] fileObjs = dataMap.get(name);
                             int len = 0;
                             //如果第一个文件为空
-                            if (req.get(name)[0] != null) {
+                            if (dataMap.get(name)[0] != null) {
                                 len = fileObjs.length;
                             }
                             TempFile[] files = new TempFile[len + 1];
@@ -179,19 +186,19 @@ public class ParameterConverter {
                                 files[fi] = file;
                             }
                             files[len] = tempFile;
-                            req.put(name, files);
+                            dataMap.put(name, files);
                         } else {
-                            req.put(name, new Object[]{tempFile});
+                            dataMap.put(name, new Object[]{tempFile});
                         }
                     }
                 } else {
                     String name = fileItem.getFieldName();
                     String value = IoTool.InputStreamTOString(fileItem.getInputStream());
-                    req.put(name, new Object[]{value});
+                    dataMap.put(name, new Object[]{value});
                 }
             }
         }
-        return req;
+        return dataMap;
     }
 
 

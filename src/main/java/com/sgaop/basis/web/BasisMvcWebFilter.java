@@ -47,7 +47,7 @@ public class BasisMvcWebFilter implements Filter {
         try {
             Map<String, ?> requestParameterMap = request.getParameterMap();
             if (ServletFileUpload.isMultipartContent(request)) {
-                requestParameterMap = ParameterConverter.bulidMultipartMap(request);
+                requestParameterMap = ParameterConverter.bulidMultipartMap(request, requestParameterMap);
             }
             boolean isAjax = WebUtil.isAjax(request);
             Mvcs.initLocal(servletRequest, servletResponse, requestParameterMap, isAjax);
