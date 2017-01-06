@@ -8,6 +8,7 @@ import com.sgaop.basis.json.JsonExclusionStrategy;
 import com.sgaop.basis.json.JsonFormat;
 import com.sgaop.basis.json.TimestampTypeAdapter;
 import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -101,9 +102,22 @@ public class DefaultViewsRender {
 
     public static void RenderFile(HttpServletResponse response, Object resultObj) {
         try {
-            if (resultObj instanceof File) {
-                File file = (File) resultObj;
-                String fileName = URLEncoder.encode(file.getName(), Constant.utf8);
+            if (resultObj instanceof File || resultObj instanceof DownFile) {
+                File file;
+                String fileName;
+                if (resultObj instanceof DownFile) {
+                    DownFile downFile = (DownFile) resultObj;
+                    file = downFile.getFile();
+                    if (StringsTool.isNullorEmpty(downFile.getName())) {
+                        fileName = file.getName();
+                    } else {
+                        fileName = downFile.getName();
+                    }
+                } else {
+                    file = (File) resultObj;
+                    fileName = file.getName();
+                }
+                fileName = URLEncoder.encode(fileName, Constant.utf8);
                 fileName = fileName.replaceAll("\\+", "%20");
                 response.setHeader("Cache-control", "private");
                 response.setHeader("Cache-Control", "maxage=3600");

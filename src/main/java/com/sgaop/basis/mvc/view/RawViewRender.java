@@ -62,8 +62,22 @@ public class RawViewRender {
                 return;
             }
             // 文件
-            else if (obj instanceof File) {
-                File file = (File) obj;
+            else if (obj instanceof File || obj instanceof DownFile) {
+                File file;
+                String fileName ;
+                if (obj instanceof DownFile) {
+                    DownFile downFile = (DownFile) obj;
+                    file = downFile.getFile();
+                    if (StringsTool.isNullorEmpty(downFile.getName())) {
+                        fileName = file.getName();
+                    } else {
+                        fileName = downFile.getName();
+                    }
+                } else {
+                    file = (File) obj;
+                    fileName = file.getName();
+                }
+
                 long fileSz = file.length();
                 if (!file.exists() || file.isDirectory()) {
                     logger.debug("File downloading ... Not Exist : " + file.getAbsolutePath());
@@ -71,7 +85,7 @@ public class RawViewRender {
                     return;
                 }
                 if (!resp.containsHeader("Content-Disposition")) {
-                    String filename = URLEncoder.encode(file.getName(), Constant.utf8);
+                    String filename = URLEncoder.encode(fileName, Constant.utf8);
                     resp.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
                 }
 
@@ -134,7 +148,7 @@ public class RawViewRender {
                 IoTool.writeAndClose(out, (InputStream) obj);
             }
             //普通对象
-            else if(obj!=null){
+            else if (obj != null) {
                 byte[] data = String.valueOf(obj).getBytes(Constant.utf8);
                 resp.setHeader("Content-Length", "" + data.length);
                 OutputStream out = resp.getOutputStream();

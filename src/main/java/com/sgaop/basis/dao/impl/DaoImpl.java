@@ -359,7 +359,7 @@ public class DaoImpl implements Dao {
     /**
      * 删除表中多行数据
      *
-     * @param klass  对象的集合
+     * @param klass     对象的集合
      * @param condition
      * @return 是否成功
      */
@@ -397,7 +397,7 @@ public class DaoImpl implements Dao {
         JdbcBuilder builder = new JdbcBuilder(tableInfo, entityClass, null);
         E E = null;
         try {
-            PreparedStatement pstm = getConnection().prepareStatement(builder.getSelectSql() + " where id=?");
+            PreparedStatement pstm = getConnection().prepareStatement(builder.getSelectSql() + " where " + tableInfo.getPkName()[0] + "=?");
             DBUtil.setParams(pstm, id);
             ResultSet rs = pstm.executeQuery();
             Record record = DBUtil.getRecord(rs);
