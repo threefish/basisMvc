@@ -84,7 +84,8 @@ public class DaoImpl implements Dao {
             }
             DBUtil.close(pstm, rs, null);
         } catch (SQLException e) {
-            log.debug(e);
+            e.printStackTrace();
+            log.error(e);
         }
         return id;
     }
@@ -121,7 +122,8 @@ public class DaoImpl implements Dao {
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, null, null);
         } catch (SQLException e) {
-            log.debug(e);
+            e.printStackTrace();
+            log.error(e);
         }
         return keys;
 
@@ -153,7 +155,8 @@ public class DaoImpl implements Dao {
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, null, null);
         } catch (SQLException e) {
-            log.debug(e);
+            e.printStackTrace();
+            log.error(e);
         }
         return id > 0;
     }
@@ -184,7 +187,8 @@ public class DaoImpl implements Dao {
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, null, null);
         } catch (SQLException e) {
-            log.debug(e);
+            e.printStackTrace();
+            log.error(e);
         }
         return id > 0;
     }
@@ -218,7 +222,8 @@ public class DaoImpl implements Dao {
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, null, null);
         } catch (SQLException e) {
-            log.debug(e);
+            e.printStackTrace();
+            log.error(e);
         }
         return id > 0;
     }
@@ -262,7 +267,8 @@ public class DaoImpl implements Dao {
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, null, null);
         } catch (SQLException e) {
-            log.debug(e);
+            e.printStackTrace();
+            log.error(e);
         }
         return keys;
     }
@@ -289,6 +295,7 @@ public class DaoImpl implements Dao {
             DBUtil.close(pstm, null, null);
         } catch (SQLException e) {
             e.printStackTrace();
+            log.error(e);
         }
         return i > 0;
     }
@@ -313,6 +320,7 @@ public class DaoImpl implements Dao {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            log.error(e);
             return false;
         }
     }
@@ -349,8 +357,10 @@ public class DaoImpl implements Dao {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            log.error(e);
             return false;
         } catch (NullPointerException e) {
+            e.printStackTrace();
             log.error("不能删除无主键的数据，请使用其他方法删除");
             return false;
         }
@@ -379,6 +389,7 @@ public class DaoImpl implements Dao {
             e.printStackTrace();
             return false;
         } catch (NullPointerException e) {
+            e.printStackTrace();
             log.error("不能删除无主键的数据，请使用其他方法删除");
             return false;
         }
@@ -404,10 +415,9 @@ public class DaoImpl implements Dao {
             E = DBUtil.RecordToEntity(entityClass, tableInfo, record);
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return E;
     }
@@ -430,10 +440,9 @@ public class DaoImpl implements Dao {
             E = DBUtil.RecordToEntity(entityClass, tableInfo, record);
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return E;
     }
@@ -458,10 +467,9 @@ public class DaoImpl implements Dao {
             E = DBUtil.RecordToEntity(entityClass, tableInfo, record);
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return E;
     }
@@ -492,10 +500,9 @@ public class DaoImpl implements Dao {
             }
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return E;
     }
@@ -526,10 +533,9 @@ public class DaoImpl implements Dao {
             }
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return E;
     }
@@ -555,10 +561,9 @@ public class DaoImpl implements Dao {
             }
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return E;
     }
@@ -585,10 +590,9 @@ public class DaoImpl implements Dao {
             }
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return E;
     }
@@ -616,10 +620,9 @@ public class DaoImpl implements Dao {
             }
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return E;
     }
@@ -642,10 +645,9 @@ public class DaoImpl implements Dao {
             }
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return count;
     }
@@ -670,10 +672,9 @@ public class DaoImpl implements Dao {
             }
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return count;
     }
@@ -712,6 +713,7 @@ public class DaoImpl implements Dao {
             DBUtil.close(pstm, null, null);
         } catch (SQLException e) {
             e.printStackTrace();
+            log.error(e);
         }
         return rs;
     }
@@ -733,10 +735,9 @@ public class DaoImpl implements Dao {
             records = DBUtil.getRecords(rs);
             DBUtil.showSql(pstm);
             DBUtil.close(pstm, rs, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         return records;
     }
