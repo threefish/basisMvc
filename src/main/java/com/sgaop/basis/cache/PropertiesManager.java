@@ -131,5 +131,9 @@ public class PropertiesManager {
             putCache(key, properties.get(key));
         }
     }
+
+    public static HashMap getConf(){
+        return propertiesMap;
+    }
 } 
  
