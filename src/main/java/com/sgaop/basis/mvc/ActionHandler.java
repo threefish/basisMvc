@@ -105,7 +105,7 @@ public class ActionHandler {
                     Object object = handlerMethod.invoke(beanInstance, actionParamList.toArray());
                     actionResult.setResultData(object);
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    throw e;
                 }
             } else if (servletPath.endsWith(Constant.PAGE_SUFFIX)) {
                 /**
@@ -122,7 +122,12 @@ public class ActionHandler {
             Map map = new HashMap();
             map.put("ok", false);
             map.put("msg", message);
-            if (te instanceof ShiroAutcException) {
+            if (e != null && e.getCause() != null && e.getCause() instanceof ShiroAutcException) {
+                webErrorMessage.setRedirectUrl(((ShiroAutcException) e.getCause()).getRedirectUrl());
+                map.put("redirecUrl", webErrorMessage.getRedirectUrl());
+                map.put("msg", e.getCause().getMessage());
+                webErrorMessage.setMessage(new Gson().toJson(map));
+            } else if (te instanceof ShiroAutcException) {
                 webErrorMessage.setRedirectUrl(((ShiroAutcException) te).getRedirectUrl());
                 map.put("redirecUrl", webErrorMessage.getRedirectUrl());
                 webErrorMessage.setMessage(new Gson().toJson(map));
@@ -141,7 +146,6 @@ public class ActionHandler {
             }
             webErrorMessage.setCode(500);
             te.printStackTrace();
-            logger.trace(te);
             logger.error(te);
         }
         if (webErrorMessage.getCode() == 404) {
