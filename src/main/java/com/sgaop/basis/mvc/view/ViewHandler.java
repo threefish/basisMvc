@@ -6,6 +6,7 @@ import com.sgaop.basis.mvc.ActionResult;
 import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.util.ClassTool;
 import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,9 +33,17 @@ public class ViewHandler {
             if (error.isAjax()) {
                 DefaultViewsRender.RenderJsonStr(response, error.getMessage());
             } else {
-                String basePath = Mvcs.getSession().getServletContext().getContextPath();
-                basePath = basePath.equals("/") ? "" : basePath;
-                DefaultViewsRender.RenderRedirect(basePath + error.getRedirectUrl(), response);
+                String redirectUrl = error.getRedirectUrl();
+                if (StringsTool.isNullorEmpty(redirectUrl)) {
+                    redirectUrl = "";
+                } else if (!(redirectUrl.startsWith("//") ||
+                        redirectUrl.startsWith("http://") ||
+                        redirectUrl.startsWith("https://"))) {
+                    String basePath = Mvcs.getSession().getServletContext().getContextPath();
+                    basePath = basePath.equals("/") ? "" : basePath;
+                    redirectUrl = basePath + redirectUrl;
+                }
+                DefaultViewsRender.RenderRedirect(redirectUrl, response);
             }
         } else if (error.getCode() == 500 && error.isAjax()) {
             DefaultViewsRender.RenderJsonStr(response, error.getMessage());
