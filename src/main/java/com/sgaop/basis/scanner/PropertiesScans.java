@@ -56,10 +56,12 @@ public class PropertiesScans {
                     Properties props = new Properties();
                     props.load(in);
                     fileName = file.getName();
+                    //缓存语言包
                     if (fileName.startsWith(i18n)) {
                         fileName = fileName.replaceAll(i18n, "").replaceAll(_suffix, "");
                         LanguageManager.add(path, fileName, props);
                     } else {
+                        //缓存配置文件kv值
                         PropertiesManager.putCache(props);
                     }
                 } catch (Exception e) {

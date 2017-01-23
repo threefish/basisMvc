@@ -1,6 +1,9 @@
 package com.sgaop.basis.cache;
 
 
+import com.sgaop.basis.log.Logs;
+
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
@@ -39,7 +42,13 @@ public class PropertiesManager {
      * @return
      */
     public static String getCacheStr(String key) {
-        return propertiesMap.get(key).toString();
+        if (propertiesMap.containsKey(key)) {
+            return propertiesMap.get(key).toString();
+        } else {
+            //记录一下就不抛错了
+            Logs.error(MessageFormat.format("key {0} 不存在！", key));
+            return "";
+        }
     }
 
     /**
@@ -49,7 +58,7 @@ public class PropertiesManager {
      * @return
      */
     public static long getLongCache(String key) {
-        return Long.parseLong(propertiesMap.get(key).toString());
+        return Long.parseLong(getCacheStr(key));
     }
 
 
@@ -60,7 +69,7 @@ public class PropertiesManager {
      * @return
      */
     public static int getIntCache(String key) {
-        return Integer.parseInt(propertiesMap.get(key).toString());
+        return Integer.parseInt(getCacheStr(key));
     }
 
     /**
@@ -70,7 +79,7 @@ public class PropertiesManager {
      * @return
      */
     public static int getInt(String key) {
-        return Integer.parseInt(propertiesMap.get(key).toString());
+        return Integer.parseInt(getCacheStr(key));
     }
 
     /**
@@ -80,7 +89,7 @@ public class PropertiesManager {
      * @return
      */
     public static boolean getBooleanCache(String key) {
-        return Boolean.parseBoolean(propertiesMap.get(key).toString());
+        return Boolean.parseBoolean(getCacheStr(key));
     }
 
     /**
@@ -132,7 +141,7 @@ public class PropertiesManager {
         }
     }
 
-    public static HashMap getConf(){
+    public static HashMap getConf() {
         return propertiesMap;
     }
 } 
