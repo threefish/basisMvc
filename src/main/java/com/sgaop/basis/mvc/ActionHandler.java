@@ -1,6 +1,8 @@
 package com.sgaop.basis.mvc;
 
 import com.google.gson.Gson;
+import com.sgaop.basis.annotation.Attr;
+import com.sgaop.basis.annotation.Cookie;
 import com.sgaop.basis.annotation.Parameter;
 import com.sgaop.basis.cache.MvcsManager;
 import com.sgaop.basis.constant.Constant;
@@ -85,6 +87,18 @@ public class ActionHandler {
                                     Object val = ClassTool.ParamCast(anClass, ParamValuesObject);
                                     actionParamList.add(val);
                                 }
+                            }
+                            if (anno instanceof Attr) {
+                                String attr = ((Attr) anno).value();
+                                Object ParamValuesObject = request.getSession().getAttribute(attr);
+                                Object val = ClassTool.coverParam(anClass, ParamValuesObject);
+                                actionParamList.add(val);
+                            }
+                            if (anno instanceof Cookie) {
+                                String cookie = ((Cookie) anno).value();
+                                Object ParamValuesObject = Mvcs.getCookie(cookie);
+                                Object val = ClassTool.coverParam(anClass, ParamValuesObject);
+                                actionParamList.add(val);
                             }
                         }
                     } else if (anClass.equals(HttpServletRequest.class)) {

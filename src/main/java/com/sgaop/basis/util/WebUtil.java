@@ -15,11 +15,6 @@ public class WebUtil {
     }
 
 
-    public void toJson() {
-
-    }
-
-
     public static String ip(HttpServletRequest request) {
         if (request == null) {
             return "";

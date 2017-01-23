@@ -16,8 +16,6 @@ import java.lang.reflect.Method;
  */
 public abstract class InterceptorProxy implements Proxy {
 
-    private static final Logger log = Logs.get();
-
 
     /**
      * 执行代理链
