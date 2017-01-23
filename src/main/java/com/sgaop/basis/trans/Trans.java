@@ -1,6 +1,6 @@
 package com.sgaop.basis.trans;
 
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;

@@ -2,7 +2,7 @@ package com.sgaop.basis.quartz;
 
 import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.util.ClassTool;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import org.apache.log4j.Logger;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;

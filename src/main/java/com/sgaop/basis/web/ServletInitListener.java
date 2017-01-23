@@ -8,7 +8,7 @@ import com.sgaop.basis.ioc.IocBeanContext;
 import com.sgaop.basis.mvc.view.ViewsRegister;
 import com.sgaop.basis.scanner.ClassHelper;
 import com.sgaop.basis.scanner.PropertiesScans;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;

@@ -8,7 +8,7 @@ import com.sgaop.basis.mvc.ActionResult;
 import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.mvc.view.DefaultViewsRender;
 import com.sgaop.basis.mvc.view.ViewHandler;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import com.sgaop.basis.util.ParameterConverter;
 import com.sgaop.basis.util.WebUtil;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;

@@ -7,7 +7,7 @@ import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.json.JsonExclusionStrategy;
 import com.sgaop.basis.json.JsonFormat;
 import com.sgaop.basis.json.TimestampTypeAdapter;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 

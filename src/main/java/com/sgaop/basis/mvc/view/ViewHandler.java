@@ -5,7 +5,7 @@ import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.mvc.ActionResult;
 import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.util.ClassTool;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 

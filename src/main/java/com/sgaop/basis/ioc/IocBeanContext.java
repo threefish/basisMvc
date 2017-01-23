@@ -14,7 +14,7 @@ import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.trans.TransAop;
 import com.sgaop.basis.trans.TransactionProxy;
 import com.sgaop.basis.util.ClassTool;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 

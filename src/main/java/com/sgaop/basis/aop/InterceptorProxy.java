@@ -2,7 +2,7 @@ package com.sgaop.basis.aop;
 
 import com.sgaop.basis.aop.proxy.Proxy;
 import com.sgaop.basis.aop.proxy.ProxyChain;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;

@@ -3,7 +3,7 @@ package com.sgaop.basis.scanner;
 import com.sgaop.basis.cache.PropertiesManager;
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.i18n.LanguageManager;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import org.apache.log4j.Logger;
 
 import java.io.File;

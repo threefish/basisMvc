@@ -10,7 +10,7 @@ import com.sgaop.basis.dao.entity.Record;
 import com.sgaop.basis.trans.BasisTransaction;
 import com.sgaop.basis.trans.Trans;
 import com.sgaop.basis.util.DBUtil;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;

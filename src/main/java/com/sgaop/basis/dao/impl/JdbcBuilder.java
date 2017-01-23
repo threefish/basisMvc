@@ -3,7 +3,7 @@ package com.sgaop.basis.dao.impl;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.util.ClassTool;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import org.apache.log4j.Logger;
 
 import java.util.LinkedList;

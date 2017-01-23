@@ -6,6 +6,7 @@ import com.sgaop.basis.dao.Pager;
 import com.sgaop.basis.dao.bean.TableFiled;
 import com.sgaop.basis.dao.bean.TableInfo;
 import com.sgaop.basis.dao.entity.Record;
+import com.sgaop.basis.log.Logs;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;

@@ -2,7 +2,7 @@ package com.sgaop.basis.mvc.view;
 
 import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.util.IoTool;
-import com.sgaop.basis.util.Logs;
+import com.sgaop.basis.log.Logs;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 
