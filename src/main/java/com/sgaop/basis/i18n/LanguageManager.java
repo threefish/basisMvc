@@ -19,6 +19,9 @@ import java.util.Properties;
  */
 public class LanguageManager {
 
+    /**
+     * 也可以采用ResourceBundle来完成国际化功能
+     */
     private volatile static HashMap<String, HashMap<String, String>> languageMap = new HashMap();
 
     private volatile static HashMap<String, Path> pathMap = new HashMap();
