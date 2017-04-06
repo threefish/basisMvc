@@ -6,6 +6,7 @@ import com.sgaop.basis.constant.Constant;
 import com.sgaop.basis.error.WebErrorMessage;
 import com.sgaop.basis.json.JsonExclusionStrategy;
 import com.sgaop.basis.json.JsonFormat;
+import com.sgaop.basis.json.NullStringToEmptyAdapterFactory;
 import com.sgaop.basis.json.TimestampTypeAdapter;
 import com.sgaop.basis.log.Logs;
 import com.sgaop.basis.util.StringsTool;
@@ -62,6 +63,9 @@ public class DefaultViewsRender {
                 GsonBuilder gb = new GsonBuilder();
                 if (jsonFormat.isIgnoreNull()) {
                     gb.serializeNulls();
+                }
+                if (jsonFormat.isNullAsEmtry()) {
+                    gb.registerTypeAdapterFactory(new NullStringToEmptyAdapterFactory());
                 }
                 if (!jsonFormat.getLocked().equals("")) {
                     gb.setExclusionStrategies(new JsonExclusionStrategy(jsonFormat.getLocked().split("\\|")));

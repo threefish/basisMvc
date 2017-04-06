@@ -10,8 +10,9 @@ public class JsonFormat {
 
     private boolean ignoreNull = false;
 
-    private String locked;
+    private boolean nullAsEmtry = false;
 
+    private String locked;
 
     private String DateFormat;
 
@@ -35,6 +36,14 @@ public class JsonFormat {
     public boolean isIgnoreNull() {
 
         return ignoreNull;
+    }
+
+    public boolean isNullAsEmtry() {
+        return nullAsEmtry;
+    }
+
+    public void setNullAsEmtry(boolean nullAsEmtry) {
+        this.nullAsEmtry = nullAsEmtry;
     }
 
     public void setIgnoreNull(boolean ignoreNull) {
