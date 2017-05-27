@@ -22,6 +22,17 @@ public class Mvcs {
 
     private static ThreadLocal<String> i18nLang = new ThreadLocal();
 
+    private static ThreadLocal<Throwable> error = new ThreadLocal();
+
+    public static void setError(Throwable e) {
+        error.set(e);
+    }
+
+    public static Throwable getError() {
+        return error.get();
+    }
+
+
     public static void setI18nLang(String lang) {
         if (lang != null) {
             if (lang.length() > 0) {

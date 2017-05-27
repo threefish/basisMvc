@@ -16,7 +16,7 @@ public class WebErrorMessage {
      */
     private boolean isJsp = false;
 
-    private Exception exception;
+    private Throwable exception;
 
     private String redirectUrl = "";
 
@@ -79,11 +79,11 @@ public class WebErrorMessage {
         this.message = message;
     }
 
-    public Exception getException() {
+    public Throwable getException() {
         return exception;
     }
 
-    public void setException(Exception exception) {
+    public void setException(Throwable exception) {
         this.exception = exception;
     }
 }

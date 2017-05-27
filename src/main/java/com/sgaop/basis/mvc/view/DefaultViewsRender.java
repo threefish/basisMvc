@@ -9,6 +9,7 @@ import com.sgaop.basis.json.JsonFormat;
 import com.sgaop.basis.json.NullStringToEmptyAdapterFactory;
 import com.sgaop.basis.json.TimestampTypeAdapter;
 import com.sgaop.basis.log.Logs;
+import com.sgaop.basis.mvc.Mvcs;
 import com.sgaop.basis.util.StringsTool;
 import org.apache.log4j.Logger;
 
@@ -154,6 +155,7 @@ public class DefaultViewsRender {
             } else {
                 response.sendError(errorMessage.getCode(), errorMessage.getMessage());
             }
+            Mvcs.setError(errorMessage.getException());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);

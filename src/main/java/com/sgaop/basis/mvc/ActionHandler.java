@@ -149,6 +149,7 @@ public class ActionHandler {
                 if (Mvcs.isAjax()) {
                     webErrorMessage.setMessage(new Gson().toJson(map));
                 } else {
+                    webErrorMessage.setException(te);
                     webErrorMessage.setMessage(te.getMessage());
                 }
             } else {
@@ -159,6 +160,7 @@ public class ActionHandler {
                 }
             }
             webErrorMessage.setCode(500);
+            webErrorMessage.setException(te);
             te.printStackTrace();
             logger.error(te);
         }
