@@ -6,7 +6,7 @@
 
 ## 基于Java注解和servlet实现通过注解方式访问的web MVC框架
 
-# 示例项目[basisMvcSample](https://github.com/threefish/basisMvcSample "示例项目")
+# 示例项目[basisEdp](https://github.com/threefish/basisEdp "示例项目")
 
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看更早前的更新日志](https://github.com/threefish/WebFrameWork "更早前的更新日志")
 
