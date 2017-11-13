@@ -10,7 +10,7 @@
 
 ###  规范了包名，所以重新创建了项目进行提交分享[点击这里可以查看更早前的更新日志](https://github.com/threefish/WebFrameWork "更早前的更新日志")
 
-#### TODO 真实项目的开发  [basisMvcSample](https://github.com/threefish/basisMvcSample "真实项目")
+#### TODO 真实项目的开发  [basisEdp](https://github.com/threefish/basisEdp "真实项目")
 
 ### 现已实现以下功能
 #### IOC、AOP、ORM、MVC
